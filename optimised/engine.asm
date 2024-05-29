@@ -111,8 +111,9 @@ bcc .branch_musicTrack_end
 ; Music
 .branch_musicTrack
 call handleMusicTrack
+mov a,!enableSoundEffectVoices : eor a,#$FF : and a,!fakeEcho : mov !echoEnableFlags,a
 mov x,#$00 : call writeReadCpuIo
-bra .loop_main
+jmp .loop_main
 .branch_musicTrack_end
 
 mov a,!cpuIo0_write : beq ++

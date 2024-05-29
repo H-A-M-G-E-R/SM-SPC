@@ -206,6 +206,7 @@ endmacro
 %declare_byte(echoTimer)
 %declare_byte(echoDelay)
 %declare_byte(echoFeedbackVolume)
+%declare_byte(fakeEcho)
 }
 
 ; Music

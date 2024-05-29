@@ -7,7 +7,6 @@ macro SetVoice(i_sound, i_voice)
 
 set<i_voice> !enableSoundEffectVoices
 clr<i_voice> !musicVoiceBitset
-clr<i_voice> !echoEnableFlags
 mov a,#!bitset : or a,!enabledVoices : mov !enabledVoices,a
 mov y,#$00
 mov a,#!bitset : mov (!p_charVoiceBitset)+y,a

@@ -544,7 +544,7 @@ ret
 ; $1A4B
 staticEcho: ; Track command F5h
 {
-mov !echoEnableFlags,a
+mov !fakeEcho,a
 call getNextTrackDataByte : mov a,#$00 : movw !echoVolumeLeft,ya
 call getNextTrackDataByte : mov a,#$00 : movw !echoVolumeRight,ya
 clr5 !flg
