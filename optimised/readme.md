@@ -18,7 +18,7 @@ $6E00 | Sample data
 In the engine mod (these ARAM addresses are just examples, read SPC engine metadata for real addresses):
 ```
 _ARAM_|___Description____
-$E0   | Extra (*)
+$E1   | Extra (*)
 $44D  | SPC engine
 $3899 | Note length table
 $38B1 | Instrument table
