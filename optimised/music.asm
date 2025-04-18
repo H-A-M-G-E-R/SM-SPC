@@ -99,15 +99,6 @@ dbnz !musicTrackStatus,musicTrackInitialisation
 call getNextTrackerCommand
 bne .branch_loadNewTrackData
 mov y,a : beq loadNewMusicTrack
-cmp a,#$80 : beq +
-cmp a,#$81 : bne .branch_processTrackerTimer
-mov a,#$00
-
-+
-mov !disableNoteProcessing,a
-bra .loop_tracker
-
-.branch_processTrackerTimer
 dec !trackerTimer : bpl +
 mov !trackerTimer,a
 
@@ -349,7 +340,7 @@ mov a,!musicVoiceBitset : tclr !noiseEnableFlags,a
 mov a,(!misc0)+y
 
 .branch_dsp
-mov $00F2,x : mov $00F3,a
+mov $F2,x : mov $F3,a
 inc x
 inc y
 cmp y,#$04 : bne .loop_dsp
@@ -544,7 +535,7 @@ ret
 ; $1A4B
 staticEcho: ; Track command F5h
 {
-mov !echoEnableFlags,a
+mov !fakeEchoEnableFlags,a
 call getNextTrackDataByte : mov a,#$00 : movw !echoVolumeLeft,ya
 call getNextTrackDataByte : mov a,#$00 : movw !echoVolumeRight,ya
 clr5 !flg
@@ -567,6 +558,7 @@ ret
 endEcho: ; Track command F6h
 {
 ; Not used by any Super Metroid tracks
+; Also called at the start of receiveDataFromCpu
 movw !echoVolumeLeft,ya
 movw !echoVolumeRight,ya
 set5 !flg
@@ -598,7 +590,7 @@ ret
 setUpEcho:
 {
 mov !echoDelay,a
-mov y,#$7D : mov $00F2,y : mov a,$00F3 : cmp a,!echoDelay : beq .branch_noChange
+mov y,#$7D : mov $F2,y : mov a,$F3 : cmp a,!echoDelay : beq .branch_noChange
 
 ; Echo timer = min(0, [echo timer]) - 1 - [DSP echo delay]
 and a,#$0F : eor a,#$FF
@@ -612,7 +604,7 @@ mov !echoTimer,a
 mov y,#$04
 
 -
-mov a,dspRegisterAddresses-1+y : mov $00F2,a : mov a,#$00 : mov $00F3,a
+mov a,dspRegisterAddresses-1+y : mov $F2,a : mov a,#$00 : mov $F3,a
 dbnz y,-
 
 ; Disable echo buffer writes
@@ -632,39 +624,6 @@ setPercussionInstrumentsIndex: ; Track command FAh
 {
 mov !percussionInstrumentsBaseIndex,a
 ret
-}
-
-; $1AF4
-skipByte: ; Track command FBh
-{
-; Not used by any Super Metroid tracks
-call incrementTrackPointer
-ret
-}
-
-; $1AF8
-skipAllNewNotes: ; Track command FCh
-{
-; Not used by any Super Metroid tracks
-inc a : mov !trackSkipNewNotesFlags+x,a
-ret
-}
-
-; $1AFD
-stopSoundEffectsAndDisableMusicNoteProcessing: ; Track command FDh
-{
-; Not used by any Super Metroid tracks
-inc a
-
-; Fall through
-}
-
-; $1AFE
-resumeSoundEffectsAndEnableMusicNoteProcessing: ; Track command FEh
-{
-; Not used by any Super Metroid tracks
-mov !disableNoteProcessing,a
-jmp keyOffMusicVoices
 }
 
 ; $1B03
@@ -765,18 +724,14 @@ dw \
     echoParameters,\
     dynamicEchoVolume,\
     pitchSlide,\
-    setPercussionInstrumentsIndex,\
-    skipByte,\
-    skipAllNewNotes,\
-    stopSoundEffectsAndDisableMusicNoteProcessing,\
-    resumeSoundEffectsAndEnableMusicNoteProcessing
+    setPercussionInstrumentsIndex
 }
 
 ; $1BA0
 trackCommandParameterBytes:
 {
 db $01, $01, $02, $03, $00, $01, $02, $01, $02, $01, $01, $03, $00, $01, $02, $03,\
-   $01, $03, $03, $00, $01, $03, $00, $03, $03, $03, $01, $02, $00, $00, $00
+   $01, $03, $03, $00, $01, $03, $00, $03, $03, $03, $01
 }
 
 ; $1BBF

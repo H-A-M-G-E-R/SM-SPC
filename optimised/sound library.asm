@@ -1,17 +1,17 @@
-macro SetVoice(i_sound, i_voice)
+macro SetVoice(i_sound)
 {
 !enabledVoices     = !sound<i_sound>_enabledVoices
 !p_charVoiceBitset = !sound<i_sound>_p_charVoiceBitset
 !p_charVoiceMask   = !sound<i_sound>_p_charVoiceMask
-!bitset #= 1<<<i_voice>
 
-set<i_voice> !enableSoundEffectVoices
-clr<i_voice> !musicVoiceBitset
-clr<i_voice> !echoEnableFlags
-mov a,#!bitset : or a,!enabledVoices : mov !enabledVoices,a
+mov a,channelBitflags-1+y
+tset !enableSoundEffectVoices,a
+tclr !musicVoiceBitset,a
+tclr !echoEnableFlags,a
 mov y,#$00
-mov a,#!bitset : mov (!p_charVoiceBitset)+y,a
-mov a,#~!bitset : mov (!p_charVoiceMask)+y,a
+mov (!p_charVoiceBitset)+y,a
+eor a,#$FF : mov (!p_charVoiceMask)+y,a
+eor a,#$FF : or a,!enabledVoices : mov !enabledVoices,a
 }
 endmacro
 

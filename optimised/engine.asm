@@ -11,17 +11,9 @@ mov !misc1+1,#main-$0200>>8
 mov !misc1,#main-$0200
 call memclear
 
-; Clear echo buffer (disabled because this region has been merged with sample data)
-;mov !misc0+1,#$800>>8
-;mov !misc1+1,#!echoBufferEnd-$800>>8
-;mov !misc1,#0
-;call memclear
-
-; Set up echo with echo delay = 1
-mov a,#$01 : call setUpEcho
-
-; Disable echo buffer writes
-set5 !flg
+; Set up echo with echo delay = 5 (that's the maximum echo buffer size of music data $00)
+; Keep echo buffer writes enabled because the echo buffer will clear on its own to prevent crackling when starting the game
+mov a,#$05 : call setUpEcho
 
 ; DSP left/right track master volume = 60h
 mov a,#$60
@@ -32,16 +24,16 @@ mov y,#$1C : call writeDspRegisterDirect
 mov a,#!sampleTable>>8 : mov y,#$5D : call writeDspRegisterDirect
 
 ; Clear $F4..F7, and stop timers (and set an unused bit)
-mov a,#$F0 : mov $00F1,a
+mov a,#$F0 : mov $F1,a
 
 ; Timer 0 divider = 10h (2 ms)
-mov a,#$10 : mov $00FA,a
+mov a,#$10 : mov $FA,a
 
 ; Music tempo = 1000h (31.3 ticks / second)
 mov !musicTempo+1,a
 
 ; Enable timer 0
-mov a,#$01 : mov $00F1,a
+mov a,#$01 : mov $F1,a
 }
 
 .loop_main
@@ -60,8 +52,8 @@ cmp (!echoTimer),(!echoDelay) : bne .branch_next
 bbs7 !echoTimer,.branch_next
 
 .branch_doUpdateDsp
-mov a,dspRegisterAddresses-1+y : mov $00F2,a
-mov a,directPageAddresses-1+y : mov x,a : mov a,(x) : mov $00F3,a
+mov a,dspRegisterAddresses-1+y : mov $F2,a
+mov a,directPageAddresses-1+y : mov x,a : mov a,(x) : mov $F3,a
 
 .branch_next
 dbnz y,.loop_updateDsp
@@ -75,7 +67,7 @@ mov a,!randomNumber : eor a,!randomNumber+1 : lsr a : lsr a : notc : ror !random
 
 ; Wait for timer 0 output to be non-zero
 -
-mov y,$00FD : beq -
+mov y,$FD : beq -
 
 ; Save time since last loop
 push y
@@ -141,11 +133,11 @@ writeReadCpuIo:
 ;;     X: CPU IO index
 
 ; Write CPU IO [X]
-mov a,!cpuIo0_write+x : mov $00F4+x,a
+mov a,!cpuIo0_write+x : mov $F4+x,a
 
 ; Wait for CPU IO [X] to stabilise
 -
-mov a,$00F4+x : cmp a,$00F4+x : bne -
+mov a,$F4+x : cmp a,$F4+x : bne -
 
 ; Read CPU IO [X]
 mov !cpuIo0_read+x,a
@@ -170,9 +162,18 @@ mov y,#$A4
 ; Return if rest or tie note
 cmp y,#$C8 : bcs writeReadCpuIo_ret
 
-; Return if voice is not sound effect enabled
+; Return if voice is sound effect enabled
 mov a,!enableSoundEffectVoices : and a,!musicVoiceBitset : bne writeReadCpuIo_ret
 
+; Enable or disable echo according to fake echo enable flags
+mov a,!fakeEchoEnableFlags : and a,!musicVoiceBitset : beq .branch_disableEcho
+tset !echoEnableFlags,a
+bra +
+
+.branch_disableEcho
+mov a,!musicVoiceBitset : tclr !echoEnableFlags,a
+
++
 ; Set track note according to [Y] after transposition
 mov a,y : and a,#$7F : clrc : adc a,!musicTranspose : clrc : adc a,!trackTransposes+x : mov !trackNotes+x,a
 mov a,!trackSubtransposes+x : mov !trackSubnotes+x,a
@@ -320,7 +321,7 @@ writeDspRegisterDirect:
 ;;     A: Value to write
 ;;     Y: DSP register index
 
-mov $00F2,y : mov $00F3,a
+mov $F2,y : mov $F3,a
 
 .ret
 ret
@@ -359,35 +360,38 @@ receiveDataFromCpu:
 ; Echo [CPU IO 0]
 ; [CPU IO 1] == 0
 
-mov a,#$AA : mov $00F4,a
-mov a,#$BB : mov $00F5,a
+; Disable echo buffer writes so the data doesn't get clobbered by the echo buffer writes
+call endEcho : mov a,!flg : mov y,#$6C : call writeDspRegisterDirect
+
+mov a,#$AA : mov $F4,a
+mov a,#$BB : mov $F5,a
 
 -
-mov a,$00F4 : cmp a,#$CC : bne -
+mov a,$F4 : cmp a,#$CC : bne -
 bra .branch_processDataBlock
 
 .loop_dataBlock
-mov y,$00F4 : bne .loop_dataBlock
+mov y,$F4 : bne .loop_dataBlock
 
 .loop_dataByte
-cmp y,$00F4 : bne +
-mov a,$00F5
-mov $00F4,y
+cmp y,$F4 : bne +
+mov a,$F5
+mov $F4,y
 mov (!misc0)+y,a : inc y : bne .loop_dataByte
 inc !misc0+1
 bra .loop_dataByte
 
 +
 bpl .loop_dataByte
-cmp y,$00F4 : bpl .loop_dataByte
+cmp y,$F4 : bpl .loop_dataByte
 
 .branch_processDataBlock
-mov a,$00F6 : mov y,$00F7 : movw !misc0,ya
-mov y,$00F4 : mov a,$00F5 : mov $00F4,y
+mov a,$F6 : mov y,$F7 : movw !misc0,ya
+mov y,$F4 : mov a,$F5 : mov $F4,y
 bne .loop_dataBlock
 
 ; Reset CPU IO input latches and enable/reset timer 0
-mov x,#$31 : mov $00F1,x
+mov x,#$31 : mov $F1,x
 
 ; Write shared tracker pointers to new tracker data location
 mov y,#$00
@@ -408,10 +412,10 @@ db $00, $01, $03, $07, $0D, $15, $1E, $29, $34, $42, $51, $5E, $67, $6E, $73, $7
 
 ; $1E32
 echoFirFilters:
-db $7F,$00,$00,$00,$00,$00,$00,$00 ; Sharp echo
-db $58,$BF,$DB,$F0,$FE,$07,$0C,$0C ; Echo + reverb
-db $0C,$21,$2B,$2B,$13,$FE,$F3,$F9 ; Smooth echo
-db $34,$33,$00,$D9,$E5,$01,$FC,$EB ; ???
+db $7F,$00,$00,$00,$00,$00,$00,$00 ; None
+db $58,$BF,$DB,$F0,$FE,$07,$0C,$0C ; High-pass
+db $0C,$21,$2B,$2B,$13,$FE,$F3,$F9 ; Low-pass
+db $34,$33,$00,$D9,$E5,$01,$FC,$EB ; Band-pass
 
 ; $1E52
 dspRegisterAddresses: ; For DSP update
@@ -424,3 +428,6 @@ db !echoVolumeLeft+1, !echoVolumeRight+1, !echoFeedbackVolume, !echoEnableFlags,
 ; $1E66
 pitchTable:
 dw $085F, $08DE, $0965, $09F4, $0A8C, $0B2C, $0BD6, $0C8B, $0D4A, $0E14, $0EEA, $0FCD, $10BE
+
+channelBitflags:
+db $01, $02, $04, $08, $10, $20, $40, $80

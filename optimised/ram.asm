@@ -266,6 +266,7 @@ endmacro
 !p_extra #= !p_ram
 %declare_word(p_trackerData)
 %declare_byte(enableLateKeyOff)
+%declare_byte(fakeEchoEnableFlags)
 
 ; $F0..FF: IO ports
 if !p_ram > $F0
@@ -510,8 +511,8 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $43E..3898: SPC engine
-!p_ram = $3899
+; $43E..3384: SPC engine
+!p_ram = $3500-$EA-$10-8
 
 %declare_byteArray(noteRingLengthTable, 8)
 %declare_byteArray(noteVolumeTable, $10)

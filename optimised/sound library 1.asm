@@ -67,7 +67,7 @@ mov !sound1_channel1_i_instructionList,y
 mov !sound1_channel2_i_instructionList,y
 mov !sound1_channel3_i_instructionList,y
 
-mov y,#$01
+inc y
 mov !sound1_channel0_instructionTimer,y
 mov !sound1_channel1_instructionTimer,y
 mov !sound1_channel2_instructionTimer,y
@@ -118,7 +118,6 @@ sound1Initialisation:
 {
 mov a,#$09 : mov !sound1_voiceId,a
 mov a,!enableSoundEffectVoices : mov !sound1_remainingEnabledSoundVoices,a
-mov a,#$FF : mov !sound1_initialisationFlag,a
 mov a,#$00
 mov !sound1_2i_channel,a
 mov !sound1_i_channel,a
@@ -130,7 +129,8 @@ mov !sound1_channel0_voiceIndex,a
 mov !sound1_channel1_voiceIndex,a
 mov !sound1_channel2_voiceIndex,a
 mov !sound1_channel3_voiceIndex,a
-mov a,#$FF
+dec a
+mov !sound1_initialisationFlag,a
 mov !sound1_channel0_voiceMask,a
 mov !sound1_channel1_voiceMask,a
 mov !sound1_channel2_voiceMask,a
@@ -141,7 +141,12 @@ mov !sound1_channel2_disableByte,a
 mov !sound1_channel3_disableByte,a
 
 .loop
-dec !sound1_voiceId : beq .ret
+dec !sound1_voiceId : bne +
+
+.ret
+ret
+
++
 asl !sound1_remainingEnabledSoundVoices : bcs .loop
 mov a,#$00 : cmp a,!sound1_n_voices : beq .ret
 dec !sound1_n_voices
@@ -161,20 +166,7 @@ mov x,!sound1_i_voice : mov y,!sound1_i_channel
 mov a,!trackOutputVolumes+x         : mov !sound1_trackOutputVolumeBackups+y,a
 mov a,!trackPhaseInversionOptions+x : mov !sound1_trackPhaseInversionOptionsBackups+y,a
 mov y,#$00 : mov a,!sound1_i_voice : mov (!sound1_p_charVoiceIndex)+y,a
-mov a,!sound1_voiceId : call goToJumpTableEntry
-dw .voice0, .voice1, .voice2, .voice3, .voice4, .voice5, .voice6, .voice7
-
-.ret
-ret
-
-.voice7 : %SetVoice(1, 7) : jmp .loop
-.voice6 : %SetVoice(1, 6) : jmp .loop
-.voice5 : %SetVoice(1, 5) : jmp .loop
-.voice4 : %SetVoice(1, 4) : jmp .loop
-.voice3 : %SetVoice(1, 3) : jmp .loop
-.voice2 : %SetVoice(1, 2) : jmp .loop
-.voice1 : %SetVoice(1, 1) : jmp .loop
-.voice0 : %SetVoice(1, 0) : jmp .loop
+mov y,!sound1_voiceId : %SetVoice(1) : jmp .loop
 }
 
 getSound1ChannelInstructionListPointer:
@@ -191,21 +183,12 @@ ret
 
 sound1Configurations:
 {
-.sound1
-call nSound1Voices_4_sound1Priority_0_dup : ret
-
 .sound2
 .sound3
 .sound4
 .sound5
 .sound6
 .sound7
-call nSound1Voices_1_sound1Priority_0 : ret
-
-.sound8
-call nSound1Voices_2_sound1Priority_0
-ret
-
 .sound9
 .soundA
 .soundB
@@ -233,60 +216,19 @@ ret
 .sound21
 .sound22
 .sound23
-call nSound1Voices_1_sound1Priority_0
-ret
-
-.sound24
-call nSound1Voices_2_sound1Priority_0
-ret
-
 .sound25
 .sound26
-call nSound1Voices_1_sound1Priority_0
-ret
-
-.sound27
-call nSound1Voices_2_sound1Priority_0
-ret
-
 .sound28
 .sound29
 .sound2A
 .sound2B
-call nSound1Voices_1_sound1Priority_0
-ret
-
 .sound2C
-call nSound1Voices_1_sound1Priority_0
-ret
-
 .sound2D
-call nSound1Voices_1_sound1Priority_0
-ret
-
-.sound2E
-call nSound1Voices_4_sound1Priority_0
-ret
-
 .sound2F
 .sound30
 .sound31
 .sound32
-call nSound1Voices_1_sound1Priority_0
-ret
-
-.sound33
-call nSound1Voices_2_sound1Priority_0
-ret
-
 .sound34
-call nSound1Voices_1_sound1Priority_0
-ret
-
-.sound35
-call nSound1Voices_1_sound1Priority_1
-ret
-
 .sound36
 .sound37
 .sound38
@@ -297,61 +239,45 @@ ret
 .sound3D
 .sound3E
 .sound3F
-call nSound1Voices_1_sound1Priority_0
-ret
-
-.sound40
-call nSound1Voices_3_sound1Priority_1
-ret
-
-.sound41
-call nSound1Voices_2_sound1Priority_0
-ret
-
-.sound42
-call nSound1Voices_2_sound1Priority_0 : ret
-}
-
-nSound1Voices_1_sound1Priority_0:
 {
 mov a,#$01 : mov !sound1_n_voices,a
 mov a,#$00 : mov !sound1Priority,a
 ret
 }
 
-nSound1Voices_1_sound1Priority_1:
+.sound35
 {
 mov a,#$01 : mov !sound1_n_voices,a
 mov a,#$01 : mov !sound1Priority,a
 ret
 }
 
-nSound1Voices_2_sound1Priority_0:
+.sound8
+.sound24
+.sound27
+.sound33
+.sound41
+.sound42
 {
 mov a,#$02 : mov !sound1_n_voices,a
 mov a,#$00 : mov !sound1Priority,a
 ret
 }
 
-nSound1Voices_3_sound1Priority_1:
+.sound40
 {
 mov a,#$03 : mov !sound1_n_voices,a
 mov a,#$01 : mov !sound1Priority,a
 ret
 }
 
-nSound1Voices_4_sound1Priority_0:
+.sound1
+.sound2E
 {
 mov a,#$04 : mov !sound1_n_voices,a
 mov a,#$00 : mov !sound1Priority,a
 ret
 }
-
-nSound1Voices_4_sound1Priority_0_dup:
-{
-mov a,#$04 : mov !sound1_n_voices,a
-mov a,#$00 : mov !sound1Priority,a
-ret
 }
 
 sound1InstructionLists:
@@ -385,11 +311,11 @@ dw .sound1,  .sound2,  .sound3,  .sound4,  .sound5,  .sound6,  .sound7,  .sound8
 
 ; Sound 1: Power bomb explosion
 .sound1
-dw ..voice0, ..voice1, ..voice2, ..voice3
-..voice0 : db $F5,$B0,$C7, $05,$D0,$0A,$98,$46, $FF
-..voice1 : db $F5,$A0,$C7, $09,$D0,$0F,$80,$50, $F5,$50,$80, $09,$D0,$0A,$AB,$46, $FF
-..voice2 : db $09,$D0,$0F,$87,$10, $F5,$B0,$C7, $05,$D0,$0F,$80,$60, $FF
-..voice3 : db $09,$D0,$05,$82,$30, $F5,$A0,$80, $05,$D0,$05,$C7,$60, $FF
+dw .PowerBombVoice0, .PowerBombVoice1, .PowerBombVoice2, .PowerBombVoice3
+.PowerBombVoice0 : db $F5,$B0,$C7, $05,$D0,$0A,$98,$46, $FF
+.PowerBombVoice1 : db $F5,$A0,$C7, $09,$D0,$0F,$80,$50, $F5,$50,$80, $09,$D0,$0A,$AB,$46, $FF
+.PowerBombVoice2 : db $09,$D0,$0F,$87,$10, $F5,$B0,$C7, $05,$D0,$0F,$80,$60, $FF
+.PowerBombVoice3 : db $09,$D0,$05,$82,$30, $F5,$A0,$80, $05,$D0,$05,$C7,$60, $FF
 
 ; Sound 2: Silence
 .sound2
@@ -455,65 +381,41 @@ dw ..voice0
 ..voice0 : db $04,$90,$0A,$89,$03, $04,$90,$0A,$84,$0E, $FF
 
 ; Sound Ch: Uncharged ice beam
+; Sound Eh: Uncharged ice + wave beam
 .soundC
-dw .weakUnchargedIceVoice
-
-; Uncharged ice / ice + wave beam
-.weakUnchargedIceVoice
-db $04,$B0,$0A,$8B,$03, $04,$B0,$0A,$89,$07, $F5,$90,$C7, $10,$90,$0A,$BC,$0A, $10,$60,$0A,$C3,$06, $10,$30,$0A,$C7,$03, $10,$20,$0A,$C7,$03, $FF
+.soundE
+dw ..voice0
+..voice0 : db $04,$B0,$0A,$8B,$03, $04,$B0,$0A,$89,$07, $F5,$90,$C7, $10,$90,$0A,$BC,$0A, $10,$60,$0A,$C3,$06, $10,$30,$0A,$C7,$03, $10,$20,$0A,$C7,$03, $FF
 
 ; Sound Dh: Uncharged wave beam
 .soundD
 dw ..voice0
 ..voice0 : db $04,$90,$0A,$89,$03, $04,$70,$0A,$84,$0B, $04,$30,$0A,$84,$08, $FF
 
-; Sound Eh: Uncharged ice + wave beam
-.soundE
-dw .weakUnchargedIceVoice
-
 ; Sound Fh: Uncharged spazer beam
+; Sound 12h: Uncharged spazer + wave beam
 .soundF
-dw .unchargedSpazerVoice
-
-; Uncharged spazer / spazer + wave beam
-.unchargedSpazerVoice
-db $00,$D0,$0A,$98,$0C, $04,$C0,$0A,$80,$10, $04,$30,$0A,$80,$08, $04,$10,$0A,$80,$06, $FF
+.sound12
+dw ..voice0
+..voice0 : db $00,$D0,$0A,$98,$0C, $04,$C0,$0A,$80,$10, $04,$30,$0A,$80,$08, $04,$10,$0A,$80,$06, $FF
 
 ; Sound 10h: Uncharged spazer + ice beam
-.sound10
-dw .strongUnchargedIceVoice
-
-; Uncharged spazer + ice / spazer + ice + wave / plasma + ice / plasma + ice + wave beam
-.strongUnchargedIceVoice
-db $00,$D0,$0A,$98,$0C, $F5,$90,$C7, $10,$90,$0A,$BC,$0A, $10,$60,$0A,$C3,$06, $10,$30,$0A,$C7,$03, $10,$20,$0A,$C7,$03, $FF
-
 ; Sound 11h: Uncharged spazer + ice + wave beam
+; Sound 14h: Uncharged plasma + ice beam
+; Sound 15h: Uncharged plasma + ice + wave beam
+.sound10
 .sound11
-dw .strongUnchargedIceVoice
-
-; Sound 12h: Uncharged spazer + wave beam
-.sound12
-dw .unchargedSpazerVoice
+.sound14
+.sound15
+dw ..voice0
+..voice0 : db $00,$D0,$0A,$98,$0C, $F5,$90,$C7, $10,$90,$0A,$BC,$0A, $10,$60,$0A,$C3,$06, $10,$30,$0A,$C7,$03, $10,$20,$0A,$C7,$03, $FF
 
 ; Sound 13h: Uncharged plasma beam
-.sound13
-dw .unchargedPlasmaVoice
-
-; Uncharged plasma / plasma + wave beam
-.unchargedPlasmaVoice
-db $00,$D0,$0A,$98,$0C, $04,$B0,$0A,$80,$13, $FF
-
-; Sound 14h: Uncharged plasma + ice beam
-.sound14
-dw .strongUnchargedIceVoice
-
-; Sound 15h: Uncharged plasma + ice + wave beam
-.sound15
-dw .strongUnchargedIceVoice
-
 ; Sound 16h: Uncharged plasma + wave beam
+.sound13
 .sound16
-dw .unchargedPlasmaVoice
+dw ..voice0
+..voice0 : db $00,$D0,$0A,$98,$0C, $04,$B0,$0A,$80,$13, $FF
 
 ; Sound 17h: Charged power beam
 .sound17
@@ -521,61 +423,38 @@ dw ..voice0
 ..voice0 : db $04,$D0,$0A,$84,$05, $04,$D0,$0A,$80,$0C, $02,$80,$0A,$98,$03, $02,$60,$0A,$98,$03, $02,$50,$0A,$98,$03, $FF
 
 ; Sound 18h: Charged ice beam
+; Sound 1Ah: Charged ice + wave beam
+; Sound 1Ch: Charged spazer + ice beam
+; Sound 1Dh: Charged spazer + ice + wave beam
+; Sound 20h: Charged plasma + ice beam
+; Sound 21h: Charged plasma + ice + wave beam
 .sound18
-dw .chargedIceVoice
-
-; Charged ice / ice + wave / spazer + ice / spazer + ice + wave / plasma + ice / plasma + ice + wave beam
-.chargedIceVoice
-db $00,$E0,$0A,$98,$0C, $F5,$B0,$C7, $10,$E0,$0A,$BC,$0A, $10,$70,$0A,$C3,$06, $10,$30,$0A,$C7,$03, $10,$20,$0A,$C7,$03, $FF
+.sound1A
+.sound1C
+.sound1D
+.sound20
+.sound21
+dw ..voice0
+..voice0 : db $00,$E0,$0A,$98,$0C, $F5,$B0,$C7, $10,$E0,$0A,$BC,$0A, $10,$70,$0A,$C3,$06, $10,$30,$0A,$C7,$03, $10,$20,$0A,$C7,$03, $FF
 
 ; Sound 19h: Charged wave beam
 .sound19
 dw ..voice0
 ..voice0 : db $04,$E0,$0A,$84,$03, $04,$E0,$0A,$80,$10, $04,$50,$0A,$80,$04, $04,$30,$0A,$80,$09, $FF
 
-; Sound 1Ah: Charged ice + wave beam
-.sound1A
-dw .chargedIceVoice
-
 ; Sound 1Bh: Charged spazer beam
-.sound1B
-dw .chargedSpazerVoice
-
-; Charged spazer / spazer + wave beam
-.chargedSpazerVoice
-db $00,$D0,$0A,$95,$08, $04,$D0,$0A,$80,$0F, $04,$80,$0A,$80,$0D, $04,$20,$0A,$80,$0A, $FF
-
-; Sound 1Ch: Charged spazer + ice beam
-.sound1C
-dw .chargedIceVoice
-
-; Sound 1Dh: Charged spazer + ice + wave beam
-.sound1D
-dw .chargedIceVoice
-
 ; Sound 1Eh: Charged spazer + wave beam
+.sound1B
 .sound1E
-dw .chargedSpazerVoice
+dw ..voice0
+..voice0 : db $00,$D0,$0A,$95,$08, $04,$D0,$0A,$80,$0F, $04,$80,$0A,$80,$0D, $04,$20,$0A,$80,$0A, $FF
 
 ; Sound 1Fh: Charged plasma beam / hyper beam
-.sound1F
-dw .chargedPlasmaVoice
-
-; Charged plasma / hyper / plasma + wave beam
-.chargedPlasmaVoice
-db $00,$D0,$0A,$98,$0E, $04,$D0,$0A,$80,$10, $04,$70,$0A,$80,$10, $04,$30,$0A,$80,$10, $FF
-
-; Sound 20h: Charged plasma + ice beam
-.sound20
-dw .chargedIceVoice
-
-; Sound 21h: Charged plasma + ice + wave beam
-.sound21
-dw .chargedIceVoice
-
 ; Sound 22h: Charged plasma + wave beam
+.sound1F
 .sound22
-dw .chargedPlasmaVoice
+dw ..voice0
+..voice0 : db $00,$D0,$0A,$98,$0E, $04,$D0,$0A,$80,$10, $04,$70,$0A,$80,$10, $04,$30,$0A,$80,$10, $FF
 
 ; Sound 23h: Ice SBA
 .sound23
@@ -617,22 +496,20 @@ dw ..voice0
 ; Sound 2Ah: Selected save file
 .sound2A
 dw ..voice0
-..voice0 : db $07,$90,$0A,$C5,$12, $FF
+..voice0 : db $07,$90,$0A,$C5,$12
+
+.EmptyVoice
+db $FF
 
 ; Sound 2Bh: (Empty)
-.sound2B
-dw ..voice0
-..voice0 : db $FF
-
 ; Sound 2Ch: (Empty)
-.sound2C
-dw ..voice0
-..voice0 : db $FF
-
 ; Sound 2Dh: (Empty)
+; Sound 3Ah: (Empty)
+.sound2B
+.sound2C
 .sound2D
-dw ..voice0
-..voice0 : db $FF
+.sound3A
+dw .EmptyVoice
 
 ; Sound 2Eh: Saving
 .sound2E
@@ -648,16 +525,20 @@ dw ..voice0
 ..voice0 : db $07,$80,$0A,$C7,$10, $FF
 
 ; Sound 30h: Resumed spin jump
+; Sound 3Fh: Resumed space jump
 .sound30
-dw ..voice0
-..voice0 : db $FE,$00, $07,$80,$0A,$C7,$10, $FB, $FF
+.sound3F
+dw .resumedSpinJumpVoice
 
 ; Sound 31h: Spin jump
 .sound31
 dw ..voice0
-..voice0 : db $07,$30,$0A,$C5,$10, $07,$40,$0A,$C6,$10, $07,$50,$0A,$C7,$10,\
-              $FE,$00, $07,$80,$0A,$C7,$10, $FB,\
-              $FF
+..voice0 : db $07,$30,$0A,$C5,$10, $07,$40,$0A,$C6,$10, $07,$50,$0A,$C7,$10
+
+; Shared by resumed spin jump, spin jump and resumed space jump
+.resumedSpinJumpVoice
+db $FE,$00, $07,$80,$0A,$C7,$10, $FB,\
+   $FF
 
 ; Sound 32h: Spin jump end
 .sound32
@@ -665,7 +546,9 @@ dw ..voice0
 ..voice0 : db $0A,$00,$0A,$87,$03, $FF
 
 ; Sound 33h: Screw attack
+; Sound 3Eh: Space jump (voice 0 only)
 .sound33
+.sound3E
 dw ..voice0, ..voice1
 ..voice0 : db $07,$30,$0A,$C7,$04, $07,$40,$0A,$C7,$05, $07,$50,$0A,$C7,$06, $07,$60,$0A,$C7,$07, $07,$70,$0A,$C7,$09, $07,$80,$0A,$C7,$0D, $07,$80,$0A,$C7,$0F,\
               $FE,$00, $07,$80,$0A,$C7,$10, $FB,\
@@ -704,11 +587,6 @@ dw ..voice0
 dw ..voice0
 ..voice0 : db $03,$40,$0A,$9C,$03, $FF
 
-; Sound 3Ah: (Empty)
-.sound3A
-dw ..voice0
-..voice0 : db $FF
-
 ; Sound 3Bh: Hexagon map -> square map transition
 .sound3B
 dw ..voice0
@@ -723,18 +601,6 @@ dw ..voice0
 .sound3D
 dw ..voice0
 ..voice0 : db $08,$70,$0A,$99,$03, $08,$70,$0A,$9C,$05, $FF
-
-; Sound 3Eh: Space jump
-.sound3E
-dw ..voice0
-..voice0 : db $07,$30,$0A,$C7,$04, $07,$40,$0A,$C7,$05, $07,$50,$0A,$C7,$06, $07,$60,$0A,$C7,$07, $07,$70,$0A,$C7,$09, $07,$80,$0A,$C7,$0D, $07,$80,$0A,$C7,$0F,\
-              $FE,$00, $07,$80,$0A,$C7,$10, $FB,\
-              $FF
-
-; Sound 3Fh: Resumed space jump
-.sound3F
-dw ..voice0
-..voice0 : db $FE,$00, $07,$80,$0A,$C7,$10, $FB, $FF
 
 ; Sound 40h: Mother Brain's rainbow beam
 .sound40
