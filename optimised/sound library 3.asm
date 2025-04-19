@@ -26,8 +26,8 @@ mov a,!sound3Priority : bne .branch_noChange
 +
 mov a,!sound3 : beq +
 mov a,#$00 : mov !sound3_enabledVoices,a
-call resetSound3Channel0
-call resetSound3Channel1
+mov x,#$00+!sound1_n_channels+!sound2_n_channels : call resetSoundChannel
+mov x,#$01+!sound1_n_channels+!sound2_n_channels : call resetSoundChannel
 
 +
 mov a,#$00
@@ -62,14 +62,11 @@ mov !sound3_channel0_instructionTimer,y
 mov !sound3_channel1_instructionTimer,y
 
 +
-mov x,#$00+!sound1_n_channels+!sound2_n_channels : mov !i_globalChannel,x : call processSoundChannel
-mov x,#$01+!sound1_n_channels+!sound2_n_channels : mov !i_globalChannel,x : call processSoundChannel
+mov x,#$00+!sound1_n_channels+!sound2_n_channels : call processSoundChannel
+mov x,#$01+!sound1_n_channels+!sound2_n_channels : call processSoundChannel
 
 ret
 }
-
-resetSound3Channel0: : mov x,#$00+!sound1_n_channels+!sound2_n_channels : mov !i_globalChannel,x : jmp resetSoundChannel
-resetSound3Channel1: : mov x,#$01+!sound1_n_channels+!sound2_n_channels : mov !i_globalChannel,x : jmp resetSoundChannel
 
 ; Sound 3 channel variable pointers
 {

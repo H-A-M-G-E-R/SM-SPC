@@ -1,4 +1,4 @@
-SPC engine modification. Frees up just under 4kb of ARAM, which can be used for any of: sample data, tracker data, or echo buffer (each echo frames are 2kb each).
+SPC engine modification. Frees up just under 7kb of ARAM, which can be used for any of: sample data, tracker data, or echo buffer (each echo frames are 2kb each).
 ARAM is rearranged so that sample data, tracker data, and echo buffer all use up the same pool of memory; so one can e.g. cut down on sample data to get more echo buffer space.
 
 Run `asar --fix-checksum=off main.asm SM.smc` to patch a ROM to have the engine mod, the main engine NSPC is expected to be at its vanilla location $CF:8104.
@@ -19,11 +19,11 @@ In the engine mod (these ARAM addresses are just examples, read SPC engine metad
 ```
 _ARAM_|___Description____
 $E0   | Extra (*)
-$455  | SPC engine
-$2EEC | Note length table
-$2F04 | Instrument table
-$3000 | Sample table
-$3100 | Sample data / trackers
+$384  | SPC engine
+$2DEC | Note length table
+$2E04 | Instrument table
+$2F00 | Sample table
+$3000 | Sample data / trackers
 ```
 
 (*) Extra is a 3 byte block:

@@ -5,10 +5,14 @@ main:
 ; The page 0 is clear, except for $00; page 1 has the stack. Clear all the rest of RAM
 movw $00,ya
 
+; Allocate stack memory
+mov x,#!p_stackBegin-2&$FF : mov sp,x
+
 ; Clear RAM between stack and SPC engine
-mov !misc0+1,#$0200>>8
-mov !misc1+1,#main-$0200>>8
-mov !misc1,#main-$0200
+mov !misc0+1,#!p_stackBegin>>8
+mov !misc0,#!p_stackBegin
+mov !misc1+1,#main-!p_stackBegin>>8
+mov !misc1,#main-!p_stackBegin
 call memclear
 
 ; Set up echo with echo delay = 6 (that's the maximum echo buffer size of music data $00)

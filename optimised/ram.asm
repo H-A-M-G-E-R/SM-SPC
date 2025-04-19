@@ -270,16 +270,15 @@ if !p_ram > $F0
     error "Spilled into IO ports"
 endif
 
-; Note: This one is referenced in code via $00 with direct page = $100
-!p_ram = $100 : !canInterleaveBytePairArray = 0
-%declare_bytePairArray(trackDynamicVibratoTimers, !n_tracks)
-
-; Rest of page 1 is stack space
-!p_ram = $0200 : !canInterleaveBytePairArray = 0
+; First part of page 1 is stack space
+!p_ram = $0120 : !canInterleaveBytePairArray = 0
 !p_stackBegin #= !p_ram
 
 ; Music
 {
+; Note: This one is referenced in code via $00 with direct page = $100
+%declare_bytePairArray(trackDynamicVibratoTimers, !n_tracks)
+
 %declare_bytePairArray(trackNoteLengths,                   !n_tracks)
 %declare_bytePairArray(trackNoteRingLengths,               !n_tracks)
 %declare_bytePairArray(trackNoteVolume,                    !n_tracks)
@@ -512,8 +511,8 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $43E..3384: SPC engine
-!p_ram = $3000-($2A*6)-$10-8
+; $384..2D80: SPC engine
+!p_ram = $2F00-($2A*6)-$10-8
 
 %declare_byteArray(noteRingLengthTable, 8)
 %declare_byteArray(noteVolumeTable, $10)

@@ -37,6 +37,8 @@ resetSoundChannel:
 
 ; Requires !i_soundLibrary to be set
 
+mov !i_globalChannel,x
+
 mov a,!sound_voiceIndices+x : mov !i_voice,a
 
 mov a,#$FF : mov !sound_disableBytes+x,a
@@ -80,6 +82,8 @@ processSoundChannel:
 
 ; Requires !i_soundLibrary to be set
 ; Valid indexed non-DP address mode opcodes are mov/cmp/adc/sbc/and/or/eor
+
+mov !i_globalChannel,x
 
 mov a,#$FF : cmp a,!sound_disableBytes+x : bne + : jmp .branch_end : +
 
