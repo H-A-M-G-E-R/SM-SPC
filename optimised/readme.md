@@ -20,10 +20,10 @@ In the engine mod (these ARAM addresses are just examples, read SPC engine metad
 _ARAM_|___Description____
 $E0   | Extra (*)
 $455  | SPC engine
-$30EC | Note length table
-$3104 | Instrument table
-$3200 | Sample table
-$3300 | Sample data / trackers
+$2EEC | Note length table
+$2F04 | Instrument table
+$3000 | Sample table
+$3100 | Sample data / trackers
 ```
 
 (*) Extra is a 3 byte block:
@@ -47,7 +47,7 @@ After patching a vanilla ROM with the ASM via asar, run:
 * `python repoint.py rom SM.smc SM_repointed.smc` (arbitrary filepaths)
 
 To repoint an NSPC file, run either:
-* `python repoint.py nspc music.nspc music_repointed.nspc --p_spcEngine=455 --p_sharedTrackers=2C85 --p_noteLengthTable=30EC --p_instrumentTable=3104 --p_sampleTable=3200 --p_sampleData=3300 --p_extra=E0`
+* `python repoint.py nspc music.nspc music_repointed.nspc --p_spcEngine=455 --p_sharedTrackers=2AE2 --p_noteLengthTable=2EEC --p_instrumentTable=2F04 --p_sampleTable=3000 --p_sampleData=3100 --p_extra=E0`
     * Where all the pointers are reported by asar when assembling the engine mod
 * `python repoint.py nspc music.nspc music_repointed.nspc --rom=SM.smc`
     * Where metadata is extracted from `--rom` argument (a patched ROM)
