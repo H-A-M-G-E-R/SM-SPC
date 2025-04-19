@@ -512,11 +512,11 @@ endif
 !p_end_ram #= !p_ram
 
 ; $43E..3384: SPC engine
-!p_ram = $3500-$EA-$10-8
+!p_ram = $3200-($2A*6)-$10-8
 
 %declare_byteArray(noteRingLengthTable, 8)
 %declare_byteArray(noteVolumeTable, $10)
-%declare_byteArray(instrumentTable, $EA)
+%declare_byteArray(instrumentTable, $2A*6)
 
 ; Must be 100h aligned
 !p_ram #= !p_ram+$100-1

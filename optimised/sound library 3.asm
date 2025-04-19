@@ -247,10 +247,10 @@ dw .sound1,  .sound2,  .sound3,  .sound4,  .sound5,  .sound6,  .sound7,  .sound8
 ;     FFh - end
 
 ; Otherwise:
-;     ii vv pp nn tt
+;     ii vv [pp] nn tt
 ;     i: Instrument index
 ;     v: Volume
-;     p: Panning
+;     p: Panning (optional, if absent, defaults to Ah)
 ;     n: Note. F6h is a tie
 ;     t: Length
 }
@@ -258,12 +258,12 @@ dw .sound1,  .sound2,  .sound3,  .sound4,  .sound5,  .sound6,  .sound7,  .sound8
 ; Sound 1: Silence
 .sound1
 dw ..voice0
-..voice0 : db $11,$00,$0A,$BC,$03, $FF
+..voice0 : db $11,$00,$BC,$03, $FF
 
 ; Sound 2: Low health beep
 .sound2
 dw ..voice0
-..voice0 : db $FE,$00, $15,$90,$0A,$BC,$F0, $FB, $FF
+..voice0 : db $FE,$00, $15,$90,$BC,$F0, $FB, $FF
 
 ; Sound 3: Speed booster
 .sound3
@@ -271,46 +271,46 @@ dw .speedBoosterVoice
 
 ; Speed booster / Dachora speed booster (sound library 2)
 .speedBoosterVoice
-db $F5,$E0,$C7, $05,$60,$0A,$98,$12, $F5,$E0,$C7, $05,$70,$0A,$A4,$11, $F5,$E0,$C7, $05,$80,$0A,$B0,$10, $F5,$E0,$C7, $05,$80,$0A,$B4,$08, $F5,$E0,$C7, $05,$80,$0A,$B9,$07, $F5,$E0,$C7, $05,$80,$0A,$BC,$06, $F5,$E0,$C1, $05,$80,$0A,$BC,$06, $F5,$E0,$C7, $05,$80,$0A,$C5,$06
+db $F5,$E0,$C7, $05,$60,$98,$12, $F5,$E0,$C7, $05,$70,$A4,$11, $F5,$E0,$C7, $05,$80,$B0,$10, $F5,$E0,$C7, $05,$80,$B4,$08, $F5,$E0,$C7, $05,$80,$B9,$07, $F5,$E0,$C7, $05,$80,$BC,$06, $F5,$E0,$C1, $05,$80,$BC,$06, $F5,$E0,$C7, $05,$80,$C5,$06
 
 ; Shared by speed booster and resume speed booster / shinespark
 .resumeSpeedBoosterVoice
-db $FE,$00, $05,$60,$0A,$C7,$10, $FB,\
+db $FE,$00, $05,$60,$C7,$10, $FB,\
    $FF
 
 ; Sound 4: Samus landed hard
 .sound4
 dw ..voice0, ..voice1
-..voice0 : db $03,$90,$0A,$80,$03, $FF
-..voice1 : db $03,$A0,$0A,$84,$05, $FF
+..voice0 : db $03,$90,$80,$03, $FF
+..voice1 : db $03,$A0,$84,$05, $FF
 
 ; Sound 5: Samus landed / wall-jumped
 .sound5
 dw ..voice0, ..voice1
-..voice0 : db $03,$40,$0A,$80,$03, $FF
-..voice1 : db $03,$50,$0A,$84,$05, $FF
+..voice0 : db $03,$40,$80,$03, $FF
+..voice1 : db $03,$50,$84,$05, $FF
 
 ; Sound 6: Samus' footsteps
 .sound6
 dw ..voice0
-..voice0 : db $09,$80,$0A,$82,$03, $FF
+..voice0 : db $09,$80,$82,$03, $FF
 
 ; Sound 7: Door opened
 .sound7
 dw ..voice0, ..voice1
-..voice0 : db $F5,$F0,$A9, $06,$80,$0A,$91,$18, $FF
-..voice1 : db $F5,$F0,$A8, $02,$80,$0A,$90,$18, $FF
+..voice0 : db $F5,$F0,$A9, $06,$80,$91,$18, $FF
+..voice1 : db $F5,$F0,$A8, $02,$80,$90,$18, $FF
 
 ; Sound 8: Door closed
 .sound8
 dw ..voice0, ..voice1
-..voice0 : db $F5,$F0,$89, $06,$80,$0A,$A1,$15, $FF
-..voice1 : db $F5,$F0,$87, $02,$80,$0A,$9F,$15, $FF
+..voice0 : db $F5,$F0,$89, $06,$80,$A1,$15, $FF
+..voice1 : db $F5,$F0,$87, $02,$80,$9F,$15, $FF
 
 ; Sound 9: Missile door shot with missile
 .sound9
 dw ..voice0
-..voice0 : db $02,$B0,$0A,$8C,$03, $02,$D0,$0A,$90,$03, $02,$D0,$0A,$8C,$03, $02,$D0,$0A,$90,$03, $FF
+..voice0 : db $02,$B0,$8C,$03, $02,$D0,$90,$03, $02,$D0,$8C,$03, $02,$D0,$90,$03, $FF
 
 ; Sound Ah: Enemy frozen
 .soundA
@@ -320,8 +320,8 @@ dw ..voice0
 ; Sound Bh: Elevator
 .soundB
 dw ..voice0, ..voice1
-..voice0 : db $FE,$00, $0B,$90,$0A,$80,$70, $FB, $FF
-..voice1 : db $FE,$00, $06,$40,$0A,$98,$13, $FB, $FF
+..voice0 : db $FE,$00, $0B,$90,$80,$70, $FB, $FF
+..voice1 : db $FE,$00, $06,$40,$98,$13, $FB, $FF
 
 ; Sound Ch: Stored shinespark
 .soundC
@@ -329,26 +329,26 @@ dw .storedShinesparkVoice
 
 ; Stored shinespark / Dachora stored shinespark (sound library 2)
 .storedShinesparkVoice
-db $05,$A0,$0A,$C7,$B0, $FF
+db $05,$A0,$C7,$B0, $FF
 
 ; Sound Dh: Typewriter stroke - intro
 .soundD
 dw ..voice0
-..voice0 : db $03,$50,$0A,$98,$02, $03,$50,$0A,$98,$02, $FF
+..voice0 : db $03,$50,$98,$02, $03,$50,$98,$02, $FF
 
 ; Sound Eh: Gate opening/closing
 .soundE
 dw ..voice0, ..voice1
 ..voice0 : db $03,$50,$0C,$85,$05, $03,$50,$0C,$85,$05, $03,$50,$0C,$85,$05, $03,$50,$0C,$85,$05, $03,$50,$0C,$85,$05, $03,$50,$0C,$85,$05, $03,$50,$0C,$85,$05, $03,$50,$0C,$85,$05, $03,$50,$0C,$85,$05, $FF
-..voice1 : db $F5,$60,$A9, $06,$90,$0A,$91,$20, $FF
+..voice1 : db $F5,$60,$A9, $06,$90,$91,$20, $FF
 
 ; Sound Fh: Shinespark
 .soundF
 dw .shinesparkVoice0, .shinesparkVoice1
 
 ; Shinespark / Dachora shinespark (sound library 2)
-.shinesparkVoice0 : db $01,$00,$0A,$90,$0C, $01,$D0,$0A,$91,$0C, $01,$D0,$0A,$93,$0C, $01,$D0,$0A,$95,$0A, $01,$D0,$0A,$95,$0A, $01,$D0,$0A,$97,$08, $01,$D0,$0A,$97,$08, $01,$D0,$0A,$98,$06, $01,$D0,$0A,$98,$06, $01,$D0,$0A,$9A,$04, $01,$D0,$0A,$9A,$04, $FF
-.shinesparkVoice1 : db $F5,$90,$C7, $05,$C0,$0A,$98,$10, $F5,$F0,$C7, $05,$C0,$0A,$F6,$30, $05,$C0,$0A,$C1,$03, $05,$C0,$0A,$C3,$03, $05,$C0,$0A,$C5,$03, $05,$C0,$0A,$C7,$03, $FF
+.shinesparkVoice0 : db $01,$00,$90,$0C, $01,$D0,$91,$0C, $01,$D0,$93,$0C, $01,$D0,$95,$0A, $01,$D0,$95,$0A, $01,$D0,$97,$08, $01,$D0,$97,$08, $01,$D0,$98,$06, $01,$D0,$98,$06, $01,$D0,$9A,$04, $01,$D0,$9A,$04, $FF
+.shinesparkVoice1 : db $F5,$90,$C7, $05,$C0,$98,$10, $F5,$F0,$C7, $05,$C0,$F6,$30, $05,$C0,$C1,$03, $05,$C0,$C3,$03, $05,$C0,$C5,$03, $05,$C0,$C7,$03, $FF
 
 ; Sound 10h: Shinespark ended
 .sound10
@@ -356,11 +356,11 @@ dw .shinesparkEndedVoice
 
 ; Shinespark ended / Dachora shinespark ended (sound library 2)
 .shinesparkEndedVoice
-db $08,$D0,$0A,$98,$03, $08,$D0,$0A,$95,$03, $08,$D0,$0A,$9A,$03
+db $08,$D0,$98,$03, $08,$D0,$95,$03, $08,$D0,$9A,$03
 
 ; Shared by shinespark ended and shorter version
 .shortShinesparkEndedVoice
-db $08,$D0,$0A,$8C,$03, $08,$D0,$0A,$8C,$15
+db $08,$D0,$8C,$03, $08,$D0,$8C,$15
 
 .emptyVoice
 db $FF
@@ -384,111 +384,111 @@ dw .emptyVoice
 ; Sound 13h: Mother Brain's projectile hits surface
 .sound13
 dw ..voice0
-..voice0 : db $08,$D0,$0A,$98,$03, $08,$D0,$0A,$95,$03, $08,$D0,$0A,$9A,$03, $08,$D0,$0A,$8C,$03, $08,$D0,$0A,$8C,$25, $FF
+..voice0 : db $08,$D0,$98,$03, $08,$D0,$95,$03, $08,$D0,$9A,$03, $08,$D0,$8C,$03, $08,$D0,$8C,$25, $FF
 
 ; Sound 14h: Gunship elevator activated
 .sound14
 dw ..voice0, ..voice1
-..voice0 : db $06,$00,$0A,$91,$23, $06,$A0,$0A,$91,$18, $F5,$F0,$A9, $06,$A0,$0A,$91,$18, $FF
-..voice1 : db $02,$00,$0A,$90,$23, $02,$20,$0A,$90,$18, $F5,$F0,$A8, $02,$20,$0A,$90,$18, $FF
+..voice0 : db $06,$00,$91,$23, $06,$A0,$91,$18, $F5,$F0,$A9, $06,$A0,$91,$18, $FF
+..voice1 : db $02,$00,$90,$23, $02,$20,$90,$18, $F5,$F0,$A8, $02,$20,$90,$18, $FF
 
 ; Sound 15h: Gunship elevator deactivated
 .sound15
 dw ..voice0, ..voice1
-..voice0 : db $F5,$F0,$89, $06,$80,$0A,$A1,$15, $FF
-..voice1 : db $F5,$F0,$87, $02,$10,$0A,$9F,$15, $FF
+..voice0 : db $F5,$F0,$89, $06,$80,$A1,$15, $FF
+..voice1 : db $F5,$F0,$87, $02,$10,$9F,$15, $FF
 
 ; Sound 16h: Crunchy footstep that's supposed to play when Mother Brain is being attacked by Shitroid (but doesn't, see $A9:9599)
 .sound16
 dw ..voice0
-..voice0 : db $08,$D0,$0A,$A3,$03, $08,$D0,$0A,$8E,$03, $08,$D0,$0A,$8E,$25, $FF
+..voice0 : db $08,$D0,$A3,$03, $08,$D0,$8E,$03, $08,$D0,$8E,$25, $FF
 
 ; Sound 17h: Mother Brain's blue rings
 .sound17
 dw ..voice0
-..voice0 : db $F5,$F0,$C3, $0B,$90,$0A,$A6,$03, $F5,$F0,$C3, $0B,$90,$0A,$A6,$03, $F5,$F0,$C3, $0B,$90,$0A,$A6,$03, $F5,$F0,$C3, $0B,$90,$0A,$A6,$03, $F5,$F0,$C3, $0B,$90,$0A,$A6,$03, $F5,$F0,$C3, $0B,$90,$0A,$A6,$03, $FF
+..voice0 : db $F5,$F0,$C3, $0B,$90,$A6,$03, $F5,$F0,$C3, $0B,$90,$A6,$03, $F5,$F0,$C3, $0B,$90,$A6,$03, $F5,$F0,$C3, $0B,$90,$A6,$03, $F5,$F0,$C3, $0B,$90,$A6,$03, $F5,$F0,$C3, $0B,$90,$A6,$03, $FF
 
 ; Sound 19h: Shitroid dies
 .sound19
 dw ..voice0, ..voice1
-..voice0 : db $25,$D0,$0A,$93,$26, $FF
-..voice1 : db $25,$A0,$0A,$8C,$3B, $FF
+..voice0 : db $25,$D0,$93,$26, $FF
+..voice1 : db $25,$A0,$8C,$3B, $FF
 
 ; Sound 1Bh: Draygon dying cry
 .sound1B
 dw ..voice0, ..voice1
-..voice0 : db $25,$D0,$0A,$8E,$30, $25,$D0,$0A,$8E,$30, $25,$D0,$0A,$8E,$40, $FF
-..voice1 : db $25,$00,$0A,$A6,$0C, $25,$80,$0A,$98,$30, $25,$80,$0A,$98,$30, $25,$80,$0A,$9A,$10, $25,$80,$0A,$98,$40, $FF
+..voice0 : db $25,$D0,$8E,$30, $25,$D0,$8E,$30, $25,$D0,$8E,$40, $FF
+..voice1 : db $25,$00,$A6,$0C, $25,$80,$98,$30, $25,$80,$98,$30, $25,$80,$9A,$10, $25,$80,$98,$40, $FF
 
 ; Sound 1Ch: Crocomire spit
 .sound1C
 dw ..voice0
-..voice0 : db $00,$D0,$0A,$9C,$20, $FF
+..voice0 : db $00,$D0,$9C,$20, $FF
 
 ; Sound 1Dh: Phantoon's flame
 .sound1D
 dw ..voice0
-..voice0 : db $F5,$F0,$B5, $09,$D0,$0A,$93,$08, $F5,$F0,$B5, $09,$D0,$0A,$93,$08, $FF
+..voice0 : db $F5,$F0,$B5, $09,$D0,$93,$08, $F5,$F0,$B5, $09,$D0,$93,$08, $FF
 
 ; Sound 1Eh: Earthquake (Kraid)
 .sound1E
 dw ..voice0
-..voice0 : db $08,$D0,$0A,$98,$03, $08,$D0,$0A,$95,$03, $08,$D0,$0A,$9A,$03, $08,$D0,$0A,$8C,$03, $08,$D0,$0A,$8C,$25, $FF
+..voice0 : db $08,$D0,$98,$03, $08,$D0,$95,$03, $08,$D0,$9A,$03, $08,$D0,$8C,$03, $08,$D0,$8C,$25, $FF
 
 ; Sound 1Fh: Kraid fires lint
 .sound1F
 dw ..voice0
-..voice0 : db $00,$D0,$0A,$90,$08, $01,$D0,$0A,$8C,$20, $FF
+..voice0 : db $00,$D0,$90,$08, $01,$D0,$8C,$20, $FF
 
 ; Sound 21h: Ridley whips its tail
 .sound21
 dw ..voice0
-..voice0 : db $07,$D0,$0A,$C7,$10, $FF
+..voice0 : db $07,$D0,$C7,$10, $FF
 
 ; Sound 22h: Crocomire acid damage
 .sound22
 dw ..voice0
-..voice0 : db $09,$B0,$0A,$8C,$05, $0E,$B0,$0A,$91,$05, $09,$B0,$0A,$8C,$05, $0E,$B0,$0A,$91,$05, $09,$B0,$0A,$8C,$05, $0E,$B0,$0A,$91,$05, $FF
+..voice0 : db $09,$B0,$8C,$05, $0E,$B0,$91,$05, $09,$B0,$8C,$05, $0E,$B0,$91,$05, $09,$B0,$8C,$05, $0E,$B0,$91,$05, $FF
 
 ; Sound 23h: Baby metroid cry 1
 .sound23
 dw ..voice0
-..voice0 : db $25,$20,$0A,$95,$40, $FF
+..voice0 : db $25,$20,$95,$40, $FF
 
 ; Sound 24h: Baby metroid cry - Ceres
 .sound24
 dw ..voice0
-..voice0 : db $24,$20,$0A,$95,$40, $FF
+..voice0 : db $24,$20,$95,$40, $FF
 
 ; Sound 25h: Silence (clear speed booster / elevator sound)
 .sound25
 dw ..voice0
-..voice0 : db $07,$00,$0A,$C7,$03, $FF
+..voice0 : db $07,$00,$C7,$03, $FF
 
 ; Sound 26h: Baby metroid cry 2
 .sound26
 dw ..voice0
-..voice0 : db $25,$20,$0A,$92,$09, $25,$30,$0A,$92,$40, $FF
+..voice0 : db $25,$20,$92,$09, $25,$30,$92,$40, $FF
 
 ; Sound 27h: Baby metroid cry 3
 .sound27
 dw ..voice0
-..voice0 : db $25,$30,$0A,$91,$40, $FF
+..voice0 : db $25,$30,$91,$40, $FF
 
 ; Sound 28h: Phantoon materialises attack
 .sound28
 dw ..voice0
-..voice0 : db $00,$D0,$0A,$91,$08, $00,$D0,$0A,$91,$08, $00,$D0,$0A,$91,$08, $00,$D0,$0A,$91,$08, $00,$D0,$0A,$91,$08, $00,$D0,$0A,$91,$08, $FF
+..voice0 : db $00,$D0,$91,$08, $00,$D0,$91,$08, $00,$D0,$91,$08, $00,$D0,$91,$08, $00,$D0,$91,$08, $00,$D0,$91,$08, $FF
 
 ; Sound 29h: Phantoon's super missiled attack
 .sound29
 dw ..voice0
-..voice0 : db $00,$D0,$0A,$91,$06, $00,$D0,$0A,$91,$06, $00,$D0,$0A,$91,$06, $00,$D0,$0A,$91,$06, $00,$D0,$0A,$91,$06, $FF
+..voice0 : db $00,$D0,$91,$06, $00,$D0,$91,$06, $00,$D0,$91,$06, $00,$D0,$91,$06, $00,$D0,$91,$06, $FF
 
 ; Sound 2Ah: Pause menu ambient beep
 .sound2A
 dw ..voice0
-..voice0 : db $0B,$20,$0A,$C7,$03, $0B,$20,$0A,$C7,$03, $0B,$10,$0A,$C7,$03, $FF
+..voice0 : db $0B,$20,$C7,$03, $0B,$20,$C7,$03, $0B,$10,$C7,$03, $FF
 
 ; Sound 2Bh: Resume speed booster / shinespark
 .sound2B
@@ -497,17 +497,17 @@ dw .resumeSpeedBoosterVoice
 ; Sound 2Ch: Ceres door opening
 .sound2C
 dw ..voice0, ..voice1
-..voice0 : db $F5,$F0,$A9, $06,$70,$0A,$91,$18, $FF
-..voice1 : db $F5,$F0,$A4, $06,$70,$0A,$8C,$18, $FF
+..voice0 : db $F5,$F0,$A9, $06,$70,$91,$18, $FF
+..voice1 : db $F5,$F0,$A4, $06,$70,$8C,$18, $FF
 
 ; Sound 2Dh: Gaining/losing incremental health
 .sound2D
 dw ..voice0
-..voice0 : db $06,$70,$0A,$A8,$01, $06,$00,$0A,$A8,$01, $06,$70,$0A,$A8,$01, $06,$00,$0A,$A8,$01, $06,$70,$0A,$A8,$01, $06,$00,$0A,$A8,$01, $06,$70,$0A,$A8,$01, $06,$00,$0A,$A8,$01, $FF
+..voice0 : db $06,$70,$A8,$01, $06,$00,$A8,$01, $06,$70,$A8,$01, $06,$00,$A8,$01, $06,$70,$A8,$01, $06,$00,$A8,$01, $06,$70,$A8,$01, $06,$00,$A8,$01, $FF
 
 ; Sound 2Eh: Mother Brain's glass shattering
 .sound2E
 dw ..voice0, ..voice1
-..voice0 : db $08,$D0,$0A,$94,$59, $FF
-..voice1 : db $25,$D0,$0A,$98,$10, $25,$D0,$0A,$93,$16, $25,$90,$0A,$8F,$15, $FF
+..voice0 : db $08,$D0,$94,$59, $FF
+..voice1 : db $25,$D0,$98,$10, $25,$D0,$93,$16, $25,$90,$8F,$15, $FF
 }

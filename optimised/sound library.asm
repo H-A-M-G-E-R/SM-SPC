@@ -159,9 +159,18 @@ mov x,!i_globalChannel : call getNextDataByte
 mov x,!i_voice : mov !trackOutputVolumes+x,a
 mov a,#$00 : mov !trackPhaseInversionOptions+x,a
 
-mov x,!i_globalChannel : call getNextDataByte : mov !panningBias+1,a : mov !panningBias,#$00
+mov !panningBias,#$00
+mov x,!i_globalChannel : push x : call getNextDataByte : bpl .branch_customPitch
+push a : mov !panningBias+1,#$0A
 mov x,!i_voice : call writeDspVoiceVolumes
-mov x,!i_globalChannel : call getNextDataByte
+pop a : pop x : bra +
+
+.branch_customPitch
+mov !panningBias+1,a
+mov x,!i_voice : call writeDspVoiceVolumes
+pop x : call getNextDataByte
+
++
 cmp a,#$F6 : beq +
 mov !sound_notes+x,a
 mov a,#$00 : mov !sound_subnotes+x,a

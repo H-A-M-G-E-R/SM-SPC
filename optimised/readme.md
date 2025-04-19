@@ -20,10 +20,10 @@ In the engine mod (these ARAM addresses are just examples, read SPC engine metad
 _ARAM_|___Description____
 $E0   | Extra (*)
 $44D  | SPC engine
-$33FE | Note length table
-$3416 | Instrument table
-$3500 | Sample table
-$3600 | Sample data / trackers
+$30EC | Note length table
+$3104 | Instrument table
+$3200 | Sample table
+$3300 | Sample data / trackers
 ```
 
 (*) Extra is a 3 byte block:
