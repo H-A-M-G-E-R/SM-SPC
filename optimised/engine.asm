@@ -11,9 +11,9 @@ mov !misc1+1,#main-$0200>>8
 mov !misc1,#main-$0200
 call memclear
 
-; Set up echo with echo delay = 5 (that's the maximum echo buffer size of music data $00)
+; Set up echo with echo delay = 6 (that's the maximum echo buffer size of music data $00)
 ; Keep echo buffer writes enabled because the echo buffer will clear on its own to prevent crackling when starting the game
-mov a,#$05 : call setUpEcho
+mov a,#$06 : call setUpEcho
 
 ; DSP left/right track master volume = 60h
 mov a,#$60
@@ -429,5 +429,5 @@ db !echoVolumeLeft+1, !echoVolumeRight+1, !echoFeedbackVolume, !echoEnableFlags,
 pitchTable:
 dw $085F, $08DE, $0965, $09F4, $0A8C, $0B2C, $0BD6, $0C8B, $0D4A, $0E14, $0EEA, $0FCD, $10BE
 
-channelBitflags:
+channelBitsets:
 db $01, $02, $04, $08, $10, $20, $40, $80

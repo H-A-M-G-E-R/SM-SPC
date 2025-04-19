@@ -4,7 +4,7 @@ macro SetVoice(i_sound)
 !p_charVoiceBitset = !sound<i_sound>_p_charVoiceBitset
 !p_charVoiceMask   = !sound<i_sound>_p_charVoiceMask
 
-mov a,channelBitflags-1+y
+mov a,channelBitsets-1+y
 tset !enableSoundEffectVoices,a
 tclr !musicVoiceBitset,a
 tclr !echoEnableFlags,a
