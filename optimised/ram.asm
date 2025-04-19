@@ -405,6 +405,7 @@ endif
 %declare_byteArray(sound_pitchSlideFlags,                   !n_channels)
 %declare_byteArray(sound_legatoFlags,                       !n_channels)
 %declare_byteArray(sound_pitchSlideLegatoFlags,             !n_channels)
+%declare_byteArray(sound_panningBiases,                     !n_channels)
 
 ; The divisions of the arrays by sound library
 %generateIndirect_sounds(sound, _i_instructionLists,                !sound_i_instructionLists)
@@ -430,6 +431,7 @@ endif
 %generateIndirect_sounds(sound, _pitchSlideFlags,                   !sound_pitchSlideFlags)
 %generateIndirect_sounds(sound, _legatoFlags,                       !sound_legatoFlags)
 %generateIndirect_sounds(sound, _pitchSlideLegatoFlags,             !sound_pitchSlideLegatoFlags)
+%generateIndirect_sounds(sound, _panningBiases,                     !sound_panningBiases)
 
 ; The divisions of subarrays by channel for each sound library
 %generateIndirect_bytes(sound1_channel, _i_instructionList,                !sound1_i_instructionLists,                !sound1_n_channels)
@@ -455,6 +457,7 @@ endif
 %generateIndirect_bytes(sound1_channel, _pitchSlideFlag,                   !sound1_pitchSlideFlags,                   !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _legatoFlag,                       !sound1_legatoFlags,                       !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _pitchSlideLegatoFlag,             !sound1_pitchSlideLegatoFlags,             !sound1_n_channels)
+%generateIndirect_bytes(sound1_channel, _panningBias,                      !sound1_panningBiases,                     !sound1_n_channels)
 
 %generateIndirect_bytes(sound2_channel, _i_instructionList,                !sound2_i_instructionLists,                !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _instructionTimer,                 !sound2_instructionTimers,                 !sound2_n_channels)
@@ -479,6 +482,7 @@ endif
 %generateIndirect_bytes(sound2_channel, _pitchSlideFlag,                   !sound2_pitchSlideFlags,                   !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _legatoFlag,                       !sound2_legatoFlags,                       !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _pitchSlideLegatoFlag,             !sound2_pitchSlideLegatoFlags,             !sound2_n_channels)
+%generateIndirect_bytes(sound2_channel, _panningBias,                      !sound2_panningBiases,                     !sound2_n_channels)
 
 %generateIndirect_bytes(sound3_channel, _i_instructionList,                !sound3_i_instructionLists,                !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _instructionTimer,                 !sound3_instructionTimers,                 !sound3_n_channels)
@@ -503,6 +507,7 @@ endif
 %generateIndirect_bytes(sound3_channel, _pitchSlideFlag,                   !sound3_pitchSlideFlags,                   !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _legatoFlag,                       !sound3_legatoFlags,                       !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _pitchSlideLegatoFlag,             !sound3_pitchSlideLegatoFlags,             !sound3_n_channels)
+%generateIndirect_bytes(sound3_channel, _panningBias,                      !sound3_panningBiases,                     !sound3_n_channels)
 }
 
 %declare_byte(disableProcessingCpuIo2)

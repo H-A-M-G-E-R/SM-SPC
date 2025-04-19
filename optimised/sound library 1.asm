@@ -139,6 +139,11 @@ mov !sound1_channel0_disableByte,a
 mov !sound1_channel1_disableByte,a
 mov !sound1_channel2_disableByte,a
 mov !sound1_channel3_disableByte,a
+mov a,#$0A
+mov !sound1_channel0_panningBias,a
+mov !sound1_channel1_panningBias,a
+mov !sound1_channel2_panningBias,a
+mov !sound1_channel3_panningBias,a
 
 .loop
 dec !sound1_voiceId : bne +
@@ -292,6 +297,7 @@ dw .sound1,  .sound2,  .sound3,  .sound4,  .sound5,  .sound6,  .sound7,  .sound8
 {
 ; Commands:
 ;     F5h dd tt - legato pitch slide with subnote delta = d, target note = t
+;     F6h pp - panning bias = p / 14h
 ;     F8h dd tt -        pitch slide with subnote delta = d, target note = t
 ;     F9h aaaa - voice's ADSR settings = a
 ;     FBh - repeat
@@ -301,10 +307,9 @@ dw .sound1,  .sound2,  .sound3,  .sound4,  .sound5,  .sound6,  .sound7,  .sound8
 ;     FFh - end
 
 ; Otherwise:
-;     ii vv [pp] nn tt
+;     ii vv nn tt
 ;     i: Instrument index
 ;     v: Volume
-;     p: Panning (optional, if absent, defaults to Ah)
 ;     n: Note. F6h is a tie
 ;     t: Length
 }
@@ -313,9 +318,9 @@ dw .sound1,  .sound2,  .sound3,  .sound4,  .sound5,  .sound6,  .sound7,  .sound8
 .sound1
 dw .PowerBombVoice0, .PowerBombVoice1, .PowerBombVoice2, .PowerBombVoice3
 .PowerBombVoice0 : db $F5,$B0,$C7, $05,$D0,$98,$46, $FF
-.PowerBombVoice1 : db $F5,$A0,$C7, $09,$D0,$0F,$80,$50, $F5,$50,$80, $09,$D0,$AB,$46, $FF
-.PowerBombVoice2 : db $09,$D0,$0F,$87,$10, $F5,$B0,$C7, $05,$D0,$0F,$80,$60, $FF
-.PowerBombVoice3 : db $09,$D0,$05,$82,$30, $F5,$A0,$80, $05,$D0,$05,$C7,$60, $FF
+.PowerBombVoice1 : db $F6,$0F, $F5,$A0,$C7, $09,$D0,$80,$50, $F6,$0A, $F5,$50,$80, $09,$D0,$AB,$46, $FF
+.PowerBombVoice2 : db $F6,$0F, $09,$D0,$87,$10, $F5,$B0,$C7, $05,$D0,$80,$60, $FF
+.PowerBombVoice3 : db $F6,$05, $09,$D0,$82,$30, $F5,$A0,$80, $05,$D0,$C7,$60, $FF
 
 ; Sound 2: Silence
 .sound2

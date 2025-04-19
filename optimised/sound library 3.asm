@@ -102,6 +102,9 @@ mov !sound3_channel0_voiceMask,a
 mov !sound3_channel1_voiceMask,a
 mov !sound3_channel0_disableByte,a
 mov !sound3_channel1_disableByte,a
+mov a,#$0A
+mov !sound3_channel0_panningBias,a
+mov !sound3_channel1_panningBias,a
 
 .loop
 dec !sound3_voiceId : bne +
@@ -238,6 +241,7 @@ dw .sound1,  .sound2,  .sound3,  .sound4,  .sound5,  .sound6,  .sound7,  .sound8
 {
 ; Commands:
 ;     F5h dd tt - legato pitch slide with subnote delta = d, target note = t
+;     F6h pp - panning bias = p / 14h
 ;     F8h dd tt -        pitch slide with subnote delta = d, target note = t
 ;     F9h aaaa - voice's ADSR settings = a
 ;     FBh - repeat
@@ -247,10 +251,9 @@ dw .sound1,  .sound2,  .sound3,  .sound4,  .sound5,  .sound6,  .sound7,  .sound8
 ;     FFh - end
 
 ; Otherwise:
-;     ii vv [pp] nn tt
+;     ii vv nn tt
 ;     i: Instrument index
 ;     v: Volume
-;     p: Panning (optional, if absent, defaults to Ah)
 ;     n: Note. F6h is a tie
 ;     t: Length
 }
@@ -315,7 +318,7 @@ dw ..voice0
 ; Sound Ah: Enemy frozen
 .soundA
 dw ..voice0
-..voice0 : db $0D,$70,$0C,$A3,$01, $0D,$80,$0C,$A1,$01, $0D,$80,$0C,$9F,$02, $0D,$80,$0C,$9D,$02, $0D,$70,$0C,$9C,$02, $0D,$50,$0C,$9A,$01, $0D,$60,$0C,$97,$01, $0D,$60,$0C,$98,$03, $FF
+..voice0 : db $F6,$0C, $0D,$70,$A3,$01, $0D,$80,$A1,$01, $0D,$80,$9F,$02, $0D,$80,$9D,$02, $0D,$70,$9C,$02, $0D,$50,$9A,$01, $0D,$60,$97,$01, $0D,$60,$98,$03, $FF
 
 ; Sound Bh: Elevator
 .soundB
@@ -339,7 +342,7 @@ dw ..voice0
 ; Sound Eh: Gate opening/closing
 .soundE
 dw ..voice0, ..voice1
-..voice0 : db $03,$50,$0C,$85,$05, $03,$50,$0C,$85,$05, $03,$50,$0C,$85,$05, $03,$50,$0C,$85,$05, $03,$50,$0C,$85,$05, $03,$50,$0C,$85,$05, $03,$50,$0C,$85,$05, $03,$50,$0C,$85,$05, $03,$50,$0C,$85,$05, $FF
+..voice0 : db $F6,$0C, $03,$50,$85,$05, $03,$50,$85,$05, $03,$50,$85,$05, $03,$50,$85,$05, $03,$50,$85,$05, $03,$50,$85,$05, $03,$50,$85,$05, $03,$50,$85,$05, $03,$50,$85,$05, $FF
 ..voice1 : db $F5,$60,$A9, $06,$90,$91,$20, $FF
 
 ; Sound Fh: Shinespark

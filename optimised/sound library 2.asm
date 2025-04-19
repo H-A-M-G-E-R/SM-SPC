@@ -103,6 +103,9 @@ mov !sound2_channel0_voiceMask,a
 mov !sound2_channel1_voiceMask,a
 mov !sound2_channel0_disableByte,a
 mov !sound2_channel1_disableByte,a
+mov a,#$0A
+mov !sound2_channel0_panningBias,a
+mov !sound2_channel1_panningBias,a
 
 .loop
 dec !sound2_voiceId : bne +
@@ -314,6 +317,7 @@ dw .sound1,  .sound2,  .sound3,  .sound4,  .sound5,  .sound6,  .sound7,  .sound8
 {
 ; Commands:
 ;     F5h dd tt - legato pitch slide with subnote delta = d, target note = t
+;     F6h pp - panning bias = p / 14h
 ;     F8h dd tt -        pitch slide with subnote delta = d, target note = t
 ;     F9h aaaa - voice's ADSR settings = a
 ;     FBh - repeat
@@ -323,10 +327,9 @@ dw .sound1,  .sound2,  .sound3,  .sound4,  .sound5,  .sound6,  .sound7,  .sound8
 ;     FFh - end
 
 ; Otherwise:
-;     ii vv [pp] nn tt
+;     ii vv nn tt
 ;     i: Instrument index
 ;     v: Volume
-;     p: Panning (optional, if absent, defaults to Ah)
 ;     n: Note. F6h is a tie
 ;     t: Length
 }
@@ -464,7 +467,7 @@ dw ..voice0
 ; Sound 1Ch: Chozo grabs Samus
 .sound1C
 dw ..voice0
-..voice0 : db $0D,$40,$0C,$8B,$02, $0D,$50,$0C,$89,$02, $0D,$60,$0C,$87,$03, $0D,$50,$0C,$85,$03, $FF
+..voice0 : db $F6,$0C, $0D,$40,$8B,$02, $0D,$50,$89,$02, $0D,$60,$87,$03, $0D,$50,$85,$03, $FF
 
 ; Sound 1Dh: Dachora cry
 .sound1D
@@ -502,7 +505,7 @@ dw ..voice0
 ; Sound 23h: Shot slug / sidehopper / zoomer
 .sound23
 dw ..voice0
-..voice0 : db $14,$E0,$0C,$84,$03, $14,$D0,$0C,$89,$03, $14,$E0,$0C,$84,$03, $14,$D0,$0C,$89,$03, $FF
+..voice0 : db $F6,$0C, $14,$E0,$84,$03, $14,$D0,$89,$03, $14,$E0,$84,$03, $14,$D0,$89,$03, $FF
 
 ; Sound 24h: Small explosion (enemy death)
 .sound24
@@ -911,8 +914,8 @@ dw ..voice0, ..voice1
 ; Sound 75h: Crocomire's skeleton collapses
 .sound75
 dw ..voice0, ..voice1
-..voice0 : db $0D,$00,$0C,$A3,$05, $0D,$A0,$0C,$A3,$02, $0D,$C0,$0C,$A1,$02, $0D,$C0,$0C,$9F,$03, $0D,$C0,$0C,$9D,$03, $0D,$B0,$0C,$9C,$03, $0D,$A0,$0C,$9A,$02, $0D,$90,$0C,$A3,$02, $0D,$90,$0C,$98,$04, $0D,$A0,$0C,$97,$02, $0D,$C0,$0C,$95,$02, $0D,$C0,$0C,$93,$03, $0D,$C0,$0C,$91,$03, $0D,$B0,$0C,$90,$03, $0D,$A0,$0C,$8E,$02, $0D,$90,$0C,$97,$02, $0D,$90,$0C,$8C,$04, $FF
-..voice1 : db $0D,$A0,$0C,$97,$02, $0D,$B0,$0C,$90,$03, $0D,$C0,$0C,$91,$03, $0D,$C0,$0C,$91,$03, $0D,$B0,$0C,$90,$03, $0D,$90,$0C,$97,$02, $0D,$90,$0C,$97,$02, $0D,$90,$0C,$8C,$04, $0D,$A0,$0C,$8B,$02, $0D,$90,$0C,$8B,$02, $0D,$C0,$0C,$87,$03, $0D,$C0,$0C,$85,$03, $0D,$C0,$0C,$89,$02, $0D,$B0,$0C,$84,$03, $0D,$C0,$0C,$89,$02, $0D,$90,$0C,$80,$04, $FF
+..voice0 : db $F6,$0C, $0D,$00,$A3,$05, $0D,$A0,$A3,$02, $0D,$C0,$A1,$02, $0D,$C0,$9F,$03, $0D,$C0,$9D,$03, $0D,$B0,$9C,$03, $0D,$A0,$9A,$02, $0D,$90,$A3,$02, $0D,$90,$98,$04, $0D,$A0,$97,$02, $0D,$C0,$95,$02, $0D,$C0,$93,$03, $0D,$C0,$91,$03, $0D,$B0,$90,$03, $0D,$A0,$8E,$02, $0D,$90,$97,$02, $0D,$90,$8C,$04, $FF
+..voice1 : db $F6,$0C, $0D,$A0,$97,$02, $0D,$B0,$90,$03, $0D,$C0,$91,$03, $0D,$C0,$91,$03, $0D,$B0,$90,$03, $0D,$90,$97,$02, $0D,$90,$97,$02, $0D,$90,$8C,$04, $0D,$A0,$8B,$02, $0D,$90,$8B,$02, $0D,$C0,$87,$03, $0D,$C0,$85,$03, $0D,$C0,$89,$02, $0D,$B0,$84,$03, $0D,$C0,$89,$02, $0D,$90,$80,$04, $FF
 
 ; Sound 77h: Crocomire melting cry
 .sound77

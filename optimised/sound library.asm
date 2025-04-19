@@ -106,11 +106,16 @@ mov a,!sound_voiceMasks+x : and a,!noiseEnableFlags : mov !noiseEnableFlags,a
 
 .loop_commands
 call getNextDataByte
+cmp a,#$F6 : bne +
+call getNextDataByte : mov !sound_panningBiases+x,a
+bra .loop_commands
+
++
 cmp a,#$F9 : bne +
 call getNextDataByte : mov !sound_adsrSettingsLow+x,a
 call getNextDataByte : mov !sound_adsrSettingsHigh+x,a
 mov a,#$FF : mov !sound_updateAdsrSettingsFlags+x,a
-jmp .loop_commands
+bra .loop_commands
 
 +
 cmp a,#$F5 : bne +
@@ -159,18 +164,9 @@ mov x,!i_globalChannel : call getNextDataByte
 mov x,!i_voice : mov !trackOutputVolumes+x,a
 mov a,#$00 : mov !trackPhaseInversionOptions+x,a
 
-mov !panningBias,#$00
-mov x,!i_globalChannel : push x : call getNextDataByte : bpl .branch_customPitch
-push a : mov !panningBias+1,#$0A
+mov x,!i_globalChannel : mov a,!sound_panningBiases+x : mov !panningBias+1,a : mov !panningBias,#$00
 mov x,!i_voice : call writeDspVoiceVolumes
-pop a : pop x : bra +
-
-.branch_customPitch
-mov !panningBias+1,a
-mov x,!i_voice : call writeDspVoiceVolumes
-pop x : call getNextDataByte
-
-+
+mov x,!i_globalChannel : call getNextDataByte
 cmp a,#$F6 : beq +
 mov !sound_notes+x,a
 mov a,#$00 : mov !sound_subnotes+x,a
