@@ -1,19 +1,17 @@
-macro SetVoice(i_sound)
+setVoice:
 {
-!enabledVoices     = !sound<i_sound>_enabledVoices
-!p_charVoiceBitset = !sound<i_sound>_p_charVoiceBitset
-!p_charVoiceMask   = !sound<i_sound>_p_charVoiceMask
+; Requires !i_soundLibrary to be set
 
+mov a,!i_soundLibrary : asl a : mov x,a
 mov a,channelBitsets-1+y
 tset !enableSoundEffectVoices,a
 tclr !musicVoiceBitset,a
 tclr !echoEnableFlags,a
-mov y,#$00
-mov (!p_charVoiceBitset)+y,a
-eor a,#$FF : mov (!p_charVoiceMask)+y,a
-eor a,#$FF : or a,!enabledVoices : mov !enabledVoices,a
+mov (!sound1_p_charVoiceBitset+x),a
+eor a,#$FF : mov (!sound1_p_charVoiceMask+x),a
+eor a,#$FF : mov x,!i_soundLibrary : or a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a
+ret
 }
-endmacro
 
 
 resetSoundIfNoEnabledVoices:

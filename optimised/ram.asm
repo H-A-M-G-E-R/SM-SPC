@@ -160,14 +160,6 @@ endmacro
 %declare_byte(disableNoteProcessing)
 %declare_word(p_return)
 
-; Sound 1
-{
-%declare_word(sound1_instructionListPointerSet)
-%declare_word(sound1_p_charVoiceBitset)
-%declare_word(sound1_p_charVoiceMask)
-%declare_word(sound1_p_charVoiceIndex)
-}
-
 ; Sounds
 {
 %declare_byteArray(sound_p_instructionListsLow,  !n_channels)
@@ -253,13 +245,17 @@ endmacro
 ; Sounds
 {
 %declare_word(p_echoBuffer) ; Unused?
+%declare_word(sound1_instructionListPointerSet)
 %declare_word(sound2_instructionListPointerSet)
-%declare_word(sound2_p_charVoiceBitset)
-%declare_word(sound2_p_charVoiceMask)
-%declare_word(sound2_p_charVoiceIndex)
 %declare_word(sound3_instructionListPointerSet)
+%declare_word(sound1_p_charVoiceBitset)
+%declare_word(sound2_p_charVoiceBitset)
 %declare_word(sound3_p_charVoiceBitset)
+%declare_word(sound1_p_charVoiceMask)
+%declare_word(sound2_p_charVoiceMask)
 %declare_word(sound3_p_charVoiceMask)
+%declare_word(sound1_p_charVoiceIndex)
+%declare_word(sound2_p_charVoiceIndex)
 %declare_word(sound3_p_charVoiceIndex)
 }
 

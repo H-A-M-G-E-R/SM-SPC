@@ -130,7 +130,7 @@ mov x,!sound3_i_voice : mov y,!sound3_i_channel
 mov a,!trackOutputVolumes+x         : mov !sound3_trackOutputVolumeBackups+y,a
 mov a,!trackPhaseInversionOptions+x : mov !sound3_trackOutputVolumeBackups+y,a
 mov y,#$00 : mov a,!sound3_i_voice : mov (!sound3_p_charVoiceIndex)+y,a
-mov y,!sound3_voiceId : %SetVoice(3) : jmp .loop
+mov y,!sound3_voiceId : call setVoice : jmp .loop
 }
 
 getSound3ChannelInstructionListPointer:

@@ -151,7 +151,7 @@ mov x,!sound1_i_voice : mov y,!sound1_i_channel
 mov a,!trackOutputVolumes+x         : mov !sound1_trackOutputVolumeBackups+y,a
 mov a,!trackPhaseInversionOptions+x : mov !sound1_trackPhaseInversionOptionsBackups+y,a
 mov y,#$00 : mov a,!sound1_i_voice : mov (!sound1_p_charVoiceIndex)+y,a
-mov y,!sound1_voiceId : %SetVoice(1) : jmp .loop
+mov y,!sound1_voiceId : call setVoice : jmp .loop
 }
 
 getSound1ChannelInstructionListPointer:
