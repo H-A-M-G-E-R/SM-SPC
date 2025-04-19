@@ -40,7 +40,7 @@ mov x,!i_sound1 : mov a,sound1InstructionLists+x : mov !sound1_instructionListPo
 mov a,!cpuIo1_write : mov !sound1,a
 mov y,#$00 : mov a,(!sound1_instructionListPointerSet)+y : mov y,a
 and a,#$0F : mov !sound1_n_voices,a
-mov a,y : lsr a : lsr a : lsr a : lsr a : mov !sound1Priority,a
+mov a,y : xcn a : and a,#$0F : mov !sound1Priority,a
 }
 
 processSound1:

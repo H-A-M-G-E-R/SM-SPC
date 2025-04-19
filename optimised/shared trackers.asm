@@ -130,20 +130,8 @@ macro setPercussionInstrumentsIndex(i)
     db $FA, <i>
 endmacro
 
-macro skipByte()
-    db $FB
-endmacro
-
-macro skipAllNewNotes()
-    db $FC
-endmacro
-
-macro stopSoundEffectsAndDisableMusicNoteProcessing()
-    db $FD
-endmacro
-
-macro resumeSoundEffectsAndEnableMusicNoteProcessing()
-    db $FE
+macro setNoteLengthTable(p_noteLengthTable)
+    db $FB, $00 : dw <p_noteLengthTable>
 endmacro
 }
 }

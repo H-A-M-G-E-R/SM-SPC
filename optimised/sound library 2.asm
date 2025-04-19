@@ -36,7 +36,7 @@ mov x,!i_sound2 : mov a,sound2InstructionLists+x : mov !sound2_instructionListPo
 mov a,!cpuIo2_write : mov !sound2,a
 mov y,#$00 : mov a,(!sound2_instructionListPointerSet)+y : mov y,a
 and a,#$0F : mov !sound2_n_voices,a
-mov a,y : lsr a : lsr a : lsr a : lsr a : mov !sound2Priority,a
+mov a,y : xcn a : and a,#$0F : mov !sound2Priority,a
 }
 
 processSound2:

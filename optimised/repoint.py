@@ -29,6 +29,7 @@ parser_b = subparsers.add_parser('nspctest', help = 'Dev option. Repoint an NSPC
 parser_b.add_argument('rom_in',  type = argparse.FileType('rb'),  help = 'Filepath to input NSPC')
 parser_b.add_argument('rom_out', type = argparse.FileType('r+b'), help = 'Filepath to output ROM')
 
+argparser.add_argument('--version',           type = lambda n: int(n),       default = None, help = 'Version')
 argparser.add_argument('--p_spcEngine',       type = lambda n: int(n, 0x10), default = None, help = 'New SPC engine ARAM pointer')
 argparser.add_argument('--p_sharedTrackers',  type = lambda n: int(n, 0x10), default = None, help = 'New shared trackers ARAM pointer')
 argparser.add_argument('--p_noteLengthTable', type = lambda n: int(n, 0x10), default = None, help = 'New note length table ARAM pointer')
@@ -109,26 +110,49 @@ class MusicData:
         "Boring class that opaquely holds the data it's given and its destination address. Now reads metadata(!)"
         
         def readMetadataIntoArgs(self):
-            if args.p_spcEngine is None:
-                args.p_spcEngine = self.data[1] | self.data[2] << 8
-        
-            if args.p_sharedTrackers is None:
-                args.p_sharedTrackers = self.data[3] | self.data[4] << 8
-        
-            if args.p_noteLengthTable is None:
-                args.p_noteLengthTable = self.data[5] | self.data[6] << 8
-        
-            if args.p_instrumentTable is None:
-                args.p_instrumentTable = self.data[7] | self.data[8] << 8
-        
-            if args.p_sampleTable is None:
-                args.p_sampleTable = self.data[9] | self.data[0xA] << 8
-        
-            if args.p_sampleData is None:
-                args.p_sampleData = self.data[0xB] | self.data[0xC] << 8
-        
-            if args.p_extra is None:
-                args.p_extra = self.data[0xD] | self.data[0xE] << 8
+            if args.version is None:
+                args.version = self.data[0]
+
+            match args.version:
+                case 1:
+                    if args.p_spcEngine is None:
+                        args.p_spcEngine = self.data[1] | self.data[2] << 8
+
+                    if args.p_sharedTrackers is None:
+                        args.p_sharedTrackers = self.data[3] | self.data[4] << 8
+
+                    if args.p_noteLengthTable is None:
+                        args.p_noteLengthTable = self.data[5] | self.data[6] << 8
+
+                    if args.p_instrumentTable is None:
+                        args.p_instrumentTable = self.data[7] | self.data[8] << 8
+
+                    if args.p_sampleTable is None:
+                        args.p_sampleTable = self.data[9] | self.data[0xA] << 8
+
+                    if args.p_sampleData is None:
+                        args.p_sampleData = self.data[0xB] | self.data[0xC] << 8
+
+                    if args.p_extra is None:
+                        args.p_extra = self.data[0xD] | self.data[0xE] << 8
+                case 2:
+                    if args.p_spcEngine is None:
+                        args.p_spcEngine = self.data[1] | self.data[2] << 8
+
+                    if args.p_sharedTrackers is None:
+                        args.p_sharedTrackers = self.data[3] | self.data[4] << 8
+
+                    if args.p_instrumentTable is None:
+                        args.p_instrumentTable = self.data[5] | self.data[6] << 8
+
+                    if args.p_sampleTable is None:
+                        args.p_sampleTable = self.data[7] | self.data[8] << 8
+
+                    if args.p_sampleData is None:
+                        args.p_sampleData = self.data[9] | self.data[0xA] << 8
+
+                    if args.p_extra is None:
+                        args.p_extra = self.data[0xB] | self.data[0xC] << 8
         
         def __init__(self, p_blockHeader, data):
             self.p_blockHeader = p_blockHeader
@@ -1617,10 +1641,11 @@ class MusicData:
 
     def repoint(self):
         if self.spcEngine is not None:
-            self.spcEngine.repoint(args.p_spcEngine - 0xF, args.p_noteLengthTable - args.p_spcEngine + 0xF)
+            metadataSize = (0xF, 0xD)[args.version - 1]
+            self.spcEngine.repoint(args.p_spcEngine - metadataSize, args.p_instrumentTable - args.p_spcEngine + metadataSize)
             self.trackers.repointSharedTrackers(args.p_sharedTrackers)
 
-        if self.noteLengthTable is not None:
+        if args.version == 1 and self.noteLengthTable is not None:
             self.noteLengthTable.repoint(self.noteLengthTable.p_aram + args.p_noteLengthTable - 0x5800)
 
         if self.instrumentTable is not None:
@@ -1631,15 +1656,22 @@ class MusicData:
 
         if self.sampleData is not None:
             self.sampleData.repoint(self.sampleData.p_aram + args.p_sampleData - 0x6E00)
-            
-        p_trackers = self.sampleData.p_aram + self.sampleData.blockSize
+
+        if args.version == 1:
+            p_trackers = self.sampleData.p_aram + self.sampleData.blockSize
+        else:
+            p_noteLengthTable = self.sampleData.p_aram + self.sampleData.blockSize
+            if self.noteLengthTable is not None:
+                self.noteLengthTable.repoint(self.noteLengthTable.p_aram + p_noteLengthTable - 0x5800)
+            p_trackers = p_noteLengthTable + self.noteLengthTable.blockSize
+
         if self.trackers is not None:
             self.trackers.repoint(self.trackers.p_aram + p_trackers - 0x5820)
 
     def write(self, p_rom): # need to repoint music pointer table
         data = AramStream(0, [])
 
-        if self.noteLengthTable is not None:
+        if args.version == 1 and self.noteLengthTable is not None:
             self.noteLengthTable.write(data)
 
         if self.instrumentTable is not None:
@@ -1651,6 +1683,9 @@ class MusicData:
         if self.sampleData is not None:
             self.sampleData.write(data)
 
+        if args.version != 1 and self.noteLengthTable is not None:
+            self.noteLengthTable.write(data)
+
         if self.trackers is not None:
             self.trackers.write(data)
 
@@ -1658,7 +1693,10 @@ class MusicData:
             self.spcEngine.write(data)
         
         # Write out location of p_trackers (newly required by engine change)
-        p_trackers = self.sampleData.p_aram + self.sampleData.blockSize
+        if args.version == 1:
+            p_trackers = self.sampleData.p_aram + self.sampleData.blockSize
+        else:
+            p_trackers = self.sampleData.p_aram + self.sampleData.blockSize + self.noteLengthTable.blockSize
         data.writeInt(3, 2)
         data.writeInt(args.p_extra, 2)
         data.writeInt(p_trackers, 2)
@@ -1667,7 +1705,8 @@ class MusicData:
         # SPC data terminator: 0000 dddd where d is the jump target for the SPC engine specifically and ignored otherwise
         data.writeInt(0, 2)
         if self.spcEngine is not None:
-            data.writeInt(self.spcEngine.p_aram + 0xF, 2) # + Fh to skip metadata
+            metadataSize = (0xF, 0xD)[args.version - 1]
+            data.writeInt(self.spcEngine.p_aram + metadataSize, 2) # + metadataSize to skip metadata
         else:
             data.writeInt(0x1500, 2)
 

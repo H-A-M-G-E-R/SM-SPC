@@ -39,7 +39,7 @@ mov x,!cpuIo3_write : mov !sound3,x
 cmp x,#$FE : bcs processSound3
 mov y,#$00 : mov a,(!sound3_instructionListPointerSet)+y : mov y,a
 and a,#$0F : mov !sound3_n_voices,a
-mov a,y : lsr a : lsr a : lsr a : lsr a : mov !sound3Priority,a
+mov a,y : xcn a : and a,#$0F : mov !sound3Priority,a
 cmp x,#$03 : bcs processSound3
 dec x : mov !sound3LowHealthPriority,x
 }

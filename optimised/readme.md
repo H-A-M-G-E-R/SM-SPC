@@ -20,26 +20,24 @@ In the engine mod (these ARAM addresses are just examples, read SPC engine metad
 _ARAM_|___Description____
 $E0   | Extra (*)
 $384  | SPC engine
-$2DEC | Note length table
 $2E04 | Instrument table
 $2F00 | Sample table
-$3000 | Sample data / trackers
+$3000 | Sample data / note length table / trackers
 ```
 
 (*) Extra is a 3 byte block:
-* A two-byte ARAM address of the trackers within the "sample data / trackers" region
+* A two-byte ARAM address of the trackers within the "sample data / note length table / trackers" region
 * A one byte flag specifying late key-off, corresponding to mITroid's "disable key-off between patterns" patch
 
-For the purposes of tooling, the first 15 bytes of the SPC engine are metadata (SPC engine block can be identified by looking for the SPC data block whose ARAM destination is also the terminator data block's destination - 0xF).
+For the purposes of tooling, the first 13 bytes of the SPC engine are metadata (SPC engine block can be identified by looking for the SPC data block whose ARAM destination is also the terminator data block's destination - 0xD).
 * 0x0: One byte version number
 * Two byte pointers to:
     * 0x1: SPC engine (entry point, metadata address + 0xF)
     * 0x3: Shared trackers (part of the SPC engine)
-    * 0x5: Note length table
-    * 0x7: Instrument table
-    * 0x9: Sample table
-    * 0xB: Sample data / trackers
-    * 0xD: Extra
+    * 0x5: Instrument table
+    * 0x7: Sample table
+    * 0x9: Sample data / note length table / trackers
+    * 0xB: Extra
 
 `repoint.py` is included to repoint vanilla NSPCs or mITroid generated NSPCs.
 
@@ -47,10 +45,11 @@ After patching a vanilla ROM with the ASM via asar, run:
 * `python repoint.py rom SM.smc SM_repointed.smc` (arbitrary filepaths)
 
 To repoint an NSPC file, run either:
-* `python repoint.py nspc music.nspc music_repointed.nspc --p_spcEngine=455 --p_sharedTrackers=2AE2 --p_noteLengthTable=2EEC --p_instrumentTable=2F04 --p_sampleTable=3000 --p_sampleData=3100 --p_extra=E0`
+* `python repoint.py nspc music.nspc music_repointed.nspc --version=2 --p_spcEngine=382 --p_sharedTrackers=29DE --p_instrumentTable=2E04 --p_sampleTable=2F00 --p_sampleData=3000 --p_extra=E0`
     * Where all the pointers are reported by asar when assembling the engine mod
 * `python repoint.py nspc music.nspc music_repointed.nspc --rom=SM.smc`
     * Where metadata is extracted from `--rom` argument (a patched ROM)
 
 Version history:
+* 2\. Note length table can now be changed by a new track command ($FB $00 pppp), and it resets to default when initialising a music track
 * 1\. Initial release (since introducing versioning)

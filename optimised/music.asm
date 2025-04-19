@@ -73,6 +73,7 @@ mov !trackerTimer,a
 mov !percussionInstrumentsBaseIndex,a
 mov !musicVolume+1,#$C0
 mov !musicTempo+1,#$20
+mov a,#sharedNoteRingLengthTable&$FF : mov y,#sharedNoteRingLengthTable>>8 : movw !p_noteRingLengthTable,ya
 
 .ret
 ret
@@ -98,7 +99,10 @@ dbnz !musicTrackStatus,musicTrackInitialisation
 {
 call getNextTrackerCommand
 bne .branch_loadNewTrackData
-mov y,a : beq loadNewMusicTrack
+mov y,a : bne +
+jmp loadNewMusicTrack
+
++
 dec !trackerTimer : bpl +
 mov !trackerTimer,a
 
@@ -168,8 +172,8 @@ call getNextTrackDataByte
 bmi +
 
 ; Extended note parameters
-push a : xcn a : and a,#$07 : mov y,a : mov a,!noteRingLengthTable+y : mov !trackNoteRingLengths+x,a : pop a
-and a,#$0F : mov y,a : mov a,!noteVolumeTable+y : mov !trackNoteVolume+x,a
+push a : xcn a : and a,#$07 : mov y,a : mov a,(!p_noteRingLengthTable)+y : mov !trackNoteRingLengths+x,a : pop a
+and a,#$0F : clrc : adc a,#$08 : mov y,a : mov a,(!p_noteRingLengthTable)+y : mov !trackNoteVolume+x,a
 call getNextTrackDataByte
 
 +
@@ -250,6 +254,13 @@ asl !musicVoiceBitset : bne -
 
 ret
 }
+
+; $5800
+sharedNoteRingLengthTable:
+db $32,$65,$7F,$98,$B2,$CB,$E5,$FC
+
+sharedNoteVolumeTable:
+db $19,$32,$4C,$65,$72,$7F,$8C,$98,$A5,$B2,$BF,$CB,$D8,$E5,$F2,$FC
 
 ; $18DD
 handleTrackCommand:
@@ -657,6 +668,24 @@ setc : sbc a,!trackNotes+x : mov y,!trackPitchSlideTimers+x : push y : pop x : c
 ret
 }
 
+miscCommand:
+{
+mov x,a : jmp (miscCommandPointers+x)
+}
+
+miscCommandPointers:
+{
+dw \
+    setNoteLengthTable
+}
+
+setNoteLengthTable:
+{
+call getNextTrackDataByte : mov !p_noteRingLengthTable,a
+call getNextTrackDataByte : mov !p_noteRingLengthTable+1,a
+ret
+}
+
 ; $1B3B
 getTrackNote:
 {
@@ -724,14 +753,15 @@ dw \
     echoParameters,\
     dynamicEchoVolume,\
     pitchSlide,\
-    setPercussionInstrumentsIndex
+    setPercussionInstrumentsIndex,\
+    miscCommand
 }
 
 ; $1BA0
 trackCommandParameterBytes:
 {
 db $01, $01, $02, $03, $00, $01, $02, $01, $02, $01, $01, $03, $00, $01, $02, $03,\
-   $01, $03, $03, $00, $01, $03, $00, $03, $03, $03, $01
+   $01, $03, $03, $00, $01, $03, $00, $03, $03, $03, $01, $03
 }
 
 ; $1BBF

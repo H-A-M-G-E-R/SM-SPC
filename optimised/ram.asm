@@ -263,6 +263,7 @@ endmacro
 %declare_word(p_trackerData)
 %declare_byte(enableLateKeyOff)
 %declare_byte(fakeEchoEnableFlags)
+%declare_word(p_noteRingLengthTable)
 
 ; $F0..FF: IO ports
 if !p_ram > $F0
@@ -511,11 +512,9 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $384..2D80: SPC engine
-!p_ram = $2F00-($2A*6)-$10-8
+; $384..2DB5: SPC engine
+!p_ram = $2F00-($2A*6)
 
-%declare_byteArray(noteRingLengthTable, 8)
-%declare_byteArray(noteVolumeTable, $10)
 %declare_byteArray(instrumentTable, $2A*6)
 
 ; Must be 100h aligned

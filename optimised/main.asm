@@ -18,7 +18,7 @@ if defined("printRamMsl") || defined("printRamMap") : undef printAramSummary
 lorom
 org $CF8104 ; The actual ROM location the data block is going to be written to
 
-!version = 1
+!version = 2
 
 incsrc "ram.asm"
 
@@ -30,7 +30,6 @@ main_metadata:
 db !version
 dw main_engine,\
    main_sharedTrackers,\
-   !noteRingLengthTable,\
    !instrumentTable,\
    !sampleTable,\
    !sampleData,\
@@ -73,18 +72,17 @@ if defined("printAramSummary")
     print "$",hex(main_soundLibrary3), ": Sound library 3"
     print "$",hex(main_sharedTrackers), ": Shared trackers"
     print "$",hex(main_eof), ": EOF"
-    print "$",hex(!noteRingLengthTable), ": Note length table"
     print "$",hex(!instrumentTable), ": Instrument table"
     print "$",hex(!sampleTable), ": Sample table"
-    print "$",hex(!sampleData), ": Sample data / trackers / echo buffer"
+    print "$",hex(!sampleData), ": Sample data / note length table / trackers / echo buffer"
     print ""
     
     ; These are the options to pass to repoint.py
     print \
         "REPOINT:",\
+        " --version=",dec(!version),\
         " --p_spcEngine=",hex(main_engine),\
         " --p_sharedTrackers=",hex(main_sharedTrackers),\
-        " --p_noteLengthTable=",hex(!noteRingLengthTable),\
         " --p_instrumentTable=",hex(!instrumentTable),\
         " --p_sampleTable=",hex(!sampleTable),\
         " --p_sampleData=",hex(!sampleData),\
