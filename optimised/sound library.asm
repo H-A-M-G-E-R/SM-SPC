@@ -178,7 +178,7 @@ mov a,!sound_notes+x : mov y,a : mov a,!sound_subnotes+x : movw !note,ya : mov x
 mov x,!i_globalChannel : call getNextDataByte : mov !sound_instructionTimers+x,a
 mov a,!sound_updateAdsrSettingsFlags+x : beq +
 mov a,!sound_dspIndices+x : or a,#$05 : mov y,a : mov a,!sound_adsrSettingsLow+x : call writeDspRegisterDirect
-mov a,!sound_dspIndices+x : or a,#$06 : mov y,a : mov a,!sound_adsrSettingsHigh+x : call writeDspRegisterDirect
+inc y : mov a,!sound_adsrSettingsHigh+x : call writeDspRegisterDirect
 
 +
 mov a,!sound_legatoFlags+x : bne .branch_processInstruction_end

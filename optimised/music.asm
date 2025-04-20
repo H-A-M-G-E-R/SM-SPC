@@ -581,7 +581,7 @@ echoParameters: ; Track command F7h
 {
 call setUpEcho
 call getNextTrackDataByte : mov !echoFeedbackVolume,a
-call getNextTrackDataByte : mov !i_echoFirFilterSet,a
+call getNextTrackDataByte
 mov y,#$08 : mul ya : mov x,a
 mov y,#$0F
 
@@ -601,7 +601,7 @@ ret
 setUpEcho:
 {
 mov !echoDelay,a
-mov y,#$7D : mov $F2,y : mov a,$F3 : cmp a,!echoDelay : beq .branch_noChange
+mov $F2,#$7D : mov a,$F3 : cmp a,!echoDelay : beq .branch_noChange
 
 ; Echo timer = min(0, [echo timer]) - 1 - [DSP echo delay]
 and a,#$0F : eor a,#$FF
@@ -615,13 +615,13 @@ mov !echoTimer,a
 mov y,#$04
 
 -
-mov a,dspRegisterAddresses-1+y : mov $F2,a : mov a,#$00 : mov $F3,a
+mov a,dspRegisterAddresses-1+y : mov $F2,a : mov $F3,#$00
 dbnz y,-
 
 ; Disable echo buffer writes
-mov a,!flg : or a,#$20 : mov y,#$6C : call writeDspRegisterDirect
+mov $F2,#$6C : set5 $F3
 
-mov a,!echoDelay : mov y,#$7D : call writeDspRegisterDirect
+mov a,!echoDelay : mov $F2,#$7D : mov $F3,a
 
 .branch_noChange
 ; DSP echo buffer address = $10000 - [echo delay] * 800h
@@ -932,7 +932,7 @@ bra ++
 mov a,!misc1+1 : beq .branch_continuePlaying
 
 ++
-dec !misc1+1 : bne +
+dbnz !misc1+1,+
 mov a,!trackRepeatedSubsectionAddresses+1+x : push a : mov a,!trackRepeatedSubsectionAddresses+x : pop y
 bra .loop_sections
 

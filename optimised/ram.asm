@@ -278,7 +278,7 @@ endif
 ; Music
 {
 ; Note: This one is referenced in code via $00 with direct page = $100
-%declare_bytePairArray(trackDynamicVibratoTimers, !n_tracks)
+%declare_bytePairArray(trackDynamicVibratoTimers,          !n_tracks)
 
 %declare_bytePairArray(trackNoteLengths,                   !n_tracks)
 %declare_bytePairArray(trackNoteRingLengths,               !n_tracks)
@@ -506,13 +506,9 @@ endif
 %generateIndirect_bytes(sound3_channel, _panningBias,                      !sound3_panningBiases,                     !sound3_n_channels)
 }
 
-%declare_byte(disableProcessingCpuIo2)
-%declare_byte(i_echoFirFilterSet)
-%declare_byte(sound3LowHealthPriority)
-
 !p_end_ram #= !p_ram
 
-; $384..2DB5: SPC engine
+; $37F..2D64: SPC engine
 !p_ram = $2F00-($2A*6)
 
 %declare_byteArray(instrumentTable, $2A*6)

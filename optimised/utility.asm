@@ -9,7 +9,7 @@ decw !misc0
 
 -
 mov (!misc0)+y,a
-dec y : bne -
+dbnz y,-
 
 +
 incw !misc0

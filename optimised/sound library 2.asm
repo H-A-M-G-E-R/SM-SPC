@@ -43,8 +43,8 @@ processSound2:
 {
 mov a,#$FF : cmp a,!sound2_initialisationFlag : beq +
 call sound2Initialisation
-mov y,#$01 : mov a,(!sound2_instructionListPointerSet)+y : mov !sound2_channel0_p_instructionListLow,a : call getSound2ChannelInstructionListPointer : mov !sound2_channel0_p_instructionListHigh,a
-call getSound2ChannelInstructionListPointer              : mov !sound2_channel1_p_instructionListLow,a : call getSound2ChannelInstructionListPointer : mov !sound2_channel1_p_instructionListHigh,a
+mov y,#$01 : mov a,(!sound2_instructionListPointerSet)+y : mov !sound2_channel0_p_instructionListLow,a : inc y : mov a,(!sound2_instructionListPointerSet)+y : mov !sound2_channel0_p_instructionListHigh,a
+inc y : mov a,(!sound2_instructionListPointerSet)+y      : mov !sound2_channel1_p_instructionListLow,a : inc y : mov a,(!sound2_instructionListPointerSet)+y : mov !sound2_channel1_p_instructionListHigh,a
 mov a,!sound2_channel0_voiceIndex : asl a : asl a : asl a : mov !sound2_channel0_dspIndex,a
 mov a,!sound2_channel1_voiceIndex : asl a : asl a : asl a : mov !sound2_channel1_dspIndex,a
 
@@ -97,18 +97,13 @@ mov !sound2_channel0_panningBias,a
 mov !sound2_channel1_panningBias,a
 
 .loop
-dec !sound2_voiceId : bne +
-
-.ret
-ret
-
-+
+dec !sound2_voiceId : beq .ret
 asl !sound2_remainingEnabledSoundVoices : bcs .loop
 mov a,#$00 : cmp a,!sound2_n_voices : beq .ret
 dec !sound2_n_voices
 mov a,#$00 : mov x,!sound2_i_channel : mov !sound2_disableBytes+x,a
 inc !sound2_i_channel
-mov a,!sound2_2i_channel : mov x,a
+mov x,!sound2_2i_channel
 mov a,sound2ChannelVoiceBitsets+x : mov !sound2_p_charVoiceBitset,a
 mov a,sound2ChannelVoiceMasks+x   : mov !sound2_p_charVoiceMask,a
 mov a,sound2ChannelVoiceIndices+x : mov !sound2_p_charVoiceIndex,a
@@ -116,18 +111,15 @@ inc x
 mov a,sound2ChannelVoiceBitsets+x : mov !sound2_p_charVoiceBitset+1,a
 mov a,sound2ChannelVoiceMasks+x   : mov !sound2_p_charVoiceMask+1,a
 mov a,sound2ChannelVoiceIndices+x : mov !sound2_p_charVoiceIndex+1,a
-inc !sound2_2i_channel : inc !sound2_2i_channel
+inc x : mov !sound2_2i_channel,x
 mov a,!sound2_voiceId : mov !sound2_i_voice,a : dec !sound2_i_voice : clrc : asl !sound2_i_voice
 mov x,!sound2_i_voice : mov y,!sound2_i_channel
 mov a,!trackOutputVolumes+x         : mov !sound2_trackOutputVolumeBackups+y,a
 mov a,!trackPhaseInversionOptions+x : mov !sound2_trackOutputVolumeBackups+y,a
 mov y,#$00 : mov a,!sound2_i_voice : mov (!sound2_p_charVoiceIndex)+y,a
-mov y,!sound2_voiceId : call setVoice : jmp .loop
-}
+mov y,!sound2_voiceId : call setVoice : bra .loop
 
-getSound2ChannelInstructionListPointer:
-{
-inc y : mov a,(!sound2_instructionListPointerSet)+y
+.ret
 ret
 }
 
@@ -141,6 +133,19 @@ dw .sound1,  .sound2,  .sound3,  .sound4,  .sound5,  .sound6,  .sound7,  .sound8
    .sound51, .sound52, .sound53, .sound54, .sound55, .sound56, .sound57, .sound58, .sound59, .sound5A, .sound5B, .sound5C, .sound5D, .sound5E, .sound5F, .sound60,\
    .sound61, .sound62, .sound63, .sound64, .sound65, .sound66, .sound67, .sound68, .sound69, .sound6A, .sound6B, .sound6C, .sound6D, .sound6E, .sound6F, .sound70,\
    .sound71, .sound72, .sound73, .sound74, .sound75, .sound76, .sound77, .sound78, .sound79, .sound7A, .sound7B, .sound7C, .sound7D, .sound7E, .sound7F
+
+; Instruction list pointer set format:
+{
+;     pn [iiii]...
+; Where:
+;     p = priority
+;     {
+;         0: Other sounds can override this sound
+;         1: Most sounds can't override this sound (except silence and Mother Brain's cry - high pitch / Phantoon's dying cry)
+;     }
+;     n = number of channels
+;     iiii = instruction list pointer per channel
+}
 
 ; Instruction list format:
 {

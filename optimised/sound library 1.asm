@@ -17,14 +17,13 @@ jmp processSound1
 .branch_change
 cmp a,#$00 : beq .branch_noChange
 mov a,!cpuIo1_read
-cmp a,#$02 : beq +
-cmp a,#$01 : beq +
+cmp a,#$03 : bcc +
 mov a,!sound1Priority : bne .branch_noChange
 
 +
 mov a,!sound1 : beq +
 mov a,#$00 : mov !sound1_enabledVoices,a
-mov x,#$00 : call resetSoundChannel
+mov x,a : call resetSoundChannel
 mov x,#$01 : call resetSoundChannel
 mov x,#$02 : call resetSoundChannel
 mov x,#$03 : call resetSoundChannel
@@ -47,10 +46,10 @@ processSound1:
 {
 mov a,#$FF : cmp a,!sound1_initialisationFlag : beq +
 call sound1Initialisation
-mov y,#$01 : mov a,(!sound1_instructionListPointerSet)+y : mov !sound1_channel0_p_instructionListLow,a : call getSound1ChannelInstructionListPointer : mov !sound1_channel0_p_instructionListHigh,a
-call getSound1ChannelInstructionListPointer              : mov !sound1_channel1_p_instructionListLow,a : call getSound1ChannelInstructionListPointer : mov !sound1_channel1_p_instructionListHigh,a
-call getSound1ChannelInstructionListPointer              : mov !sound1_channel2_p_instructionListLow,a : call getSound1ChannelInstructionListPointer : mov !sound1_channel2_p_instructionListHigh,a
-call getSound1ChannelInstructionListPointer              : mov !sound1_channel3_p_instructionListLow,a : call getSound1ChannelInstructionListPointer : mov !sound1_channel3_p_instructionListHigh,a
+mov y,#$01 : mov a,(!sound1_instructionListPointerSet)+y : mov !sound1_channel0_p_instructionListLow,a : inc y : mov a,(!sound1_instructionListPointerSet)+y : mov !sound1_channel0_p_instructionListHigh,a
+inc y : mov a,(!sound1_instructionListPointerSet)+y      : mov !sound1_channel1_p_instructionListLow,a : inc y : mov a,(!sound1_instructionListPointerSet)+y : mov !sound1_channel1_p_instructionListHigh,a
+inc y : mov a,(!sound1_instructionListPointerSet)+y      : mov !sound1_channel2_p_instructionListLow,a : inc y : mov a,(!sound1_instructionListPointerSet)+y : mov !sound1_channel2_p_instructionListHigh,a
+inc y : mov a,(!sound1_instructionListPointerSet)+y      : mov !sound1_channel3_p_instructionListLow,a : inc y : mov a,(!sound1_instructionListPointerSet)+y : mov !sound1_channel3_p_instructionListHigh,a
 mov a,!sound1_channel0_voiceIndex : asl a : asl a : asl a : mov !sound1_channel0_dspIndex,a
 mov a,!sound1_channel1_voiceIndex : asl a : asl a : asl a : mov !sound1_channel1_dspIndex,a
 mov a,!sound1_channel2_voiceIndex : asl a : asl a : asl a : mov !sound1_channel2_dspIndex,a
@@ -121,18 +120,13 @@ mov !sound1_channel2_panningBias,a
 mov !sound1_channel3_panningBias,a
 
 .loop
-dec !sound1_voiceId : bne +
-
-.ret
-ret
-
-+
+dec !sound1_voiceId : beq .ret
 asl !sound1_remainingEnabledSoundVoices : bcs .loop
 mov a,#$00 : cmp a,!sound1_n_voices : beq .ret
 dec !sound1_n_voices
 mov a,#$00 : mov x,!sound1_i_channel : mov !sound1_disableBytes+x,a
 inc !sound1_i_channel
-mov a,!sound1_2i_channel : mov x,a
+mov x,!sound1_2i_channel
 mov a,sound1ChannelVoiceBitsets+x : mov !sound1_p_charVoiceBitset,a
 mov a,sound1ChannelVoiceMasks+x   : mov !sound1_p_charVoiceMask,a
 mov a,sound1ChannelVoiceIndices+x : mov !sound1_p_charVoiceIndex,a
@@ -140,18 +134,15 @@ inc x
 mov a,sound1ChannelVoiceBitsets+x : mov !sound1_p_charVoiceBitset+1,a
 mov a,sound1ChannelVoiceMasks+x   : mov !sound1_p_charVoiceMask+1,a
 mov a,sound1ChannelVoiceIndices+x : mov !sound1_p_charVoiceIndex+1,a
-inc !sound1_2i_channel : inc !sound1_2i_channel
+inc x : mov !sound1_2i_channel,x
 mov a,!sound1_voiceId : mov !sound1_i_voice,a : dec !sound1_i_voice : clrc : asl !sound1_i_voice
 mov x,!sound1_i_voice : mov y,!sound1_i_channel
 mov a,!trackOutputVolumes+x         : mov !sound1_trackOutputVolumeBackups+y,a
 mov a,!trackPhaseInversionOptions+x : mov !sound1_trackPhaseInversionOptionsBackups+y,a
 mov y,#$00 : mov a,!sound1_i_voice : mov (!sound1_p_charVoiceIndex)+y,a
-mov y,!sound1_voiceId : call setVoice : jmp .loop
-}
+mov y,!sound1_voiceId : call setVoice : bra .loop
 
-getSound1ChannelInstructionListPointer:
-{
-inc y : mov a,(!sound1_instructionListPointerSet)+y
+.ret
 ret
 }
 
@@ -162,6 +153,19 @@ dw .sound1,  .sound2,  .sound3,  .sound4,  .sound5,  .sound6,  .sound7,  .sound8
    .sound21, .sound22, .sound23, .sound24, .sound25, .sound26, .sound27, .sound28, .sound29, .sound2A, .sound2B, .sound2C, .sound2D, .sound2E, .sound2F, .sound30,\
    .sound31, .sound32, .sound33, .sound34, .sound35, .sound36, .sound37, .sound38, .sound39, .sound3A, .sound3B, .sound3C, .sound3D, .sound3E, .sound3F, .sound40,\
    .sound41, .sound42
+
+; Instruction list pointer set format:
+{
+;     pn [iiii]...
+; Where:
+;     p = priority
+;     {
+;         0: Other sounds can override this sound
+;         1: Most sounds can't override this sound (except power bomb explosion and silence)
+;     }
+;     n = number of channels
+;     iiii = instruction list pointer per channel
+}
 
 ; Instruction list format:
 {

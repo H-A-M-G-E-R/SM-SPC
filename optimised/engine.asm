@@ -20,15 +20,15 @@ call memclear
 mov a,#$06 : call setUpEcho
 
 ; DSP left/right track master volume = 60h
-mov a,#$60
-mov y,#$0C : call writeDspRegisterDirect
-mov y,#$1C : call writeDspRegisterDirect
+mov y,#$60
+mov a,#$0C : movw $F2,ya
+mov a,#$1C : movw $F2,ya
 
 ; DSP sample table address = $6D00
-mov a,#!sampleTable>>8 : mov y,#$5D : call writeDspRegisterDirect
+mov $F2,#$5D : mov $F3,#!sampleTable>>8
 
 ; Clear $F4..F7, and stop timers (and set an unused bit)
-mov a,#$F0 : mov $F1,a
+mov $F1,#$F0
 
 ; Timer 0 divider = 10h (2 ms)
 mov a,#$10 : mov $FA,a
@@ -37,7 +37,7 @@ mov a,#$10 : mov $FA,a
 mov !musicTempo+1,a
 
 ; Enable timer 0
-mov a,#$01 : mov $F1,a
+mov $F1,#$01
 }
 
 .loop_main
@@ -86,11 +86,9 @@ call handleCpuIo1
 mov x,#$01 : call writeReadCpuIo
 
 ; CPU IO 2
-mov a,!disableProcessingCpuIo2 : bne +
 call handleCpuIo2
 mov x,#$02 : call writeReadCpuIo
 
-+
 ; CPU IO 3
 call handleCpuIo3
 mov x,#$03 : call writeReadCpuIo
@@ -141,7 +139,7 @@ mov a,!cpuIo0_write+x : mov $F4+x,a
 
 ; Wait for CPU IO [X] to stabilise
 -
-mov a,$F4+x : cmp a,$F4+x : bne -
+mov a,$F4+x : cbne $F4+x,-
 
 ; Read CPU IO [X]
 mov !cpuIo0_read+x,a
@@ -365,13 +363,13 @@ receiveDataFromCpu:
 ; [CPU IO 1] == 0
 
 ; Disable echo buffer writes so the data doesn't get clobbered by the echo buffer writes
-call endEcho : mov a,!flg : mov y,#$6C : call writeDspRegisterDirect
+call endEcho : mov $F2,#$6C : mov $F3,!flg
 
-mov a,#$AA : mov $F4,a
-mov a,#$BB : mov $F5,a
+mov $F4,#$AA
+mov $F5,#$BB
 
 -
-mov a,$F4 : cmp a,#$CC : bne -
+cmp $F4,#$CC : bne -
 bra .branch_processDataBlock
 
 .loop_dataBlock
@@ -395,7 +393,7 @@ mov y,$F4 : mov a,$F5 : mov $F4,y
 bne .loop_dataBlock
 
 ; Reset CPU IO input latches and enable/reset timer 0
-mov x,#$31 : mov $F1,x
+mov $F1,#$31
 
 ; Write shared tracker pointers to new tracker data location
 mov y,#$00
