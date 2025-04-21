@@ -113,6 +113,7 @@ mov y,!i_globalChannel
 mov a,!trackOutputVolumes+x         : mov !sound_trackOutputVolumeBackups+y,a
 mov a,!trackPhaseInversionOptions+x : mov !sound_trackPhaseInversionOptionsBackups+y,a
 mov a,x : mov x,!i_globalChannel : mov !sound_voiceIndices+y,a
+mov a,#$0A : mov !sound_panningBiases+x,a
 
 mov y,!misc0 : mov a,channelBitsets+y
 tset !enableSoundEffectVoices,a
@@ -121,7 +122,6 @@ tclr !echoEnableFlags,a
 mov !sound_voiceBitsets+x,a
 eor a,#$FF : mov !sound_voiceMasks+x,a
 eor a,#$FF : mov x,!i_soundLibrary : or a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a
-mov a,#$0A : !sound_panningBiases+x,a
 
 inc !i_globalChannel
 
