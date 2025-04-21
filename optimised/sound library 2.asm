@@ -32,9 +32,9 @@ mov a,#$00
 mov !sound2_channel0_legatoFlag,a
 mov !sound2_channel1_legatoFlag,a
 mov a,!cpuIo2_write : dec a : asl a : mov x,a
-mov a,sound2InstructionLists+x : mov !sound2_instructionListPointerSet,a : inc x : mov a,sound2InstructionLists+x : mov !sound2_instructionListPointerSet+1,a
+mov a,sound2InstructionLists+x : mov !sound_instructionListPointerSet,a : inc x : mov a,sound2InstructionLists+x : mov !sound_instructionListPointerSet+1,a
 mov a,!cpuIo2_write : mov !sound2,a
-mov y,#$00 : mov a,(!sound2_instructionListPointerSet)+y : mov y,a
+mov y,#$00 : mov a,(!sound_instructionListPointerSet)+y : mov y,a
 and a,#$0F : mov !misc1,a
 mov a,y : xcn a : and a,#$0F : mov !sound2Priority,a
 }
@@ -43,18 +43,6 @@ processSound2:
 {
 mov a,!sound2_initialisationFlag : bne +
 call sound2Initialisation
-mov y,#$01 : mov a,(!sound2_instructionListPointerSet)+y : mov !sound2_channel0_p_instructionListLow,a : inc y : mov a,(!sound2_instructionListPointerSet)+y : mov !sound2_channel0_p_instructionListHigh,a
-inc y : mov a,(!sound2_instructionListPointerSet)+y      : mov !sound2_channel1_p_instructionListLow,a : inc y : mov a,(!sound2_instructionListPointerSet)+y : mov !sound2_channel1_p_instructionListHigh,a
-mov a,!sound2_channel0_voiceIndex : asl a : asl a : asl a : mov !sound2_channel0_dspIndex,a
-mov a,!sound2_channel1_voiceIndex : asl a : asl a : asl a : mov !sound2_channel1_dspIndex,a
-
-mov y,#$00
-mov !sound2_channel0_i_instructionList,y
-mov !sound2_channel1_i_instructionList,y
-
-inc y
-mov !sound2_channel0_instructionTimer,y
-mov !sound2_channel1_instructionTimer,y
 
 +
 mov x,#$00+!sound1_n_channels : call processSoundChannel
@@ -63,21 +51,8 @@ mov x,#$01+!sound1_n_channels : call processSoundChannel
 ret
 }
 
-; Sound 2 channel variable pointers
-{
-sound2ChannelVoiceBitsets:
-dw !sound2_channel0_voiceBitset, !sound2_channel1_voiceBitset
-
-sound2ChannelVoiceMasks:
-dw !sound2_channel0_voiceMask, !sound2_channel1_voiceMask
-
-sound2ChannelVoiceIndices:
-dw !sound2_channel0_voiceIndex, !sound2_channel1_voiceIndex
-}
-
 sound2Initialisation:
 {
-mov !misc0,#$07
 mov !i_globalChannel,#$00+!sound1_n_channels
 mov a,#$00
 mov !sound2_channel0_voiceBitset,a
@@ -86,8 +61,6 @@ mov !sound2_channel0_voiceIndex,a
 mov !sound2_channel1_voiceIndex,a
 dec a
 mov !sound2_initialisationFlag,a
-mov !sound2_channel0_voiceMask,a
-mov !sound2_channel1_voiceMask,a
 mov !sound2_channel0_disableByte,a
 mov !sound2_channel1_disableByte,a
 jmp sound1Initialisation_mergeFromOtherLibraries

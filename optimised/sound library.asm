@@ -26,8 +26,8 @@ mov a,!sound_voiceIndices+x : mov !i_voice,a
 
 mov a,#$FF : mov !sound_disableBytes+x,a
 mov a,#$00 : mov !sound_updateAdsrSettingsFlags+x,a
-mov a,!sound_voiceMasks+x : mov x,!i_soundLibrary : and a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a : mov x,!i_globalChannel
-mov a,!enableSoundEffectVoices : and a,!sound_voiceMasks+x : mov !enableSoundEffectVoices,a
+mov a,!sound_voiceBitsets+x : eor a,#$FF : mov y,a : mov x,!i_soundLibrary : and a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a : mov x,!i_globalChannel
+mov a,y : and a,!enableSoundEffectVoices : mov !enableSoundEffectVoices,a
 mov a,!musicVoiceBitset : or a,!sound_voiceBitsets+x : mov !musicVoiceBitset,a
 mov a,!keyOffFlags : or a,!sound_voiceBitsets+x : mov !keyOffFlags,a
 mov x,!i_voice : mov a,!trackInstrumentIndices+x : call setInstrumentSettings : mov x,!i_globalChannel
@@ -86,8 +86,8 @@ mov a,#$FF : mov !sound_releaseFlags+x,a
 +
 mov a,!sound_releaseTimers+x : dec a : mov !sound_releaseTimers+x,a : beq + : jmp .branch_end : +
 mov a,#$00 : mov !sound_releaseFlags+x,a
-mov a,!sound_voiceMasks+x : and a,!musicVoiceBitset : mov !musicVoiceBitset,a
-mov a,!sound_voiceMasks+x : and a,!noiseEnableFlags : mov !noiseEnableFlags,a
+mov a,!sound_voiceBitsets+x : eor a,#$FF : mov y,a : and a,!musicVoiceBitset : mov !musicVoiceBitset,a
+mov a,y : and a,!noiseEnableFlags : mov !noiseEnableFlags,a
 
 .loop_commands
 call getNextDataByte
@@ -160,7 +160,7 @@ mov a,#$00 : mov !sound_subnotes+x,a
 mov a,!sound_notes+x : mov y,a : mov a,!sound_subnotes+x : movw !note,ya : mov x,!i_voice : call playNoteDirect
 mov x,!i_globalChannel : call getNextDataByte : mov !sound_instructionTimers+x,a
 mov a,!sound_updateAdsrSettingsFlags+x : beq +
-mov a,!sound_dspIndices+x : or a,#$05 : mov y,a : mov a,!sound_adsrSettingsLow+x : call writeDspRegisterDirect
+mov a,!sound_voiceIndices+x : asl a : asl a : asl a : or a,#$05 : mov y,a : mov a,!sound_adsrSettingsLow+x : call writeDspRegisterDirect
 inc y : mov a,!sound_adsrSettingsHigh+x : call writeDspRegisterDirect
 
 +

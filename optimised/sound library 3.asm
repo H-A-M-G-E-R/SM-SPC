@@ -32,10 +32,10 @@ mov a,#$00
 mov !sound3_channel0_legatoFlag,a
 mov !sound3_channel1_legatoFlag,a
 mov a,!cpuIo3_write : dec a : asl a : mov x,a
-mov a,sound3InstructionLists+x : mov !sound3_instructionListPointerSet,a : inc x : mov a,sound3InstructionLists+x : mov !sound3_instructionListPointerSet+1,a
+mov a,sound3InstructionLists+x : mov !sound_instructionListPointerSet,a : inc x : mov a,sound3InstructionLists+x : mov !sound_instructionListPointerSet+1,a
 mov x,!cpuIo3_write : mov !sound3,x
 cmp x,#$FE : bcs processSound3
-mov y,#$00 : mov a,(!sound3_instructionListPointerSet)+y : mov y,a
+mov y,#$00 : mov a,(!sound_instructionListPointerSet)+y : mov y,a
 and a,#$0F : mov !misc1,a
 mov a,y : xcn a : and a,#$0F : mov !sound3Priority,a
 }
@@ -44,18 +44,6 @@ processSound3:
 {
 mov a,!sound3_initialisationFlag : bne +
 call sound3Initialisation
-mov y,#$01 : mov a,(!sound3_instructionListPointerSet)+y : mov !sound3_channel0_p_instructionListLow,a : inc y : mov a,(!sound3_instructionListPointerSet)+y : mov !sound3_channel0_p_instructionListHigh,a
-inc y : mov a,(!sound3_instructionListPointerSet)+y :      mov !sound3_channel1_p_instructionListLow,a : inc y : mov a,(!sound3_instructionListPointerSet)+y : mov !sound3_channel1_p_instructionListHigh,a
-mov a,!sound3_channel0_voiceIndex : asl a : asl a : asl a : mov !sound3_channel0_dspIndex,a
-mov a,!sound3_channel1_voiceIndex : asl a : asl a : asl a : mov !sound3_channel1_dspIndex,a
-
-mov y,#$00
-mov !sound3_channel0_i_instructionList,y
-mov !sound3_channel1_i_instructionList,y
-
-inc y
-mov !sound3_channel0_instructionTimer,y
-mov !sound3_channel1_instructionTimer,y
 
 +
 mov x,#$00+!sound1_n_channels+!sound2_n_channels : call processSoundChannel
@@ -66,7 +54,6 @@ ret
 
 sound3Initialisation:
 {
-mov !misc0,#$07
 mov !i_globalChannel,#$00+!sound1_n_channels+!sound2_n_channels
 mov a,#$00
 mov !sound3_channel0_voiceBitset,a
@@ -75,8 +62,6 @@ mov !sound3_channel0_voiceIndex,a
 mov !sound3_channel1_voiceIndex,a
 dec a
 mov !sound3_initialisationFlag,a
-mov !sound3_channel0_voiceMask,a
-mov !sound3_channel1_voiceMask,a
 mov !sound3_channel0_disableByte,a
 mov !sound3_channel1_disableByte,a
 jmp sound1Initialisation_mergeFromOtherLibraries

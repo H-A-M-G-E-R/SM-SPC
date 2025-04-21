@@ -245,9 +245,7 @@ endmacro
 ; Sounds
 {
 %declare_word(p_echoBuffer) ; Unused?
-%declare_word(sound1_instructionListPointerSet)
-%declare_word(sound2_instructionListPointerSet)
-%declare_word(sound3_instructionListPointerSet)
+%declare_word(sound_instructionListPointerSet)
 %declare_byte(i_globalChannel)
 %declare_byte(i_voice)
 %declare_byte(i_soundLibrary)
@@ -339,9 +337,7 @@ endif
 %declare_byteArray(sound_instructionTimers,                 !n_channels)
 %declare_byteArray(sound_disableBytes,                      !n_channels)
 %declare_byteArray(sound_voiceBitsets,                      !n_channels)
-%declare_byteArray(sound_voiceMasks,                        !n_channels)
 %declare_byteArray(sound_voiceIndices,                      !n_channels)
-%declare_byteArray(sound_dspIndices,                        !n_channels)
 %declare_byteArray(sound_trackOutputVolumeBackups,          !n_channels)
 %declare_byteArray(sound_trackPhaseInversionOptionsBackups, !n_channels)
 %declare_byteArray(sound_releaseFlags,                      !n_channels)
@@ -365,9 +361,7 @@ endif
 %generateIndirect_sounds(sound, _instructionTimers,                 !sound_instructionTimers)
 %generateIndirect_sounds(sound, _disableBytes,                      !sound_disableBytes)
 %generateIndirect_sounds(sound, _voiceBitsets,                      !sound_voiceBitsets)
-%generateIndirect_sounds(sound, _voiceMasks,                        !sound_voiceMasks)
 %generateIndirect_sounds(sound, _voiceIndices,                      !sound_voiceIndices)
-%generateIndirect_sounds(sound, _dspIndices,                        !sound_dspIndices)
 %generateIndirect_sounds(sound, _trackOutputVolumeBackups,          !sound_trackOutputVolumeBackups)
 %generateIndirect_sounds(sound, _trackPhaseInversionOptionsBackups, !sound_trackPhaseInversionOptionsBackups)
 %generateIndirect_sounds(sound, _releaseFlags,                      !sound_releaseFlags)
@@ -391,9 +385,7 @@ endif
 %generateIndirect_bytes(sound1_channel, _instructionTimer,                 !sound1_instructionTimers,                 !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _disableByte,                      !sound1_disableBytes,                      !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _voiceBitset,                      !sound1_voiceBitsets,                      !sound1_n_channels)
-%generateIndirect_bytes(sound1_channel, _voiceMask,                        !sound1_voiceMasks,                        !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _voiceIndex,                       !sound1_voiceIndices,                      !sound1_n_channels)
-%generateIndirect_bytes(sound1_channel, _dspIndex,                         !sound1_dspIndices,                        !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _trackOutputVolumeBackup,          !sound1_trackOutputVolumeBackups,          !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _trackPhaseInversionOptionsBackup, !sound1_trackPhaseInversionOptionsBackups, !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _releaseFlag,                      !sound1_releaseFlags,                      !sound1_n_channels)
@@ -416,9 +408,7 @@ endif
 %generateIndirect_bytes(sound2_channel, _instructionTimer,                 !sound2_instructionTimers,                 !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _disableByte,                      !sound2_disableBytes,                      !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _voiceBitset,                      !sound2_voiceBitsets,                      !sound2_n_channels)
-%generateIndirect_bytes(sound2_channel, _voiceMask,                        !sound2_voiceMasks,                        !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _voiceIndex,                       !sound2_voiceIndices,                      !sound2_n_channels)
-%generateIndirect_bytes(sound2_channel, _dspIndex,                         !sound2_dspIndices,                        !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _trackOutputVolumeBackup,          !sound2_trackOutputVolumeBackups,          !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _trackPhaseInversionOptionsBackup, !sound2_trackPhaseInversionOptionsBackups, !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _releaseFlag,                      !sound2_releaseFlags,                      !sound2_n_channels)
@@ -441,9 +431,7 @@ endif
 %generateIndirect_bytes(sound3_channel, _instructionTimer,                 !sound3_instructionTimers,                 !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _disableByte,                      !sound3_disableBytes,                      !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _voiceBitset,                      !sound3_voiceBitsets,                      !sound3_n_channels)
-%generateIndirect_bytes(sound3_channel, _voiceMask,                        !sound3_voiceMasks,                        !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _voiceIndex,                       !sound3_voiceIndices,                      !sound3_n_channels)
-%generateIndirect_bytes(sound3_channel, _dspIndex,                         !sound3_dspIndices,                        !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _trackOutputVolumeBackup,          !sound3_trackOutputVolumeBackups,          !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _trackPhaseInversionOptionsBackup, !sound3_trackPhaseInversionOptionsBackups, !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _releaseFlag,                      !sound3_releaseFlags,                      !sound3_n_channels)
@@ -465,8 +453,8 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $367..2B96: SPC engine
-!p_ram = $2D00-($2A*6)
+; $357..2A9D: SPC engine
+!p_ram = $2C00-($2A*6)
 
 %declare_byteArray(instrumentTable, $2A*6)
 

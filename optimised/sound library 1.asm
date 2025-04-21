@@ -35,9 +35,9 @@ mov !sound1_channel1_legatoFlag,a
 mov !sound1_channel2_legatoFlag,a
 mov !sound1_channel3_legatoFlag,a
 mov a,!cpuIo1_write : dec a : asl a : mov x,a
-mov a,sound1InstructionLists+x : mov !sound1_instructionListPointerSet,a : inc x : mov a,sound1InstructionLists+x : mov !sound1_instructionListPointerSet+1,a
+mov a,sound1InstructionLists+x : mov !sound_instructionListPointerSet,a : inc x : mov a,sound1InstructionLists+x : mov !sound_instructionListPointerSet+1,a
 mov a,!cpuIo1_write : mov !sound1,a
-mov y,#$00 : mov a,(!sound1_instructionListPointerSet)+y : mov y,a
+mov y,#$00 : mov a,(!sound_instructionListPointerSet)+y : mov y,a
 and a,#$0F : mov !misc1,a
 mov a,y : xcn a : and a,#$0F : mov !sound1Priority,a
 }
@@ -46,26 +46,6 @@ processSound1:
 {
 mov a,!sound1_initialisationFlag : bne +
 call sound1Initialisation
-mov y,#$01 : mov a,(!sound1_instructionListPointerSet)+y : mov !sound1_channel0_p_instructionListLow,a : inc y : mov a,(!sound1_instructionListPointerSet)+y : mov !sound1_channel0_p_instructionListHigh,a
-inc y : mov a,(!sound1_instructionListPointerSet)+y      : mov !sound1_channel1_p_instructionListLow,a : inc y : mov a,(!sound1_instructionListPointerSet)+y : mov !sound1_channel1_p_instructionListHigh,a
-inc y : mov a,(!sound1_instructionListPointerSet)+y      : mov !sound1_channel2_p_instructionListLow,a : inc y : mov a,(!sound1_instructionListPointerSet)+y : mov !sound1_channel2_p_instructionListHigh,a
-inc y : mov a,(!sound1_instructionListPointerSet)+y      : mov !sound1_channel3_p_instructionListLow,a : inc y : mov a,(!sound1_instructionListPointerSet)+y : mov !sound1_channel3_p_instructionListHigh,a
-mov a,!sound1_channel0_voiceIndex : asl a : asl a : asl a : mov !sound1_channel0_dspIndex,a
-mov a,!sound1_channel1_voiceIndex : asl a : asl a : asl a : mov !sound1_channel1_dspIndex,a
-mov a,!sound1_channel2_voiceIndex : asl a : asl a : asl a : mov !sound1_channel2_dspIndex,a
-mov a,!sound1_channel3_voiceIndex : asl a : asl a : asl a : mov !sound1_channel3_dspIndex,a
-
-mov y,#$00
-mov !sound1_channel0_i_instructionList,y
-mov !sound1_channel1_i_instructionList,y
-mov !sound1_channel2_i_instructionList,y
-mov !sound1_channel3_i_instructionList,y
-
-inc y
-mov !sound1_channel0_instructionTimer,y
-mov !sound1_channel1_instructionTimer,y
-mov !sound1_channel2_instructionTimer,y
-mov !sound1_channel3_instructionTimer,y
 
 +
 mov x,#$00 : call processSoundChannel
@@ -78,7 +58,6 @@ ret
 
 sound1Initialisation:
 {
-mov !misc0,#$07
 mov a,#$00
 mov !i_globalChannel,a
 mov !sound1_channel0_voiceBitset,a
@@ -91,23 +70,25 @@ mov !sound1_channel2_voiceIndex,a
 mov !sound1_channel3_voiceIndex,a
 dec a
 mov !sound1_initialisationFlag,a
-mov !sound1_channel0_voiceMask,a
-mov !sound1_channel1_voiceMask,a
-mov !sound1_channel2_voiceMask,a
-mov !sound1_channel3_voiceMask,a
 mov !sound1_channel0_disableByte,a
 mov !sound1_channel1_disableByte,a
 mov !sound1_channel2_disableByte,a
 mov !sound1_channel3_disableByte,a
 
 .mergeFromOtherLibraries
+mov !misc0,#$07
 mov !misc0+1,!enableSoundEffectVoices
 
 .loop
 asl !misc0+1 : bcs .skipVoice
 mov a,!misc1 : beq .ret
-dec !misc1
+dec a : mov !misc1,a
+asl a : inc a : mov y,a
 mov a,#$00 : mov x,!i_globalChannel : mov !sound_disableBytes+x,a
+mov !sound_i_instructionLists+x,a
+inc a : mov !sound_instructionTimers+x,a
+mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionListsLow+x,a : inc y : mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionListsHigh+x,a
+
 mov a,!misc0 : asl a : mov x,a
 mov y,!i_globalChannel
 mov a,!trackOutputVolumes+x         : mov !sound_trackOutputVolumeBackups+y,a
@@ -120,8 +101,7 @@ tset !enableSoundEffectVoices,a
 tclr !musicVoiceBitset,a
 tclr !echoEnableFlags,a
 mov !sound_voiceBitsets+x,a
-eor a,#$FF : mov !sound_voiceMasks+x,a
-eor a,#$FF : mov x,!i_soundLibrary : or a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a
+mov x,!i_soundLibrary : or a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a
 
 inc !i_globalChannel
 
