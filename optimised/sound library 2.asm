@@ -31,17 +31,17 @@ mov x,#$01+!sound1_n_channels : call resetSoundChannel
 mov a,#$00
 mov !sound2_channel0_legatoFlag,a
 mov !sound2_channel1_legatoFlag,a
-mov a,!cpuIo2_write : dec a : asl a : mov !i_sound2,a
-mov x,!i_sound2 : mov a,sound2InstructionLists+x : mov !sound2_instructionListPointerSet,a : inc x : mov a,sound2InstructionLists+x : mov !sound2_instructionListPointerSet+1,a
+mov a,!cpuIo2_write : dec a : asl a : mov x,a
+mov a,sound2InstructionLists+x : mov !sound2_instructionListPointerSet,a : inc x : mov a,sound2InstructionLists+x : mov !sound2_instructionListPointerSet+1,a
 mov a,!cpuIo2_write : mov !sound2,a
 mov y,#$00 : mov a,(!sound2_instructionListPointerSet)+y : mov y,a
-and a,#$0F : mov !sound2_n_voices,a
+and a,#$0F : mov !misc1,a
 mov a,y : xcn a : and a,#$0F : mov !sound2Priority,a
 }
 
 processSound2:
 {
-mov a,#$FF : cmp a,!sound2_initialisationFlag : beq +
+mov a,!sound2_initialisationFlag : bne +
 call sound2Initialisation
 mov y,#$01 : mov a,(!sound2_instructionListPointerSet)+y : mov !sound2_channel0_p_instructionListLow,a : inc y : mov a,(!sound2_instructionListPointerSet)+y : mov !sound2_channel0_p_instructionListHigh,a
 inc y : mov a,(!sound2_instructionListPointerSet)+y      : mov !sound2_channel1_p_instructionListLow,a : inc y : mov a,(!sound2_instructionListPointerSet)+y : mov !sound2_channel1_p_instructionListHigh,a
@@ -77,11 +77,9 @@ dw !sound2_channel0_voiceIndex, !sound2_channel1_voiceIndex
 
 sound2Initialisation:
 {
-mov a,#$09 : mov !sound2_voiceId,a
-mov a,!enableSoundEffectVoices : mov !sound2_remainingEnabledSoundVoices,a
+mov !misc0,#$07
+mov !i_globalChannel,#$00+!sound1_n_channels
 mov a,#$00
-mov !sound2_2i_channel,a
-mov !sound2_i_channel,a
 mov !sound2_channel0_voiceBitset,a
 mov !sound2_channel1_voiceBitset,a
 mov !sound2_channel0_voiceIndex,a
@@ -92,35 +90,7 @@ mov !sound2_channel0_voiceMask,a
 mov !sound2_channel1_voiceMask,a
 mov !sound2_channel0_disableByte,a
 mov !sound2_channel1_disableByte,a
-mov a,#$0A
-mov !sound2_channel0_panningBias,a
-mov !sound2_channel1_panningBias,a
-
-.loop
-dec !sound2_voiceId : beq .ret
-asl !sound2_remainingEnabledSoundVoices : bcs .loop
-mov a,#$00 : cmp a,!sound2_n_voices : beq .ret
-dec !sound2_n_voices
-mov a,#$00 : mov x,!sound2_i_channel : mov !sound2_disableBytes+x,a
-inc !sound2_i_channel
-mov x,!sound2_2i_channel
-mov a,sound2ChannelVoiceBitsets+x : mov !sound2_p_charVoiceBitset,a
-mov a,sound2ChannelVoiceMasks+x   : mov !sound2_p_charVoiceMask,a
-mov a,sound2ChannelVoiceIndices+x : mov !sound2_p_charVoiceIndex,a
-inc x
-mov a,sound2ChannelVoiceBitsets+x : mov !sound2_p_charVoiceBitset+1,a
-mov a,sound2ChannelVoiceMasks+x   : mov !sound2_p_charVoiceMask+1,a
-mov a,sound2ChannelVoiceIndices+x : mov !sound2_p_charVoiceIndex+1,a
-inc x : mov !sound2_2i_channel,x
-mov a,!sound2_voiceId : mov !sound2_i_voice,a : dec !sound2_i_voice : clrc : asl !sound2_i_voice
-mov x,!sound2_i_voice : mov y,!sound2_i_channel
-mov a,!trackOutputVolumes+x         : mov !sound2_trackOutputVolumeBackups+y,a
-mov a,!trackPhaseInversionOptions+x : mov !sound2_trackOutputVolumeBackups+y,a
-mov y,#$00 : mov a,!sound2_i_voice : mov (!sound2_p_charVoiceIndex)+y,a
-mov y,!sound2_voiceId : call setVoice : bra .loop
-
-.ret
-ret
+jmp sound1Initialisation_mergeFromOtherLibraries
 }
 
 sound2InstructionLists:

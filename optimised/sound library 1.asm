@@ -23,7 +23,7 @@ mov a,!sound1Priority : bne .branch_noChange
 +
 mov a,!sound1 : beq +
 mov a,#$00 : mov !sound1_enabledVoices,a
-mov x,a : call resetSoundChannel
+mov x,a    : call resetSoundChannel
 mov x,#$01 : call resetSoundChannel
 mov x,#$02 : call resetSoundChannel
 mov x,#$03 : call resetSoundChannel
@@ -34,17 +34,17 @@ mov !sound1_channel0_legatoFlag,a
 mov !sound1_channel1_legatoFlag,a
 mov !sound1_channel2_legatoFlag,a
 mov !sound1_channel3_legatoFlag,a
-mov a,!cpuIo1_write : dec a : asl a : mov !i_sound1,a
-mov x,!i_sound1 : mov a,sound1InstructionLists+x : mov !sound1_instructionListPointerSet,a : inc x : mov a,sound1InstructionLists+x : mov !sound1_instructionListPointerSet+1,a
+mov a,!cpuIo1_write : dec a : asl a : mov x,a
+mov a,sound1InstructionLists+x : mov !sound1_instructionListPointerSet,a : inc x : mov a,sound1InstructionLists+x : mov !sound1_instructionListPointerSet+1,a
 mov a,!cpuIo1_write : mov !sound1,a
 mov y,#$00 : mov a,(!sound1_instructionListPointerSet)+y : mov y,a
-and a,#$0F : mov !sound1_n_voices,a
+and a,#$0F : mov !misc1,a
 mov a,y : xcn a : and a,#$0F : mov !sound1Priority,a
 }
 
 processSound1:
 {
-mov a,#$FF : cmp a,!sound1_initialisationFlag : beq +
+mov a,!sound1_initialisationFlag : bne +
 call sound1Initialisation
 mov y,#$01 : mov a,(!sound1_instructionListPointerSet)+y : mov !sound1_channel0_p_instructionListLow,a : inc y : mov a,(!sound1_instructionListPointerSet)+y : mov !sound1_channel0_p_instructionListHigh,a
 inc y : mov a,(!sound1_instructionListPointerSet)+y      : mov !sound1_channel1_p_instructionListLow,a : inc y : mov a,(!sound1_instructionListPointerSet)+y : mov !sound1_channel1_p_instructionListHigh,a
@@ -76,25 +76,11 @@ mov x,#$03 : call processSoundChannel
 ret
 }
 
-; Sound 1 channel variable pointers
-{
-sound1ChannelVoiceBitsets:
-dw !sound1_channel0_voiceBitset, !sound1_channel1_voiceBitset, !sound1_channel2_voiceBitset, !sound1_channel3_voiceBitset
-
-sound1ChannelVoiceMasks:
-dw !sound1_channel0_voiceMask, !sound1_channel1_voiceMask, !sound1_channel2_voiceMask, !sound1_channel3_voiceMask
-
-sound1ChannelVoiceIndices:
-dw !sound1_channel0_voiceIndex, !sound1_channel1_voiceIndex, !sound1_channel2_voiceIndex, !sound1_channel3_voiceIndex
-}
-
 sound1Initialisation:
 {
-mov a,#$09 : mov !sound1_voiceId,a
-mov a,!enableSoundEffectVoices : mov !sound1_remainingEnabledSoundVoices,a
+mov !misc0,#$07
 mov a,#$00
-mov !sound1_2i_channel,a
-mov !sound1_i_channel,a
+mov !i_globalChannel,a
 mov !sound1_channel0_voiceBitset,a
 mov !sound1_channel1_voiceBitset,a
 mov !sound1_channel2_voiceBitset,a
@@ -113,34 +99,34 @@ mov !sound1_channel0_disableByte,a
 mov !sound1_channel1_disableByte,a
 mov !sound1_channel2_disableByte,a
 mov !sound1_channel3_disableByte,a
-mov a,#$0A
-mov !sound1_channel0_panningBias,a
-mov !sound1_channel1_panningBias,a
-mov !sound1_channel2_panningBias,a
-mov !sound1_channel3_panningBias,a
+
+.mergeFromOtherLibraries
+mov !misc0+1,!enableSoundEffectVoices
 
 .loop
-dec !sound1_voiceId : beq .ret
-asl !sound1_remainingEnabledSoundVoices : bcs .loop
-mov a,#$00 : cmp a,!sound1_n_voices : beq .ret
-dec !sound1_n_voices
-mov a,#$00 : mov x,!sound1_i_channel : mov !sound1_disableBytes+x,a
-inc !sound1_i_channel
-mov x,!sound1_2i_channel
-mov a,sound1ChannelVoiceBitsets+x : mov !sound1_p_charVoiceBitset,a
-mov a,sound1ChannelVoiceMasks+x   : mov !sound1_p_charVoiceMask,a
-mov a,sound1ChannelVoiceIndices+x : mov !sound1_p_charVoiceIndex,a
-inc x
-mov a,sound1ChannelVoiceBitsets+x : mov !sound1_p_charVoiceBitset+1,a
-mov a,sound1ChannelVoiceMasks+x   : mov !sound1_p_charVoiceMask+1,a
-mov a,sound1ChannelVoiceIndices+x : mov !sound1_p_charVoiceIndex+1,a
-inc x : mov !sound1_2i_channel,x
-mov a,!sound1_voiceId : mov !sound1_i_voice,a : dec !sound1_i_voice : clrc : asl !sound1_i_voice
-mov x,!sound1_i_voice : mov y,!sound1_i_channel
-mov a,!trackOutputVolumes+x         : mov !sound1_trackOutputVolumeBackups+y,a
-mov a,!trackPhaseInversionOptions+x : mov !sound1_trackPhaseInversionOptionsBackups+y,a
-mov y,#$00 : mov a,!sound1_i_voice : mov (!sound1_p_charVoiceIndex)+y,a
-mov y,!sound1_voiceId : call setVoice : bra .loop
+asl !misc0+1 : bcs .skipVoice
+mov a,!misc1 : beq .ret
+dec !misc1
+mov a,#$00 : mov x,!i_globalChannel : mov !sound_disableBytes+x,a
+mov a,!misc0 : asl a : mov x,a
+mov y,!i_globalChannel
+mov a,!trackOutputVolumes+x         : mov !sound_trackOutputVolumeBackups+y,a
+mov a,!trackPhaseInversionOptions+x : mov !sound_trackPhaseInversionOptionsBackups+y,a
+mov a,x : mov x,!i_globalChannel : mov !sound_voiceIndices+y,a
+
+mov y,!misc0 : mov a,channelBitsets+y
+tset !enableSoundEffectVoices,a
+tclr !musicVoiceBitset,a
+tclr !echoEnableFlags,a
+mov !sound_voiceBitsets+x,a
+eor a,#$FF : mov !sound_voiceMasks+x,a
+eor a,#$FF : mov x,!i_soundLibrary : or a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a
+mov a,#$0A : !sound_panningBiases+x,a
+
+inc !i_globalChannel
+
+.skipVoice
+dec !misc0 : bpl .loop
 
 .ret
 ret

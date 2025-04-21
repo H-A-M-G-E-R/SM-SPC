@@ -248,15 +248,9 @@ endmacro
 %declare_word(sound1_instructionListPointerSet)
 %declare_word(sound2_instructionListPointerSet)
 %declare_word(sound3_instructionListPointerSet)
-%declare_word(sound1_p_charVoiceBitset)
-%declare_word(sound2_p_charVoiceBitset)
-%declare_word(sound3_p_charVoiceBitset)
-%declare_word(sound1_p_charVoiceMask)
-%declare_word(sound2_p_charVoiceMask)
-%declare_word(sound3_p_charVoiceMask)
-%declare_word(sound1_p_charVoiceIndex)
-%declare_word(sound2_p_charVoiceIndex)
-%declare_word(sound3_p_charVoiceIndex)
+%declare_byte(i_globalChannel)
+%declare_byte(i_voice)
+%declare_byte(i_soundLibrary)
 }
 
 !p_extra #= !p_ram
@@ -315,43 +309,6 @@ endif
 %declare_bytePairArray(trackTargetNotes,                   !n_tracks)
 %declare_bytePairArray(trackSubtransposes,                 !n_tracks)
 %declare_bytePairArray(trackSkipNewNotesFlags,             !n_tracks)
-}
-
-%declare_byte(i_globalChannel)
-%declare_byte(i_voice)
-%declare_byte(i_soundLibrary)
-
-; Sound 1
-{
-%declare_byte(i_sound1)
-%declare_byte(sound1_i_channel)
-%declare_byte(sound1_n_voices)
-%declare_byte(sound1_i_voice)
-%declare_byte(sound1_remainingEnabledSoundVoices)
-%declare_byte(sound1_voiceId)
-%declare_byte(sound1_2i_channel)
-}
-
-; Sound 2
-{
-%declare_byte(i_sound2)
-%declare_byte(sound2_i_channel)
-%declare_byte(sound2_n_voices)
-%declare_byte(sound2_i_voice)
-%declare_byte(sound2_remainingEnabledSoundVoices)
-%declare_byte(sound2_voiceId)
-%declare_byte(sound2_2i_channel)
-}
-
-; Sound 3
-{
-%declare_byte(i_sound3)
-%declare_byte(sound3_i_channel)
-%declare_byte(sound3_n_voices)
-%declare_byte(sound3_i_voice)
-%declare_byte(sound3_remainingEnabledSoundVoices)
-%declare_byte(sound3_voiceId)
-%declare_byte(sound3_2i_channel)
 }
 
 ; Sounds
@@ -508,8 +465,8 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $37F..2D64: SPC engine
-!p_ram = $2F00-($2A*6)
+; $367..2B96: SPC engine
+!p_ram = $2D00-($2A*6)
 
 %declare_byteArray(instrumentTable, $2A*6)
 

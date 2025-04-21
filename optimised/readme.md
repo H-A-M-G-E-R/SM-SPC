@@ -1,4 +1,4 @@
-SPC engine modification. Frees up just under 7kb of ARAM, which can be used for any of: sample data, tracker data, or echo buffer (each echo frames are 2kb each).
+SPC engine modification. Frees up just over 7kb of ARAM, which can be used for any of: sample data, tracker data, or echo buffer (each echo frames are 2kb each).
 ARAM is rearranged so that sample data, tracker data, and echo buffer all use up the same pool of memory; so one can e.g. cut down on sample data to get more echo buffer space.
 
 Run `asar --fix-checksum=off main.asm SM.smc` to patch a ROM to have the engine mod, the main engine NSPC is expected to be at its vanilla location $CF:8104.
@@ -18,11 +18,11 @@ $6E00 | Sample data
 In the engine mod (these ARAM addresses are just examples, read SPC engine metadata for real addresses):
 ```
 _ARAM_|___Description____
-$E0   | Extra (*)
-$37F  | SPC engine
-$2E04 | Instrument table
-$2F00 | Sample table
-$3000 | Sample data / note length table / trackers
+$D1   | Extra (*)
+$367  | SPC engine
+$2C04 | Instrument table
+$2D00 | Sample table
+$2E00 | Sample data / note length table / trackers
 ```
 
 (*) Extra is a 3 byte block:
@@ -45,7 +45,7 @@ After patching a vanilla ROM with the ASM via asar, run:
 * `python repoint.py rom SM.smc SM_repointed.smc` (arbitrary filepaths)
 
 To repoint an NSPC file, run either:
-* `python repoint.py nspc music.nspc music_repointed.nspc --version=2 --p_spcEngine=37F --p_sharedTrackers=2991 --p_instrumentTable=2E04 --p_sampleTable=2F00 --p_sampleData=3000 --p_extra=E0`
+* `python repoint.py nspc music.nspc music_repointed.nspc --version=2 --p_spcEngine=367 --p_sharedTrackers=27DF --p_instrumentTable=2C04 --p_sampleTable=2D00 --p_sampleData=2E00 --p_extra=D1`
     * Where all the pointers are reported by asar when assembling the engine mod
 * `python repoint.py nspc music.nspc music_repointed.nspc --rom=SM.smc`
     * Where metadata is extracted from `--rom` argument (a patched ROM)

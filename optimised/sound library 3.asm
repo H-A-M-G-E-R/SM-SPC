@@ -31,18 +31,18 @@ mov x,#$01+!sound1_n_channels+!sound2_n_channels : call resetSoundChannel
 mov a,#$00
 mov !sound3_channel0_legatoFlag,a
 mov !sound3_channel1_legatoFlag,a
-mov a,!cpuIo3_write : dec a : asl a : mov !i_sound3,a
-mov x,!i_sound3 : mov a,sound3InstructionLists+x : mov !sound3_instructionListPointerSet,a : inc x : mov a,sound3InstructionLists+x : mov !sound3_instructionListPointerSet+1,a
+mov a,!cpuIo3_write : dec a : asl a : mov x,a
+mov a,sound3InstructionLists+x : mov !sound3_instructionListPointerSet,a : inc x : mov a,sound3InstructionLists+x : mov !sound3_instructionListPointerSet+1,a
 mov x,!cpuIo3_write : mov !sound3,x
 cmp x,#$FE : bcs processSound3
 mov y,#$00 : mov a,(!sound3_instructionListPointerSet)+y : mov y,a
-and a,#$0F : mov !sound3_n_voices,a
+and a,#$0F : mov !misc1,a
 mov a,y : xcn a : and a,#$0F : mov !sound3Priority,a
 }
 
 processSound3:
 {
-mov a,#$FF : cmp a,!sound3_initialisationFlag : beq +
+mov a,!sound3_initialisationFlag : bne +
 call sound3Initialisation
 mov y,#$01 : mov a,(!sound3_instructionListPointerSet)+y : mov !sound3_channel0_p_instructionListLow,a : inc y : mov a,(!sound3_instructionListPointerSet)+y : mov !sound3_channel0_p_instructionListHigh,a
 inc y : mov a,(!sound3_instructionListPointerSet)+y :      mov !sound3_channel1_p_instructionListLow,a : inc y : mov a,(!sound3_instructionListPointerSet)+y : mov !sound3_channel1_p_instructionListHigh,a
@@ -64,25 +64,11 @@ mov x,#$01+!sound1_n_channels+!sound2_n_channels : call processSoundChannel
 ret
 }
 
-; Sound 3 channel variable pointers
-{
-sound3ChannelVoiceBitsets:
-dw !sound3_channel0_voiceBitset, !sound3_channel1_voiceBitset
-
-sound3ChannelVoiceMasks:
-dw !sound3_channel0_voiceMask, !sound3_channel1_voiceMask
-
-sound3ChannelVoiceIndices:
-dw !sound3_channel0_voiceIndex, !sound3_channel1_voiceIndex
-}
-
 sound3Initialisation:
 {
-mov a,#$09 : mov !sound3_voiceId,a
-mov a,!enableSoundEffectVoices : mov !sound3_remainingEnabledSoundVoices,a
+mov !misc0,#$07
+mov !i_globalChannel,#$00+!sound1_n_channels+!sound2_n_channels
 mov a,#$00
-mov !sound3_2i_channel,a
-mov !sound3_i_channel,a
 mov !sound3_channel0_voiceBitset,a
 mov !sound3_channel1_voiceBitset,a
 mov !sound3_channel0_voiceIndex,a
@@ -93,35 +79,7 @@ mov !sound3_channel0_voiceMask,a
 mov !sound3_channel1_voiceMask,a
 mov !sound3_channel0_disableByte,a
 mov !sound3_channel1_disableByte,a
-mov a,#$0A
-mov !sound3_channel0_panningBias,a
-mov !sound3_channel1_panningBias,a
-
-.loop
-dec !sound3_voiceId : beq .ret
-asl !sound3_remainingEnabledSoundVoices : bcs .loop
-mov a,#$00 : cmp a,!sound3_n_voices : beq .ret
-dec !sound3_n_voices
-mov a,#$00 : mov x,!sound3_i_channel : mov !sound3_channel0_disableByte+x,a
-inc !sound3_i_channel
-mov x,!sound3_2i_channel
-mov a,sound3ChannelVoiceBitsets+x : mov !sound3_p_charVoiceBitset,a
-mov a,sound3ChannelVoiceMasks+x   : mov !sound3_p_charVoiceMask,a
-mov a,sound3ChannelVoiceIndices+x : mov !sound3_p_charVoiceIndex,a
-inc x
-mov a,sound3ChannelVoiceBitsets+x : mov !sound3_p_charVoiceBitset+1,a
-mov a,sound3ChannelVoiceMasks+x   : mov !sound3_p_charVoiceMask+1,a
-mov a,sound3ChannelVoiceIndices+x : mov !sound3_p_charVoiceIndex+1,a
-inc x : mov !sound3_2i_channel,x
-mov a,!sound3_voiceId : mov !sound3_i_voice,a : dec !sound3_i_voice : clrc : asl !sound3_i_voice
-mov x,!sound3_i_voice : mov y,!sound3_i_channel
-mov a,!trackOutputVolumes+x         : mov !sound3_trackOutputVolumeBackups+y,a
-mov a,!trackPhaseInversionOptions+x : mov !sound3_trackOutputVolumeBackups+y,a
-mov y,#$00 : mov a,!sound3_i_voice : mov (!sound3_p_charVoiceIndex)+y,a
-mov y,!sound3_voiceId : call setVoice : bra .loop
-
-.ret
-ret
+jmp sound1Initialisation_mergeFromOtherLibraries
 }
 
 sound3InstructionLists:
