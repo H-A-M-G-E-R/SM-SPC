@@ -17,7 +17,7 @@ call memclear
 
 ; Set up echo with echo delay = 6 (that's the maximum echo buffer size of music data $00)
 ; Keep echo buffer writes enabled because the echo buffer will clear on its own to prevent crackling when starting the game
-mov a,#$06 : call setUpEcho
+mov a,#$06 : mov !echoDelay,a : call setUpEcho_spcInitialisation
 
 ; DSP left/right track master volume = 60h
 mov y,#$60
