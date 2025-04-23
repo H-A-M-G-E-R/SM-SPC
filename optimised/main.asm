@@ -45,6 +45,7 @@ incsrc "utility.asm"
 main_music:
 incsrc "music.asm"
 
+main_soundLibrary:
 incsrc "sound library.asm" ; Contains code that's generic across sound libraries
 
 main_soundLibrary1:
@@ -67,6 +68,7 @@ if defined("printAramSummary")
     print "$",hex(main_engine), ": Engine"
     print "$",hex(main_utility), ": Utility"
     print "$",hex(main_music), ": Music"
+    print "$",hex(main_soundLibrary), ": Sound library"
     print "$",hex(main_soundLibrary1), ": Sound library 1"
     print "$",hex(main_soundLibrary2), ": Sound library 2"
     print "$",hex(main_soundLibrary3), ": Sound library 3"

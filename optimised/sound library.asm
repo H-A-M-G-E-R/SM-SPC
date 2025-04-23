@@ -1,18 +1,3 @@
-resetSoundIfNoEnabledVoices:
-{
-; Requires !i_soundLibrary to be set
-
-mov x,!i_soundLibrary
-mov a,!sound_enabledVoices+x : bne +
-mov !sounds+x,a
-mov !sound_priorities+x,a
-mov !sound_initialisationFlags+x,a
-
-+
-ret
-}
-
-
 resetSoundChannel:
 {
 ;; Parameters:
@@ -26,10 +11,10 @@ mov a,!sound_voiceIndices+x : mov !i_voice,a
 
 mov a,#$FF : mov !sound_disableBytes+x,a
 mov a,#$00 : mov !sound_updateAdsrSettingsFlags+x,a
-mov a,!sound_voiceBitsets+x : eor a,#$FF : mov y,a : mov x,!i_soundLibrary : and a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a : mov x,!i_globalChannel
-mov a,y : and a,!enableSoundEffectVoices : mov !enableSoundEffectVoices,a
-mov a,!musicVoiceBitset : or a,!sound_voiceBitsets+x : mov !musicVoiceBitset,a
-mov a,!keyOffFlags : or a,!sound_voiceBitsets+x : mov !keyOffFlags,a
+mov a,!sound_voiceBitsets+x : eor a,#$FF : mov x,!i_soundLibrary : and a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a : mov x,!i_globalChannel
+mov a,!sound_voiceBitsets+x : tclr !enableSoundEffectVoices,a
+tset !musicVoiceBitset,a
+tset !keyOffFlags,a
 mov x,!i_voice : mov a,!trackInstrumentIndices+x : call setInstrumentSettings : mov x,!i_globalChannel
 mov a,!sound_trackOutputVolumeBackups+x : push a
 mov a,!sound_trackPhaseInversionOptionsBackups+x
@@ -37,7 +22,15 @@ mov x,!i_voice
 mov !trackPhaseInversionOptions+x,a
 pop a : mov !trackOutputVolumes+x,a
 
-jmp resetSoundIfNoEnabledVoices
+; Reset sound if no enabled voices
+mov x,!i_soundLibrary
+mov a,!sound_enabledVoices+x : bne +
+mov !sounds+x,a
+mov !sound_priorities+x,a
+mov !sound_initialisationFlags+x,a
+
++
+ret
 }
 
 
@@ -45,15 +38,10 @@ getNextDataByte:
 {
 ;; Parameters:
 ;;     X: Global channel index. Range 0..7
-push x
-mov x,!i_globalChannel
-
 mov a,!sound_p_instructionListsLow+x : mov y,!sound_p_instructionListsHigh+x : movw !misc0,ya
 mov a,!sound_i_instructionLists+x : mov y,a
 inc a : mov !sound_i_instructionLists+x,a
 mov a,(!misc0)+y
-
-pop x
 ret
 }
 
@@ -68,7 +56,7 @@ processSoundChannel:
 
 mov !i_globalChannel,x
 
-mov a,#$FF : cmp a,!sound_disableBytes+x : bne + : jmp .branch_end : +
+mov a,!sound_disableBytes+x : beq + : jmp .branch_end : +
 
 mov a,!sound_voiceIndices+x : mov !i_voice,a
 mov a,!sound_instructionTimers+x : dec a : mov !sound_instructionTimers+x,a : beq + : jmp .branch_processInstruction_end : +
@@ -77,8 +65,8 @@ mov a,#$00
 mov !sound_pitchSlideFlags+x,a
 mov !sound_subnoteDeltas+x,a
 mov !sound_targetNotes+x,a
-mov a,#$FF : cmp a,!sound_releaseFlags+x : beq +
-mov a,!sound_voiceBitsets+x : or a,!keyOffFlags : mov !keyOffFlags,a
+mov a,!sound_releaseFlags+x : bne +
+mov a,!sound_voiceBitsets+x : tset !keyOffFlags,a
 mov a,#$02 : mov !sound_releaseTimers+x,a
 mov a,#$01 : mov !sound_instructionTimers+x,a
 mov a,#$FF : mov !sound_releaseFlags+x,a
@@ -86,8 +74,8 @@ mov a,#$FF : mov !sound_releaseFlags+x,a
 +
 mov a,!sound_releaseTimers+x : dec a : mov !sound_releaseTimers+x,a : beq + : jmp .branch_end : +
 mov a,#$00 : mov !sound_releaseFlags+x,a
-mov a,!sound_voiceBitsets+x : eor a,#$FF : mov y,a : and a,!musicVoiceBitset : mov !musicVoiceBitset,a
-mov a,y : and a,!noiseEnableFlags : mov !noiseEnableFlags,a
+mov a,!sound_voiceBitsets+x : tclr !musicVoiceBitset,a
+tclr !noiseEnableFlags,a
 
 .loop_commands
 call getNextDataByte
@@ -139,7 +127,7 @@ call getNextDataByte
 .branch_repeatCommand
 cmp a,#$FB : bne + : jmp .loop_repeatCommand : +
 cmp a,#$FC : bne +
-mov a,!sound_voiceBitsets+x : or a,!noiseEnableFlags : mov !noiseEnableFlags,a
+mov a,!sound_voiceBitsets+x : tset !noiseEnableFlags,a
 jmp .loop_commands
 
 ; Process note instruction
@@ -165,10 +153,10 @@ inc y : mov a,!sound_adsrSettingsHigh+x : call writeDspRegisterDirect
 
 +
 mov a,!sound_legatoFlags+x : bne .branch_processInstruction_end
-mov a,!sound_voiceBitsets+x : or a,!keyOnFlags : mov !keyOnFlags,a
+mov a,!sound_voiceBitsets+x : tset !keyOnFlags,a
 
 .branch_processInstruction_end
-mov a,!sound_pitchSlideFlags+x : cmp a,#$FF : bne .branch_end
+mov a,!sound_pitchSlideFlags+x : beq .branch_end
 mov a,!sound_pitchSlideLegatoFlags+x : beq +
 mov a,#$FF : mov !sound_legatoFlags+x,a
 

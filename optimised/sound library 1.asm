@@ -386,7 +386,9 @@ db $FE,$00, $07,$80,$C7,$10, $FB,\
    $FF
 
 ; Sound 32h: Spin jump end
+; Sound 34h: Screw attack end
 .sound32
+.sound34
 db $01 : dw ..voice0
 ..voice0 : db $0A,$00,$87,$03, $FF
 
@@ -403,11 +405,6 @@ db $02 : dw ..voice0, ..voice1
 ; Sound 3Eh: Space jump
 .sound3E
 db $01 : dw .sound33_voice0
-
-; Sound 34h: Screw attack end
-.sound34
-db $01 : dw ..voice0
-..voice0 : db $0A,$00,$87,$03, $FF
 
 ; Sound 35h: Samus damaged
 .sound35
