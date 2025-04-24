@@ -251,14 +251,20 @@ endmacro
 %declare_byte(i_soundLibrary)
 }
 
-!p_extra #= !p_ram
-%declare_word(p_trackerData)
-%declare_byte(enableLateKeyOff)
 %declare_byte(fakeEchoEnableFlags)
 %declare_word(p_noteRingLengthTable)
 
+!p_extra = $E0
+if !p_ram >= !p_extra
+    print "\!p_ram = ",hex(!p_ram)
+    error "Spilled into extra"
+endif
+!p_ram #= !p_extra
+%declare_word(p_trackerData)
+%declare_byte(enableLateKeyOff)
+
 ; $F0..FF: IO ports
-if !p_ram > $F0
+if !p_ram >= $F0
     print "\!p_ram = ",hex(!p_ram)
     error "Spilled into IO ports"
 endif
