@@ -176,6 +176,11 @@ bra +
 mov a,!musicVoiceBitset : tclr !echoEnableFlags,a
 
 +
+; Key-off voice if mITroid's "disable key-off between notes" is activated
+bbc1 !enableLateKeyOff,+
+mov $F2,#$5C : mov $F3,!musicVoiceBitset
+
++
 ; Set track note according to [Y] after transposition
 mov a,y : and a,#$7F : clrc : adc a,!musicTranspose : clrc : adc a,!trackTransposes+x : mov !trackNotes+x,a
 mov a,!trackSubtransposes+x : mov !trackSubnotes+x,a

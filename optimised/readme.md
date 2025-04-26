@@ -27,7 +27,7 @@ $2D00 | Sample data / note length table / trackers
 
 (*) Extra is a 3 byte block:
 * A two-byte ARAM address of the trackers within the "sample data / note length table / trackers" region
-* A one byte flag specifying late key-off, corresponding to mITroid's "disable key-off between patterns" patch
+* A one byte flag specifying late key-off, corresponding to mITroid's "disable key-off between patterns" and "disable key-off between notes" patches (bits 0 and 1 respectively)
 
 For the purposes of tooling, the first 13 bytes of the SPC engine are metadata (SPC engine block can be identified by looking for the SPC data block whose ARAM destination is also the terminator data block's destination - 0xD).
 * 0x0: One byte version number

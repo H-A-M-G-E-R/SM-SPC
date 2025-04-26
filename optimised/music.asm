@@ -918,6 +918,10 @@ mov a,(!misc0)+y
 bpl .loop_noteParameters
 
 .branch_command
+bbc1 !enableLateKeyOff,+
+cmp a,#$C9 : bcc .branch_continuePlaying
+
++
 cmp a,#$C8 : beq .branch_continuePlaying
 cmp a,#$EF : beq .branch_repeatSubsection
 cmp a,#$E0 : bcc .branch_note
@@ -925,7 +929,7 @@ push y : mov y,a : pop a : adc a,trackCommandParameterBytes-$E0+y : mov y,a
 bra .loop_commands
 
 .branch_end
-mov a,!enableLateKeyOff : bne +
+bbs0 !enableLateKeyOff,+
 mov a,!misc1+1 : beq .branch_note
 bra ++
 
