@@ -671,7 +671,8 @@ ret
 
 miscCommand:
 {
-mov x,a : jmp (miscCommandPointers+x)
+; Jump to [!miscCommandPointers + [A] * 2] while preserving X
+asl a : mov y,a : mov a,miscCommandPointers+1+y : push a : mov a,miscCommandPointers+y : push a : ret
 }
 
 miscCommandPointers:
