@@ -282,9 +282,6 @@ endif
 %declare_bytePairArray(trackNoteRingLengths,               !n_tracks)
 %declare_bytePairArray(trackNoteVolume,                    !n_tracks)
 %declare_bytePairArray(trackInstrumentIndices,             !n_tracks)
-%declare_wordArray(trackInstrumentPitches,                 !n_tracks)
-%declare_wordArray(trackRepeatedSubsectionAddresses,       !n_tracks)
-%declare_wordArray(trackRepeatedSubsectionReturnAddresses, !n_tracks)
 %declare_bytePairArray(trackSlideLengths,                  !n_tracks)
 %declare_bytePairArray(trackSlideDelays,                   !n_tracks)
 %declare_bytePairArray(trackSlideDirections,               !n_tracks)
@@ -299,20 +296,24 @@ endif
 %declare_bytePairArray(trackTremoloRates,                  !n_tracks)
 %declare_bytePairArray(trackTremoloDelays,                 !n_tracks)
 %declare_bytePairArray(trackTransposes,                    !n_tracks)
-%declare_wordArray(trackVolumes,                           !n_tracks)
-%declare_wordArray(trackVolumeDeltas,                      !n_tracks)
 %declare_bytePairArray(trackTargetVolumes,                 !n_tracks)
 %declare_bytePairArray(trackOutputVolumes,                 !n_tracks)
-%declare_wordArray(trackPanningBiases,                     !n_tracks)
-%declare_wordArray(trackPanningBiasDeltas,                 !n_tracks)
 %declare_bytePairArray(trackTargetPanningBiases,           !n_tracks)
 %declare_bytePairArray(trackPhaseInversionOptions,         !n_tracks)
 %declare_bytePairArray(trackSubnotes,                      !n_tracks)
 %declare_bytePairArray(trackNotes,                         !n_tracks)
-%declare_wordArray(trackNoteDeltas,                        !n_tracks)
 %declare_bytePairArray(trackTargetNotes,                   !n_tracks)
 %declare_bytePairArray(trackSubtransposes,                 !n_tracks)
 %declare_bytePairArray(trackSkipNewNotesFlags,             !n_tracks)
+
+%declare_wordArray(trackInstrumentPitches,                 !n_tracks)
+%declare_wordArray(trackRepeatedSubsectionAddresses,       !n_tracks)
+%declare_wordArray(trackRepeatedSubsectionReturnAddresses, !n_tracks)
+%declare_wordArray(trackVolumes,                           !n_tracks)
+%declare_wordArray(trackVolumeDeltas,                      !n_tracks)
+%declare_wordArray(trackPanningBiases,                     !n_tracks)
+%declare_wordArray(trackPanningBiasDeltas,                 !n_tracks)
+%declare_wordArray(trackNoteDeltas,                        !n_tracks)
 }
 
 ; Sounds
@@ -459,7 +460,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $357..2A79: SPC engine
+; $357..2A81: SPC engine
 !p_ram = $2C00-($2A*6)
 
 %declare_byteArray(instrumentTable, $2A*6)
