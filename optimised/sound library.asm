@@ -1,3 +1,31 @@
+determineSoundVoiceOrder:
+{
+mov y,#7
+
+; Empty tracks
+mov x,#7*2
+
+-
+mov a,!trackPointers+1+x : bne +
+mov a,x : mov !sound_voiceOrder+y,a : dec y
+
++
+dec x : dec x : bpl -
+
+; Non-empty tracks
+mov x,#7*2
+
+-
+mov a,!trackPointers+1+x : beq +
+mov a,x : mov !sound_voiceOrder+y,a : dec y
+
++
+dec x : dec x : bpl -
+
+ret
+}
+
+
 resetSoundChannel:
 {
 ;; Parameters:
@@ -9,10 +37,9 @@ mov !i_globalChannel,x
 
 mov a,!sound_voiceIndices+x : mov !i_voice,a
 
-mov a,#$FF : mov !sound_disableBytes+x,a
 mov a,#$00 : mov !sound_updateAdsrSettingsFlags+x,a
-mov a,!sound_voiceBitsets+x : eor a,#$FF : mov x,!i_soundLibrary : and a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a : mov x,!i_globalChannel
-mov a,!sound_voiceBitsets+x : tclr !enableSoundEffectVoices,a
+mov a,!sound_voiceBitsets+x : push a : eor a,#$FF : mov x,!i_soundLibrary : and a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a
+pop a : tclr !enableSoundEffectVoices,a
 tset !musicVoiceBitset,a
 tset !keyOffFlags,a
 mov x,!i_voice : mov a,!trackInstrumentIndices+x : call setInstrumentSettings : mov x,!i_globalChannel
@@ -56,7 +83,7 @@ processSoundChannel:
 
 mov !i_globalChannel,x
 
-mov a,!sound_disableBytes+x : beq + : jmp .branch_end : +
+mov a,!sound_voiceBitsets+x : bne + : jmp .branch_end : +
 
 mov a,!sound_voiceIndices+x : mov !i_voice,a
 mov a,!sound_instructionTimers+x : dec a : mov !sound_instructionTimers+x,a : beq + : jmp .branch_processInstruction_end : +

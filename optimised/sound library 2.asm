@@ -61,8 +61,6 @@ mov !sound2_channel0_voiceIndex,a
 mov !sound2_channel1_voiceIndex,a
 dec a
 mov !sound2_initialisationFlag,a
-mov !sound2_channel0_disableByte,a
-mov !sound2_channel1_disableByte,a
 jmp sound1Initialisation_mergeFromOtherLibraries
 }
 

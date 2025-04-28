@@ -70,37 +70,34 @@ mov !sound1_channel2_voiceIndex,a
 mov !sound1_channel3_voiceIndex,a
 dec a
 mov !sound1_initialisationFlag,a
-mov !sound1_channel0_disableByte,a
-mov !sound1_channel1_disableByte,a
-mov !sound1_channel2_disableByte,a
-mov !sound1_channel3_disableByte,a
 
 .mergeFromOtherLibraries
 mov !misc0,#$07
-mov !misc0+1,!enableSoundEffectVoices
 
 .loop
-asl !misc0+1 : bcs .skipVoice
+mov y,!misc0 : mov a,!sound_voiceOrder+y : mov !misc0+1,a
+lsr a : mov y,a : mov a,channelBitsets+y : mov !misc1+1,a
+and a,!enableSoundEffectVoices : bne .skipVoice
+
 mov a,!misc1 : beq .ret
 dec a : mov !misc1,a
 asl a : inc a : mov y,a
-mov a,#$00 : mov x,!i_globalChannel : mov !sound_disableBytes+x,a
-mov !sound_i_instructionLists+x,a
+mov a,#$00 : mov x,!i_globalChannel : mov !sound_i_instructionLists+x,a
 inc a : mov !sound_instructionTimers+x,a
 mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionListsLow+x,a : inc y : mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionListsHigh+x,a
 
-mov a,!misc0 : asl a : mov x,a
+mov x,!misc0+1
 mov y,!i_globalChannel
 mov a,!trackOutputVolumes+x         : mov !sound_trackOutputVolumeBackups+y,a
 mov a,!trackPhaseInversionOptions+x : mov !sound_trackPhaseInversionOptionsBackups+y,a
-mov a,x : mov x,!i_globalChannel : mov !sound_voiceIndices+y,a
-mov a,#$0A : mov !sound_panningBiases+x,a
+mov a,x : mov !sound_voiceIndices+y,a
+mov a,#$0A : mov !sound_panningBiases+y,a
 
-mov y,!misc0 : mov a,channelBitsets+y
+mov a,!misc1+1
 tset !enableSoundEffectVoices,a
 tclr !musicVoiceBitset,a
 tclr !echoEnableFlags,a
-mov !sound_voiceBitsets+x,a
+mov !sound_voiceBitsets+y,a
 mov x,!i_soundLibrary : or a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a
 
 inc !i_globalChannel

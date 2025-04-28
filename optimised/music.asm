@@ -119,6 +119,7 @@ mov y,#$0F
 
 -
 mov a,(!misc1)+y : mov !trackPointers+y,a : dec y : bpl -
+call determineSoundVoiceOrder
 
 ; Reset music tracks
 mov x,#$00
