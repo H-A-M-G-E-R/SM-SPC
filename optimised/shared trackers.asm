@@ -133,6 +133,10 @@ endmacro
 macro setNoteLengthTable(p_noteLengthTable)
     db $FB, $00 : dw <p_noteLengthTable>
 endmacro
+
+macro adsrGain(adsr1, adsr2, gain)
+    db $FB, $01, <gain>, <adsr2>, <adsr1>
+endmacro
 }
 }
 

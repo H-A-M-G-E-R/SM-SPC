@@ -679,13 +679,31 @@ asl a : mov y,a : mov a,miscCommandPointers+1+y : push a : mov a,miscCommandPoin
 miscCommandPointers:
 {
 dw \
-    setNoteLengthTable
+    setNoteLengthTable,\
+    adsrGain
+}
+
+miscCommandParameterBytes:
+{
+db $02,$03
 }
 
 setNoteLengthTable:
 {
 call getNextTrackDataByte : mov !p_noteRingLengthTable,a
 call getNextTrackDataByte : mov !p_noteRingLengthTable+1,a
+ret
+}
+
+adsrGain:
+{
+; Writes to ADSR2/GAIN before ADSR1 due to a hardware bug: https://snes.nesdev.org/wiki/S-DSP_registers#VxADSR
+mov a,x : xcn a : lsr a : or a,#$07 : mov y,a
+mov !misc0,#$03
+
+-
+push y : call getNextTrackDataByte : pop y : call writeDspRegisterDirect : dec y
+dbnz !misc0,-
 ret
 }
 
@@ -926,6 +944,7 @@ cmp a,#$C9 : bcc .branch_continuePlaying
 +
 cmp a,#$C8 : beq .branch_continuePlaying
 cmp a,#$EF : beq .branch_repeatSubsection
+cmp a,#$FB : beq .branch_miscCommand
 cmp a,#$E0 : bcc .branch_note
 push y : mov y,a : pop a : adc a,trackCommandParameterBytes-$E0+y : mov y,a
 bra .loop_commands
@@ -960,6 +979,10 @@ mov a,!trackPitchSlideTimers+x : beq .branch_pitchSlide_end
 mov a,!trackPitchSlideDelayTimers+x : beq +
 dec !trackPitchSlideDelayTimers+x
 bra .branch_pitchSlide_end
+
+.branch_miscCommand
+inc y : mov a,(!misc0)+y : push y : mov y,a : pop a : adc a,miscCommandParameterBytes+y : mov y,a
+bra .loop_commands
 
 +
 set7 !noteModifiedFlag
