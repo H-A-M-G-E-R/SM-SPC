@@ -483,7 +483,7 @@ db $01 : dw ..voice0
 ; Sound 4Bh: Chozo / torizo footsteps
 .sound4B
 db $01 : dw ..voice0
-..voice0 : db $08,$A0,$0C,$98,$08, $FF
+..voice0 : db $F6,$0C, $08,$A0,$98,$08, $FF
 
 ; Sound 4Ch: Ki-hunter / eye door acid spit
 .sound4C
