@@ -74,6 +74,7 @@ mov !percussionInstrumentsBaseIndex,a
 mov !musicVolume+1,#$C0
 mov !musicTempo+1,#$20
 mov a,#sharedNoteRingLengthTable&$FF : mov y,#sharedNoteRingLengthTable>>8 : movw !p_noteRingLengthTable,ya
+mov !noteEndInTicks,#$02
 
 .ret
 ret
@@ -680,12 +681,13 @@ miscCommandPointers:
 {
 dw \
     setNoteLengthTable,\
-    adsrGain
+    adsrGain,\
+    setDPMiscCommand
 }
 
 miscCommandParameterBytes:
 {
-db $02,$03
+db $02,$03,$02
 }
 
 setNoteLengthTable:
@@ -698,12 +700,18 @@ ret
 adsrGain:
 {
 ; Writes to ADSR2/GAIN before ADSR1 due to a hardware bug: https://snes.nesdev.org/wiki/S-DSP_registers#VxADSR
-mov a,x : xcn a : lsr a : or a,#$07 : mov y,a
-mov !misc0,#$03
+mov a,x : xcn a : lsr a : or a,#$07 : mov $F2,a
 
 -
-push y : call getNextTrackDataByte : pop y : call writeDspRegisterDirect : dec y
-dbnz !misc0,-
+call getNextTrackDataByte : mov $F3,a : dec $F2
+cmp $F2,#$F4 : bne -
+ret
+}
+
+setDPMiscCommand:
+{
+call getNextTrackDataByte : push a : call getNextTrackDataByte : pop a
+push x : mov x,a : mov a,y : mov (x),a : pop x
 ret
 }
 
@@ -918,7 +926,7 @@ handleCurrentNote:
 {
 mov a,!trackNoteRingTimers+x : beq .branch_continuePlaying
 dec !trackNoteRingTimers+x : beq +
-mov a,#$02 : cbne !trackNoteTimers+x,.branch_continuePlaying
+mov a,!noteEndInTicks : cbne !trackNoteTimers+x,.branch_continuePlaying
 
 +
 ; Note ring has ended or note is ending in two ticks

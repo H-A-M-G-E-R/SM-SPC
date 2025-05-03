@@ -137,6 +137,10 @@ endmacro
 macro adsrGain(adsr1, adsr2, gain)
     db $FB, $01, <gain>, <adsr2>, <adsr1>
 endmacro
+
+macro setDPMiscCommand(p_ram, value)
+    db $FB, $02, <p_ram>, <value>
+endmacro
 }
 }
 

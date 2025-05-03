@@ -253,6 +253,7 @@ endmacro
 
 %declare_byte(fakeEchoEnableFlags)
 %declare_word(p_noteRingLengthTable)
+%declare_byte(noteEndInTicks) ; Note: Pocky & Rocky 2 changed this to 1 from 2
 
 !p_extra = $E0
 if !p_ram >= !p_extra
