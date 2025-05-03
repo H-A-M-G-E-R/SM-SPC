@@ -165,7 +165,7 @@ bne +
 mov a,!trackRepeatedSubsectionCounters+x : beq .loop_tracker
 call repeatSubsection_setTrackPointer
 dec !trackRepeatedSubsectionCounters+x : bne .loop_track_command
-mov a,!trackRepeatedSubsectionAddresses+x : mov !trackPointers+x,a : mov a,!trackRepeatedSubsectionAddresses+1+x : mov !trackPointers+1+x,a
+mov a,!trackRepeatedSubsectionReturnAddresses+x : mov !trackPointers+x,a : mov a,!trackRepeatedSubsectionReturnAddresses+1+x : mov !trackPointers+1+x,a
 bra .loop_track_command
 
 +
@@ -531,13 +531,13 @@ ret
 ; $1A28
 repeatSubsection: ; Track command EFh
 {
-mov !trackRepeatedSubsectionReturnAddresses+x,a
-call getNextTrackDataByte : mov !trackRepeatedSubsectionReturnAddresses+1+x,a
+mov !trackRepeatedSubsectionAddresses+x,a
+call getNextTrackDataByte : mov !trackRepeatedSubsectionAddresses+1+x,a
 call getNextTrackDataByte : mov !trackRepeatedSubsectionCounters+x,a
-mov a,!trackPointers+x : mov !trackRepeatedSubsectionAddresses+x,a : mov a,!trackPointers+1+x : mov !trackRepeatedSubsectionAddresses+1+x,a
+mov a,!trackPointers+x : mov !trackRepeatedSubsectionReturnAddresses+x,a : mov a,!trackPointers+1+x : mov !trackRepeatedSubsectionReturnAddresses+1+x,a
 
 .setTrackPointer
-mov a,!trackRepeatedSubsectionReturnAddresses+x : mov !trackPointers+x,a : mov a,!trackRepeatedSubsectionReturnAddresses+1+x : mov !trackPointers+1+x,a
+mov a,!trackRepeatedSubsectionAddresses+x : mov !trackPointers+x,a : mov a,!trackRepeatedSubsectionAddresses+1+x : mov !trackPointers+1+x,a
 ret
 }
 
@@ -941,11 +941,11 @@ bra .loop_commands
 .branch_end
 mov a,!misc1+1 : beq .branch_note
 dec !misc1+1 : bne +
-mov a,!trackRepeatedSubsectionAddresses+1+x : push a : mov a,!trackRepeatedSubsectionAddresses+x : pop y
+mov a,!trackRepeatedSubsectionReturnAddresses+1+x : push a : mov a,!trackRepeatedSubsectionReturnAddresses+x : pop y
 bra .loop_sections
 
 +
-mov a,!trackRepeatedSubsectionReturnAddresses+1+x : push a : mov a,!trackRepeatedSubsectionReturnAddresses+x : pop y
+mov a,!trackRepeatedSubsectionAddresses+1+x : push a : mov a,!trackRepeatedSubsectionAddresses+x : pop y
 bra .loop_sections
 
 .branch_repeatSubsection

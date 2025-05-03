@@ -308,8 +308,8 @@ endif
 %declare_bytePairArray(trackSkipNewNotesFlags,             !n_tracks)
 
 %declare_wordArray(trackInstrumentPitches,                 !n_tracks)
-%declare_wordArray(trackRepeatedSubsectionAddresses,       !n_tracks)
 %declare_wordArray(trackRepeatedSubsectionReturnAddresses, !n_tracks)
+%declare_wordArray(trackRepeatedSubsectionAddresses,       !n_tracks)
 %declare_wordArray(trackVolumes,                           !n_tracks)
 %declare_wordArray(trackVolumeDeltas,                      !n_tracks)
 %declare_wordArray(trackPanningBiases,                     !n_tracks)
