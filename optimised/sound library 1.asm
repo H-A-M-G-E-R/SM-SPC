@@ -14,6 +14,10 @@ ret
 +
 jmp processSound1
 
+.branch_silence
+mov a,#$00 : mov !sound1,a
+ret
+
 .branch_change
 cmp a,#$00 : beq .branch_noChange
 mov a,!cpuIo1_read
@@ -22,90 +26,35 @@ mov a,!sound1Priority : bne .branch_noChange
 
 +
 mov a,!sound1 : beq +
-mov a,#$00 : mov !sound1_enabledVoices,a
-mov x,a    : call resetSoundChannel
+mov x,#$00 : call resetSoundChannel
 mov x,#$01 : call resetSoundChannel
 mov x,#$02 : call resetSoundChannel
 mov x,#$03 : call resetSoundChannel
 
 +
-mov a,#$00
-mov !sound1_channel0_legatoFlag,a
-mov !sound1_channel1_legatoFlag,a
-mov !sound1_channel2_legatoFlag,a
-mov !sound1_channel3_legatoFlag,a
 mov a,!cpuIo1_write : dec a : asl a : mov x,a
-mov a,sound1InstructionLists+x : mov !sound_instructionListPointerSet,a : inc x : mov a,sound1InstructionLists+x : mov !sound_instructionListPointerSet+1,a
+mov a,sound1InstructionLists+1+x : mov y,a : mov a,sound1InstructionLists+x : movw !sound_instructionListPointerSet,ya
 mov a,!cpuIo1_write : mov !sound1,a
 mov y,#$00 : mov a,(!sound_instructionListPointerSet)+y : mov y,a
-and a,#$0F : mov !misc1,a
+and a,#$0F : beq .branch_silence : mov !misc1,a
 mov a,y : xcn a : and a,#$0F : mov !sound1Priority,a
-}
 
-processSound1:
-{
-mov a,!sound1_initialisationFlag : bne +
-call sound1Initialisation
-
-+
-mov x,#$00 : call processSoundChannel
-mov x,#$01 : call processSoundChannel
-mov x,#$02 : call processSoundChannel
-mov x,#$03 : call processSoundChannel
-
-ret
-}
-
-sound1Initialisation:
-{
 mov a,#$00
 mov !i_globalChannel,a
 mov !sound1_channel0_voiceBitset,a
 mov !sound1_channel1_voiceBitset,a
 mov !sound1_channel2_voiceBitset,a
 mov !sound1_channel3_voiceBitset,a
-mov !sound1_channel0_voiceIndex,a
-mov !sound1_channel1_voiceIndex,a
-mov !sound1_channel2_voiceIndex,a
-mov !sound1_channel3_voiceIndex,a
-dec a
-mov !sound1_initialisationFlag,a
+call soundInitialisation
+}
 
-.mergeFromOtherLibraries
-mov !misc0,#$07
+processSound1:
+{
+mov x,#$00 : call processSoundChannel
+mov x,#$01 : call processSoundChannel
+mov x,#$02 : call processSoundChannel
+mov x,#$03 : call processSoundChannel
 
-.loop
-mov y,!misc0 : mov a,!sound_voiceOrder+y : mov !misc0+1,a
-lsr a : mov y,a : mov a,channelBitsets+y : mov !misc1+1,a
-and a,!enableSoundEffectVoices : bne .skipVoice
-
-mov a,!misc1 : beq .ret
-dec a : mov !misc1,a
-asl a : inc a : mov y,a
-mov a,#$00 : mov x,!i_globalChannel : mov !sound_i_instructionLists+x,a
-inc a : mov !sound_instructionTimers+x,a
-mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionListsLow+x,a : inc y : mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionListsHigh+x,a
-
-mov x,!misc0+1
-mov y,!i_globalChannel
-mov a,!trackOutputVolumes+x         : mov !sound_trackOutputVolumeBackups+y,a
-mov a,!trackPhaseInversionOptions+x : mov !sound_trackPhaseInversionOptionsBackups+y,a
-mov a,x : mov !sound_voiceIndices+y,a
-mov a,#$0A : mov !sound_panningBiases+y,a
-
-mov a,!misc1+1
-tset !enableSoundEffectVoices,a
-tclr !musicVoiceBitset,a
-tclr !echoEnableFlags,a
-mov !sound_voiceBitsets+y,a
-mov x,!i_soundLibrary : or a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a
-
-inc !i_globalChannel
-
-.skipVoice
-dec !misc0 : bpl .loop
-
-.ret
 ret
 }
 
@@ -160,9 +109,24 @@ db $04 : dw .PowerBombVoice0, .PowerBombVoice1, .PowerBombVoice2, .PowerBombVoic
 .PowerBombVoice3 : db $F6,$05, $09,$D0,$82,$30, $F5,$A0,$80, $05,$D0,$C7,$60, $FF
 
 ; Sound 2: Silence
+; Sound Ah: X-ray end
+; Sound 29h: Wave SBA end
+; Sound 2Bh: (Empty)
+; Sound 2Ch: (Empty)
+; Sound 2Dh: (Empty)
+; Sound 32h: Spin jump end
+; Sound 34h: Screw attack end
+; Sound 3Ah: (Empty)
 .sound2
-db $01 : dw ..voice0
-..voice0 : db $15,$00,$BC,$03, $FF
+.soundA
+.sound29
+.sound2B
+.sound2C
+.sound2D
+.sound32
+.sound34
+.sound3A
+db $00
 
 ; Sound 3: Missile
 .sound3
@@ -211,11 +175,6 @@ db $01 : dw ..voice0
 ..voice0 : db $F5,$70,$AD, $06,$40,$A4,$40,\
               $FE,$00, $06,$40,$AD,$F0, $FB,\
               $FF
-
-; Sound Ah: X-ray end
-.soundA
-db $01 : dw ..voice0
-..voice0 : db $06,$00,$AD,$03, $FF
 
 ; Sound Bh: Uncharged power beam
 .soundB
@@ -330,28 +289,10 @@ db $02 : dw ..voice0, ..voice1
 db $01 : dw ..voice0
 ..voice0 : db $F5,$30,$C7, $05,$50,$B7,$25, $FF
 
-; Sound 29h: Wave SBA end
-.sound29
-db $01 : dw ..voice0
-..voice0 : db $05,$00,$B7,$03, $FF
-
 ; Sound 2Ah: Selected save file
 .sound2A
 db $01 : dw ..voice0
-..voice0 : db $07,$90,$C5,$12
-
-.EmptyVoice
-db $FF
-
-; Sound 2Bh: (Empty)
-; Sound 2Ch: (Empty)
-; Sound 2Dh: (Empty)
-; Sound 3Ah: (Empty)
-.sound2B
-.sound2C
-.sound2D
-.sound3A
-db $01 : dw .EmptyVoice
+..voice0 : db $07,$90,$C5,$12, $FF
 
 ; Sound 2Eh: Saving
 .sound2E
@@ -381,13 +322,6 @@ db $01 : dw ..voice0
 .resumedSpinJumpVoice
 db $FE,$00, $07,$80,$C7,$10, $FB,\
    $FF
-
-; Sound 32h: Spin jump end
-; Sound 34h: Screw attack end
-.sound32
-.sound34
-db $01 : dw ..voice0
-..voice0 : db $0A,$00,$87,$03, $FF
 
 ; Sound 33h: Screw attack
 .sound33

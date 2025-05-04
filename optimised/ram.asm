@@ -322,7 +322,6 @@ endif
 %declare_byteArray(sounds, 3)
 %declare_byteArray(sound_enabledVoices, 3)
 %declare_byteArray(sound_priorities, 3)
-%declare_byteArray(sound_initialisationFlags, 3)
 
 !sound1 = !sounds
 !sound2 = !sounds+1
@@ -333,9 +332,6 @@ endif
 !sound1Priority = !sound_priorities
 !sound2Priority = !sound_priorities+1
 !sound3Priority = !sound_priorities+2
-!sound1_initialisationFlag = !sound_initialisationFlags
-!sound2_initialisationFlag = !sound_initialisationFlags+1
-!sound3_initialisationFlag = !sound_initialisationFlags+2
 }
 
 ; Sound channels
@@ -458,7 +454,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $349..2AB0: SPC engine
+; $346..2A25: SPC engine
 !p_ram = $2C00-($2A*6)
 
 %declare_byteArray(instrumentTable, $2A*6)

@@ -26,12 +26,60 @@ ret
 }
 
 
+soundInitialisation:
+{
+;; Parameters:
+;;     !misc1: number of sound channels
+
+; Requires !i_soundLibrary and !i_globalChannel to be set
+
+mov !misc0,#$07
+
+.loop
+mov y,!misc0 : mov a,!sound_voiceOrder+y : mov !misc0+1,a
+lsr a : mov y,a : mov a,channelBitsets+y : mov !misc1+1,a
+and a,!enableSoundEffectVoices : bne .skipVoice
+
+mov a,!misc1 : beq .ret
+dec a : mov !misc1,a
+asl a : inc a : mov y,a
+mov a,#$00 : mov x,!i_globalChannel : mov !sound_i_instructionLists+x,a
+mov !sound_legatoFlags+x,a
+inc a : mov !sound_instructionTimers+x,a
+mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionListsLow+x,a : inc y : mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionListsHigh+x,a
+
+mov x,!misc0+1
+mov y,!i_globalChannel
+mov a,!trackOutputVolumes+x         : mov !sound_trackOutputVolumeBackups+y,a
+mov a,!trackPhaseInversionOptions+x : mov !sound_trackPhaseInversionOptionsBackups+y,a
+mov a,x : mov !sound_voiceIndices+y,a
+mov a,#$0A : mov !sound_panningBiases+y,a
+
+mov a,!misc1+1
+tset !enableSoundEffectVoices,a
+tclr !musicVoiceBitset,a
+tclr !echoEnableFlags,a
+mov !sound_voiceBitsets+y,a
+mov x,!i_soundLibrary : or a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a
+
+inc !i_globalChannel
+
+.skipVoice
+dec !misc0 : bpl .loop
+
+.ret
+ret
+}
+
+
 resetSoundChannel:
 {
 ;; Parameters:
 ;;     X: Global channel index. Range 0..7
 
 ; Requires !i_soundLibrary to be set
+
+mov a,!sound_voiceBitsets+x : beq +
 
 mov !i_globalChannel,x
 
@@ -54,7 +102,6 @@ mov x,!i_soundLibrary
 mov a,!sound_enabledVoices+x : bne +
 mov !sounds+x,a
 mov !sound_priorities+x,a
-mov !sound_initialisationFlags+x,a
 
 +
 ret

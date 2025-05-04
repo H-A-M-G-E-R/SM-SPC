@@ -14,6 +14,10 @@ ret
 +
 jmp processSound2
 
+.branch_silence
+mov a,#$00 : mov !sound2,a
+ret
+
 .branch_change
 cmp a,#$00 : beq .branch_noChange
 mov a,!cpuIo2_read
@@ -23,45 +27,30 @@ mov a,!sound2Priority : bne .branch_noChange
 
 +
 mov a,!sound2 : beq +
-mov a,#$00 : mov !sound2_enabledVoices,a
 mov x,#$00+!sound1_n_channels : call resetSoundChannel
 mov x,#$01+!sound1_n_channels : call resetSoundChannel
 
 +
-mov a,#$00
-mov !sound2_channel0_legatoFlag,a
-mov !sound2_channel1_legatoFlag,a
 mov a,!cpuIo2_write : dec a : asl a : mov x,a
-mov a,sound2InstructionLists+x : mov !sound_instructionListPointerSet,a : inc x : mov a,sound2InstructionLists+x : mov !sound_instructionListPointerSet+1,a
+mov a,sound2InstructionLists+1+x : mov y,a : mov a,sound2InstructionLists+x : movw !sound_instructionListPointerSet,ya
 mov a,!cpuIo2_write : mov !sound2,a
 mov y,#$00 : mov a,(!sound_instructionListPointerSet)+y : mov y,a
-and a,#$0F : mov !misc1,a
+and a,#$0F : beq .branch_silence : mov !misc1,a
 mov a,y : xcn a : and a,#$0F : mov !sound2Priority,a
-}
 
-processSound2:
-{
-mov a,!sound2_initialisationFlag : bne +
-call sound2Initialisation
-
-+
-mov x,#$00+!sound1_n_channels : call processSoundChannel
-mov x,#$01+!sound1_n_channels : call processSoundChannel
-
-ret
-}
-
-sound2Initialisation:
-{
 mov !i_globalChannel,#$00+!sound1_n_channels
 mov a,#$00
 mov !sound2_channel0_voiceBitset,a
 mov !sound2_channel1_voiceBitset,a
-mov !sound2_channel0_voiceIndex,a
-mov !sound2_channel1_voiceIndex,a
-dec a
-mov !sound2_initialisationFlag,a
-jmp sound1Initialisation_mergeFromOtherLibraries
+call soundInitialisation
+}
+
+processSound2:
+{
+mov x,#$00+!sound1_n_channels : call processSoundChannel
+mov x,#$01+!sound1_n_channels : call processSoundChannel
+
+ret
 }
 
 sound2InstructionLists:
@@ -199,11 +188,6 @@ db $01 : dw ..voice0
 .sound14
 db $01 : dw ..voice0
 ..voice0 : db $0E,$60,$80,$0A, $0E,$60,$87,$10, $22,$60,$84,$1A, $0E,$60,$80,$0A, $0E,$60,$84,$07, $22,$60,$91,$16, $0E,$60,$80,$0A, $0E,$60,$87,$10, $FF
-
-; Sound 15h: Maridia elevatube
-.sound15
-db $01 : dw ..voice0
-..voice0 : db $25,$00,$AB,$03, $FF
 
 ; Sound 16h: Fake Kraid cry
 .sound16
@@ -429,16 +413,7 @@ db $01 : dw ..voice0
 ; Sound 40h:
 .sound40
 db $01 : dw ..voice0
-..voice0 : db $F5,$F0,$80, $0B,$30,$C7,$08
-
-.EmptyVoice:
-db $FF
-
-; Sound 41h: (Empty)
-; Sound 44h: (Empty)
-.sound41
-.sound44
-db $01 : dw .EmptyVoice
+..voice0 : db $F5,$F0,$80, $0B,$30,$C7,$08, $FF
 
 ; Sound 42h: Boulder bounces
 .sound42
@@ -663,10 +638,15 @@ db $12 : dw ..voice0, ..voice1
 db $01 : dw ..voice0
 ..voice0 : db $1A,$60,$AB,$06, $1A,$60,$B0,$09, $FF
 
+; Sound 15h: Maridia elevatube
+; Sound 41h: (Empty)
+; Sound 44h: (Empty)
 ; Sound 71h: Silence
+.sound15
+.sound41
+.sound44
 .sound71
-db $01 : dw ..voice0
-..voice0 : db $09,$00,$8C,$03, $FF
+db $00
 
 ; Sound 72h: Shitroid's cry
 .sound72

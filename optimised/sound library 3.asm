@@ -14,6 +14,10 @@ ret
 +
 jmp processSound3
 
+.branch_silence
+mov a,#$00 : mov !sound3,a
+ret
+
 .branch_change
 cmp a,#$00 : beq .branch_noChange
 mov a,!cpuIo3_read : cmp a,#$01 : beq +
@@ -23,46 +27,30 @@ dec y : beq .branch_noChange
 
 +
 mov a,!sound3 : beq +
-mov a,#$00 : mov !sound3_enabledVoices,a
 mov x,#$00+!sound1_n_channels+!sound2_n_channels : call resetSoundChannel
 mov x,#$01+!sound1_n_channels+!sound2_n_channels : call resetSoundChannel
 
 +
-mov a,#$00
-mov !sound3_channel0_legatoFlag,a
-mov !sound3_channel1_legatoFlag,a
 mov a,!cpuIo3_write : dec a : asl a : mov x,a
-mov a,sound3InstructionLists+x : mov !sound_instructionListPointerSet,a : inc x : mov a,sound3InstructionLists+x : mov !sound_instructionListPointerSet+1,a
+mov a,sound3InstructionLists+1+x : mov y,a : mov a,sound3InstructionLists+x : movw !sound_instructionListPointerSet,ya
 mov x,!cpuIo3_write : mov !sound3,x
-cmp x,#$FE : bcs processSound3
 mov y,#$00 : mov a,(!sound_instructionListPointerSet)+y : mov y,a
-and a,#$0F : mov !misc1,a
+and a,#$0F : beq .branch_silence : mov !misc1,a
 mov a,y : xcn a : and a,#$0F : mov !sound3Priority,a
-}
 
-processSound3:
-{
-mov a,!sound3_initialisationFlag : bne +
-call sound3Initialisation
-
-+
-mov x,#$00+!sound1_n_channels+!sound2_n_channels : call processSoundChannel
-mov x,#$01+!sound1_n_channels+!sound2_n_channels : call processSoundChannel
-
-ret
-}
-
-sound3Initialisation:
-{
 mov !i_globalChannel,#$00+!sound1_n_channels+!sound2_n_channels
 mov a,#$00
 mov !sound3_channel0_voiceBitset,a
 mov !sound3_channel1_voiceBitset,a
-mov !sound3_channel0_voiceIndex,a
-mov !sound3_channel1_voiceIndex,a
-dec a
-mov !sound3_initialisationFlag,a
-jmp sound1Initialisation_mergeFromOtherLibraries
+call soundInitialisation
+}
+
+processSound3:
+{
+mov x,#$00+!sound1_n_channels+!sound2_n_channels : call processSoundChannel
+mov x,#$01+!sound1_n_channels+!sound2_n_channels : call processSoundChannel
+
+ret
 }
 
 sound3InstructionLists:
@@ -107,9 +95,20 @@ dw .sound1,  .sound2,  .sound3,  .sound4,  .sound5,  .sound6,  .sound7,  .sound8
 }
 
 ; Sound 1: Silence
+; Sound 12h: (Empty)
+; Sound 18h: (Empty)
+; Sound 1Ah: (Empty)
+; Sound 20h: (Empty)
+; Sound 25h: Silence (clear speed booster / elevator sound)
+; Sound 2Fh: (Empty)
 .sound1
-db $01 : dw ..voice0
-..voice0 : db $11,$00,$BC,$03, $FF
+.sound12
+.sound18
+.sound1A
+.sound20
+.sound25
+.sound2F
+db $00
 
 ; Sound 2: Low health beep
 .sound2
@@ -211,28 +210,11 @@ db $08,$D0,$98,$03, $08,$D0,$95,$03, $08,$D0,$9A,$03
 
 ; Shared by shinespark ended and shorter version
 .shortShinesparkEndedVoice
-db $08,$D0,$8C,$03, $08,$D0,$8C,$15
-
-.emptyVoice
-db $FF
+db $08,$D0,$8C,$03, $08,$D0,$8C,$15, $FF
 
 ; Sound 11h: (shorter version of shinespark ended)
 .sound11
 db $01 : dw .shortShinesparkEndedVoice
-
-; Sound 12h: (Empty)
-; Sound 20h: (Empty)
-.sound12
-.sound20
-db $11 : dw .emptyVoice
-
-; Sound 18h: (Empty)
-; Sound 1Ah: (Empty)
-; Sound 2Fh: (Empty)
-.sound18
-.sound1A
-.sound2F
-db $01 : dw .emptyVoice
 
 ; Sound 13h: Mother Brain's projectile hits surface
 .sound13
@@ -312,11 +294,6 @@ db $01 : dw ..voice0
 .sound24
 db $11 : dw ..voice0
 ..voice0 : db $24,$20,$95,$40, $FF
-
-; Sound 25h: Silence (clear speed booster / elevator sound)
-.sound25
-db $01 : dw ..voice0
-..voice0 : db $07,$00,$C7,$03, $FF
 
 ; Sound 26h: Baby metroid cry 2
 .sound26
