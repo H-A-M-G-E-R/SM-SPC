@@ -699,7 +699,7 @@ mov a,x : xcn a : lsr a : or a,#$07
 mov !misc0,#$03
 
 -
-push a : call getNextTrackDataByte : pop a : mov $F2,ya : dec a
+push a : call getNextTrackDataByte : pop a : movw $F2,ya : dec a
 dbnz !misc0,-
 ret
 }
