@@ -42,8 +42,6 @@ mov $F1,#$01
 
 .loop_main
 {
-mov a,!disableNoteProcessing : bne .branch_musicTrack
-
 ; DSP registers update
 mov y,#$0A
 

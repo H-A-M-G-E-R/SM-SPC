@@ -305,7 +305,6 @@ endif
 %declare_bytePairArray(trackNotes,                         !n_tracks)
 %declare_bytePairArray(trackTargetNotes,                   !n_tracks)
 %declare_bytePairArray(trackSubtransposes,                 !n_tracks)
-%declare_bytePairArray(trackSkipNewNotesFlags,             !n_tracks)
 
 %declare_wordArray(trackInstrumentPitches,                 !n_tracks)
 %declare_wordArray(trackRepeatedSubsectionReturnAddresses, !n_tracks)
@@ -454,7 +453,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $346..2A25: SPC engine
+; $345..2A13: SPC engine
 !p_ram = $2C00-($2A*6)
 
 %declare_byteArray(instrumentTable, $2A*6)

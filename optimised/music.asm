@@ -58,7 +58,6 @@ mov !trackInstrumentIndices+x,a
 mov !trackSubtransposes+x,a
 mov !trackTransposes+x,a
 mov !trackSlideLengths+x,a
-mov !trackSkipNewNotesFlags+x,a
 mov !trackVibratoExtents+x,a
 mov !trackTremoloExtents+x,a
 dec x : dec x
@@ -186,16 +185,12 @@ bra .loop_track_command
 
 +
 ; Note
-mov a,!trackSkipNewNotesFlags+x : or a,!disableNoteProcessing : bne +
 mov a,y : call processNewNote
-
-+
 mov a,!trackNoteLengths+x : mov !trackNoteTimers+x,a
 mov y,a : mov a,!trackNoteRingLengths+x : mul ya : mov a,y : bne + : inc a : + : mov !trackNoteRingTimers+x,a
 bra .branch_next
 
 .branch_noteIsPlaying
-mov a,!disableNoteProcessing : bne .branch_noTrackCommands
 call handleCurrentNote
 
 .branch_next
@@ -700,11 +695,12 @@ ret
 adsrGain:
 {
 ; Writes to ADSR2/GAIN before ADSR1 due to a hardware bug: https://snes.nesdev.org/wiki/S-DSP_registers#VxADSR
-mov a,x : xcn a : lsr a : or a,#$07 : mov $F2,a
+mov a,x : xcn a : lsr a : or a,#$07
+mov !misc0,#$03
 
 -
-call getNextTrackDataByte : mov $F3,a : dec $F2
-cmp $F2,#$F4 : bne -
+push a : call getNextTrackDataByte : pop a : mov $F2,ya : dec a
+dbnz !misc0,-
 ret
 }
 
