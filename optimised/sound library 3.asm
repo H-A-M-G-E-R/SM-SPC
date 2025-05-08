@@ -91,7 +91,9 @@ dw .sound1,  .sound2,  .sound3,  .sound4,  .sound5,  .sound6,  .sound7,  .sound8
 ;     i: Instrument index
 ;     v: Volume
 ;     n: Note. F6h is a tie
-;     t: Length
+;     t: Length in ticks. 1 tick = 16 ms
+
+; There's a 1 tick delay after a note (except when there's legato)
 }
 
 ; Sound 1: Silence

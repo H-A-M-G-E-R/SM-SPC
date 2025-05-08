@@ -343,7 +343,6 @@ endif
 %declare_byteArray(sound_trackOutputVolumeBackups,          !n_channels)
 %declare_byteArray(sound_trackPhaseInversionOptionsBackups, !n_channels)
 %declare_byteArray(sound_releaseFlags,                      !n_channels)
-%declare_byteArray(sound_releaseTimers,                     !n_channels)
 %declare_byteArray(sound_repeatCounters,                    !n_channels)
 %declare_byteArray(sound_repeatPoints,                      !n_channels)
 %declare_byteArray(sound_adsrSettingsLow,                   !n_channels)
@@ -366,7 +365,6 @@ endif
 %generateIndirect_sounds(sound, _trackOutputVolumeBackups,          !sound_trackOutputVolumeBackups)
 %generateIndirect_sounds(sound, _trackPhaseInversionOptionsBackups, !sound_trackPhaseInversionOptionsBackups)
 %generateIndirect_sounds(sound, _releaseFlags,                      !sound_releaseFlags)
-%generateIndirect_sounds(sound, _releaseTimers,                     !sound_releaseTimers)
 %generateIndirect_sounds(sound, _repeatCounters,                    !sound_repeatCounters)
 %generateIndirect_sounds(sound, _repeatPoints,                      !sound_repeatPoints)
 %generateIndirect_sounds(sound, _adsrSettingsLow,                   !sound_adsrSettingsLow)
@@ -389,7 +387,6 @@ endif
 %generateIndirect_bytes(sound1_channel, _trackOutputVolumeBackup,          !sound1_trackOutputVolumeBackups,          !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _trackPhaseInversionOptionsBackup, !sound1_trackPhaseInversionOptionsBackups, !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _releaseFlag,                      !sound1_releaseFlags,                      !sound1_n_channels)
-%generateIndirect_bytes(sound1_channel, _releaseTimer,                     !sound1_releaseTimers,                     !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _repeatCounter,                    !sound1_repeatCounters,                    !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _repeatPoint,                      !sound1_repeatPoints,                      !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _adsrSettingsLow,                  !sound1_adsrSettingsLow,                   !sound1_n_channels)
@@ -411,7 +408,6 @@ endif
 %generateIndirect_bytes(sound2_channel, _trackOutputVolumeBackup,          !sound2_trackOutputVolumeBackups,          !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _trackPhaseInversionOptionsBackup, !sound2_trackPhaseInversionOptionsBackups, !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _releaseFlag,                      !sound2_releaseFlags,                      !sound2_n_channels)
-%generateIndirect_bytes(sound2_channel, _releaseTimer,                     !sound2_releaseTimers,                     !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _repeatCounter,                    !sound2_repeatCounters,                    !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _repeatPoint,                      !sound2_repeatPoints,                      !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _adsrSettingsLow,                  !sound2_adsrSettingsLow,                   !sound2_n_channels)
@@ -433,7 +429,6 @@ endif
 %generateIndirect_bytes(sound3_channel, _trackOutputVolumeBackup,          !sound3_trackOutputVolumeBackups,          !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _trackPhaseInversionOptionsBackup, !sound3_trackPhaseInversionOptionsBackups, !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _releaseFlag,                      !sound3_releaseFlags,                      !sound3_n_channels)
-%generateIndirect_bytes(sound3_channel, _releaseTimer,                     !sound3_releaseTimers,                     !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _repeatCounter,                    !sound3_repeatCounters,                    !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _repeatPoint,                      !sound3_repeatPoints,                      !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _adsrSettingsLow,                  !sound3_adsrSettingsLow,                   !sound3_n_channels)
@@ -453,7 +448,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $345..2A12: SPC engine
+; $33D..29BF: SPC engine
 !p_ram = $2C00-($2A*6)
 
 %declare_byteArray(instrumentTable, $2A*6)
