@@ -44,21 +44,21 @@ mov a,!misc1 : beq .ret
 dec a : mov !misc1,a
 asl a : inc a : mov y,a
 mov a,#$00 : mov x,!i_globalChannel : mov !sound_i_instructionLists+x,a
+mov !sound_releaseFlags+x,a
+mov !sound_updateAdsrSettingsFlags+x,a
+mov !sound_pitchSlideFlags+x,a
 mov !sound_legatoFlags+x,a
+mov !sound_pitchSlideLegatoFlags+x,a
 inc a : mov !sound_instructionTimers+x,a
 mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionListsLow+x,a : inc y : mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionListsHigh+x,a
 
-mov x,!misc0+1
-mov y,!i_globalChannel
-mov a,!trackOutputVolumes+x         : mov !sound_trackOutputVolumeBackups+y,a
-mov a,!trackPhaseInversionOptions+x : mov !sound_trackPhaseInversionOptionsBackups+y,a
-mov a,x : mov !sound_voiceIndices+y,a
-mov a,#$0A : mov !sound_panningBiases+y,a
+mov a,!misc0+1 : mov !sound_voiceIndices+x,a
+mov a,#$0A : mov !sound_panningBiases+x,a
 
 mov a,!misc1+1
 tset !enableSoundEffectVoices,a
 tclr !echoEnableFlags,a
-mov !sound_voiceBitsets+y,a
+mov !sound_voiceBitsets+x,a
 mov x,!i_soundLibrary : or a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a
 
 inc !i_globalChannel
@@ -84,16 +84,11 @@ mov !i_globalChannel,x
 
 mov a,!sound_voiceIndices+x : mov !i_voice,a
 
-mov a,#$00 : mov !sound_updateAdsrSettingsFlags+x,a
 mov a,!sound_voiceBitsets+x : push a : eor a,#$FF : mov x,!i_soundLibrary : and a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a
 pop a : tclr !enableSoundEffectVoices,a
 tset !keyOffFlags,a
 mov x,!i_voice : mov a,!trackInstrumentIndices+x : call setInstrumentSettings : mov x,!i_globalChannel
-mov a,!sound_trackOutputVolumeBackups+x : push a
-mov a,!sound_trackPhaseInversionOptionsBackups+x
-mov x,!i_voice
-mov !trackPhaseInversionOptions+x,a
-pop a : mov !trackOutputVolumes+x,a
+mov a,#$00 : mov !sound_voiceBitsets+x,a
 
 ; Reset sound if no enabled voices
 mov x,!i_soundLibrary
@@ -223,12 +218,19 @@ jmp .loop_commands
 mov x,!i_voice : call setInstrumentSettings
 
 ; Volume
-mov x,!i_globalChannel : call getNextDataByte
-mov x,!i_voice : mov !trackOutputVolumes+x,a
+mov x,!i_globalChannel : call getNextDataByte : mov y,a
+; Save track output volume and phase inversion options
+mov x,!i_voice : mov a,!trackOutputVolumes+x : push a
+mov a,!trackPhaseInversionOptions+x : push a
+
+mov a,y : mov !trackOutputVolumes+x,a
 mov a,#$00 : mov !trackPhaseInversionOptions+x,a
 
 mov x,!i_globalChannel : mov a,!sound_panningBiases+x : mov !panningBias+1,a : mov !panningBias,#$00
 mov x,!i_voice : call writeDspVoiceVolumes
+; Restore track output volume and phase inversion options
+pop a : mov !trackPhaseInversionOptions+x,a
+pop a : mov !trackOutputVolumes+x,a
 
 ; Note
 mov x,!i_globalChannel : call getNextDataByte
