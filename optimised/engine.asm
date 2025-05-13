@@ -6,7 +6,7 @@ main:
 movw $00,ya
 
 ; Allocate stack memory
-mov x,#!p_stackBegin-2&$FF : mov sp,x
+mov x,#!p_stackBegin-1&$FF : mov sp,x
 
 ; Clear RAM between stack and SPC engine
 mov !misc0+1,#!p_stackBegin>>8

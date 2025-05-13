@@ -5,14 +5,14 @@ memclear_8bit:
 ;;     Y: Size. 0 = 100h bytes
 
 mov a,#$00
-decw !misc0
+dec y : beq +
 
 -
 mov (!misc0)+y,a
 dbnz y,-
 
 +
-incw !misc0
+mov (!misc0)+y,a
 ret
 }
 
