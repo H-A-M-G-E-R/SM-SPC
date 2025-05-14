@@ -365,8 +365,11 @@ receiveDataFromCpu:
 ; Echo [CPU IO 0]
 ; [CPU IO 1] == 0
 
-; Disable echo buffer writes so the data doesn't get clobbered by the echo buffer writes
-call endEcho : mov $F2,#$6C : mov $F3,!flg
+; Silence echo and disable echo buffer writes so the data doesn't get clobbered by the echo buffer writes
+call endEcho
+mov $F2,#$2C : mov $F3,#$00
+mov $F2,#$3C : mov $F3,#$00
+mov $F2,#$6C : mov $F3,!flg
 
 mov $F4,#$AA
 mov $F5,#$BB
@@ -399,14 +402,11 @@ bne .loop_dataBlock
 mov $F1,#$31
 
 ; Write shared tracker pointers to new tracker data location
-mov y,#$00
-warnings push
-warnings disable W1006 ; Warning about loading 8-bit size limit for mov (pending fix in asar trunk)
-mov a,#musicTrack1 : mov (!p_trackerData)+y,a : inc y : mov a,#musicTrack1>>8 : mov (!p_trackerData)+y,a : inc y
-mov a,#musicTrack2 : mov (!p_trackerData)+y,a : inc y : mov a,#musicTrack2>>8 : mov (!p_trackerData)+y,a : inc y
-mov a,#musicTrack3 : mov (!p_trackerData)+y,a : inc y : mov a,#musicTrack3>>8 : mov (!p_trackerData)+y,a : inc y
-mov a,#musicTrack4 : mov (!p_trackerData)+y,a : inc y : mov a,#musicTrack4>>8 : mov (!p_trackerData)+y,a
-warnings pull
+mov y,#$07
+
+-
+mov a,sharedTrackerPointers+y : mov (!p_trackerData)+y,a
+dec y : bpl -
 
 ret
 }

@@ -144,6 +144,9 @@ endmacro
 }
 }
 
+sharedTrackerPointers:
+dw musicTrack1, musicTrack2, musicTrack3, musicTrack4
+
 ; Samus fanfare
 musicTrack1:
 {
