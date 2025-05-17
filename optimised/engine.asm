@@ -153,15 +153,22 @@ processNewNote:
 ;;     A: Note. Range is 80h..DFh
 ;;     Y: Note (same as A)
 
+; Return if rest or tie note
+cmp y,#$C8 : beq writeReadCpuIo_ret
+cmp y,#$C9 : beq writeReadCpuIo_ret
+
 ; Percussion note check
 cmp y,#$CA : bcc +
 call selectInstrument
 mov y,#$A4
+bra ++
+
+; Select current instrument if sound ended
 +
+mov a,!sound_endedVoices : and a,!musicVoiceBitset : beq ++
+push y : mov a,!trackInstrumentIndices+x : call setInstrumentSettings : pop y
 
-; Return if rest or tie note
-cmp y,#$C8 : bcs writeReadCpuIo_ret
-
+++
 ; Return if voice is sound effect enabled
 mov a,!enableSoundEffectVoices : and a,!musicVoiceBitset : bne writeReadCpuIo_ret
 

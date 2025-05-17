@@ -84,17 +84,16 @@ mov !i_globalChannel,x
 
 mov a,!sound_voiceIndices+x : mov !i_voice,a
 
-mov a,!sound_voiceBitsets+x : push a : eor a,#$FF : mov x,!i_soundLibrary : and a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a
+mov a,!sound_voiceBitsets+x : push a : eor a,#$FF : mov y,!i_soundLibrary : and a,!sound_enabledVoices+y : mov !sound_enabledVoices+y,a
 pop a : tclr !enableSoundEffectVoices,a
-tset !keyOffFlags,a
-mov x,!i_voice : mov a,!trackInstrumentIndices+x : call setInstrumentSettings : mov x,!i_globalChannel
+mov $F2,#$5C : mov $F3,a
+tset !sound_endedVoices,a
 mov a,#$00 : mov !sound_voiceBitsets+x,a
 
 ; Reset sound if no enabled voices
-mov x,!i_soundLibrary
-mov a,!sound_enabledVoices+x : bne +
-mov !sounds+x,a
-mov !sound_priorities+x,a
+mov a,!sound_enabledVoices+y : bne +
+mov !sounds+y,a
+mov !sound_priorities+y,a
 
 +
 ret

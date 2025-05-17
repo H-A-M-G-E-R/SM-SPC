@@ -254,6 +254,7 @@ endmacro
 %declare_byte(fakeEchoEnableFlags)
 %declare_word(p_noteRingLengthTable)
 %declare_byte(noteEndInTicks) ; Note: Pocky & Rocky 2 changed this to 1 from 2
+%declare_byte(sound_endedVoices)
 
 !p_extra = $E0
 if !p_ram >= !p_extra
@@ -438,7 +439,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $32D..29A8: SPC engine
+; $32D..29BA: SPC engine
 !p_ram = $2C00-($2A*6)
 
 %declare_byteArray(instrumentTable, $2A*6)

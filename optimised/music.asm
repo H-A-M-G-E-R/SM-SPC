@@ -331,6 +331,7 @@ setc : sbc a,#$CA : clrc : adc a,!percussionInstrumentsBaseIndex
 +
 mov y,#$06 : mul ya : movw !misc0,ya : clrc : adc !misc0,#!instrumentTable&$FF : adc !misc0+1,#!instrumentTable>>8
 mov a,!enableSoundEffectVoices : and a,!musicVoiceBitset : bne .ret
+mov a,!musicVoiceBitset : tclr !sound_endedVoices,a
 push x
 mov a,x : xcn a : lsr a : or a,#$04 : mov x,a
 mov y,#$00
