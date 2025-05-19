@@ -140,7 +140,10 @@ ret
 +
 ; Note release has ended
 mov a,#$00 : mov !sound_releaseFlags+x,a
+
+if defined("noiseSounds")
 mov a,!sound_voiceBitsets+x : tclr !noiseEnableFlags,a
+endif
 
 .loop_commands
 call getNextDataByte
@@ -205,14 +208,19 @@ call getNextDataByte
 
 .branch_repeatCommand
 cmp a,#$FB : bne + : jmp .loop_repeatCommand : +
+
+if defined("noiseSounds")
 cmp a,#$FC : bne +
 
 ; FCh - enable noise
 mov a,!sound_voiceBitsets+x : tset !noiseEnableFlags,a
 jmp .loop_commands
 
-; Process note instruction
 +
+endif
+
+; Process note instruction
+
 ; Instrument index
 mov x,!i_voice : call setInstrumentSettings
 

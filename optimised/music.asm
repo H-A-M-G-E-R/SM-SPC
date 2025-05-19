@@ -316,7 +316,7 @@ setInstrumentSettings:
 ;     Return
 
 ; If [[$14]] & 80h: (always false in vanilla)
-;     Enable voice noise with frequency [[$14]], voice source number = 0
+;     Enable voice noise with frequency [[$14]], voice source number = 2
 ; Else:
 ;     Disable voice noise, voice source number = [[$14]]
 ;
@@ -335,13 +335,16 @@ mov a,!musicVoiceBitset : tclr !sound_endedVoices,a
 push x
 mov a,x : xcn a : lsr a : or a,#$04 : mov x,a
 mov y,#$00
+
+if defined("noiseInstruments")
 mov a,(!misc0)+y : bpl +
 and a,#$1F : and !flg,#$20 : tset !flg,a
 or (!noiseEnableFlags),(!musicVoiceBitset)
-mov a,y
+mov a,#$02 ; first looping sample for noise to work, see https://snes.nesdev.org/wiki/S-DSP_registers#NON
 bra .branch_dsp
 
 +
+endif
 mov a,!musicVoiceBitset : tclr !noiseEnableFlags,a
 
 .loop_dsp

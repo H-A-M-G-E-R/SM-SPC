@@ -320,8 +320,8 @@ writeDspRegister:
 ;;     A: Value to write
 ;;     Y: DSP register index
 
-; Return if voice is sound effect enabled
-push a : mov a,!musicVoiceBitset : and a,!enableSoundEffectVoices : pop a : bne writeDspRegisterDirect_ret
+; Return if voice is sound effect enabled or ended
+push a : mov a,!enableSoundEffectVoices : or a,!sound_endedVoices : and a,!musicVoiceBitset : pop a : bne writeDspRegisterDirect_ret
 
 ; Fall through
 }
