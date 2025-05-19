@@ -131,6 +131,9 @@ macro generateIndirect_sounds(prefix, suffix, p_base)
 }
 endmacro
 
+; $00..03 are reserved for echo when echo delay = 0
+!p_ram = $04
+
 ; CPU IO cache registers
 {
 %generate_bytes(cpuIo, _read, 4)
@@ -145,6 +148,7 @@ endmacro
 {
 !note #= !p_ram
 !panningBias #= !p_ram
+!sound_instructionListPointerSet #= !p_ram
 %declare_word(noteOrPanningBias)
 
 !signBit #= !p_ram
@@ -244,8 +248,6 @@ endmacro
 
 ; Sounds
 {
-%declare_word(p_echoBuffer) ; Unused?
-%declare_word(sound_instructionListPointerSet)
 %declare_byte(i_globalChannel)
 %declare_byte(i_voice)
 %declare_byte(i_soundLibrary)
@@ -439,7 +441,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $32D..29BA: SPC engine
+; $32D..29AB: SPC engine
 !p_ram = $2C00-($2A*6)
 
 %declare_byteArray(instrumentTable, $2A*6)

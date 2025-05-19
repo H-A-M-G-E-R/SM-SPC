@@ -372,11 +372,9 @@ receiveDataFromCpu:
 ; Echo [CPU IO 0]
 ; [CPU IO 1] == 0
 
-; Silence echo and disable echo buffer writes so the data doesn't get clobbered by the echo buffer writes
-call endEcho
-mov $F2,#$2C : mov $F3,#$00
-mov $F2,#$3C : mov $F3,#$00
-mov $F2,#$6C : mov $F3,!flg
+; Silence echo and set up echo with echo delay = 0 so the data doesn't get clobbered by the echo buffer writes
+movw ya,!zero : call endEcho : mov !echoFeedbackVolume,a
+call setUpEcho
 
 mov $F4,#$AA
 mov $F5,#$BB
