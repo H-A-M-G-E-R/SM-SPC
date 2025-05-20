@@ -421,7 +421,7 @@ panningVolumeMultipliers:
 db $00, $01, $03, $07, $0D, $15, $1E, $29, $34, $42, $51, $5E, $67, $6E, $73, $77, $7A, $7C, $7D, $7E, $7F
 
 ; $1E32
-echoFirFilters:
+sharedEchoFirFilters:
 db $7F,$00,$00,$00,$00,$00,$00,$00 ; None
 db $58,$BF,$DB,$F0,$FE,$07,$0C,$0C ; High-pass
 db $0C,$21,$2B,$2B,$13,$FE,$F3,$F9 ; Low-pass

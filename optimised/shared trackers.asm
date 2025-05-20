@@ -134,8 +134,8 @@ macro setNoteLengthTable(p_noteLengthTable)
     db $FB, $00 : dw <p_noteLengthTable>
 endmacro
 
-macro adsrGain(adsr1, adsr2, gain)
-    db $FB, $01, <gain>, <adsr2>, <adsr1>
+macro setEchoFirFilters(p_echoFirFilters)
+    db $FB, $01 : dw <p_echoFirFilters>
 endmacro
 
 macro setDPMiscCommand(p_ram, value)
@@ -145,7 +145,7 @@ endmacro
 }
 
 sharedTrackerPointers:
-dw musicTrack1, musicTrack2, musicTrack3, musicTrack4
+dw musicTrack1_tracker, musicTrack2_tracker, musicTrack3_tracker, musicTrack4_tracker
 
 ; Samus fanfare
 musicTrack1:

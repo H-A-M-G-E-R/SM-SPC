@@ -73,6 +73,7 @@ mov !percussionInstrumentsBaseIndex,a
 mov !musicVolume+1,#$C0
 mov !musicTempo+1,#$20
 mov a,#sharedNoteRingLengthTable&$FF : mov y,#sharedNoteRingLengthTable>>8 : movw !p_noteRingLengthTable,ya
+mov a,#sharedEchoFirFilters&$FF : mov y,#sharedEchoFirFilters>>8 : movw !p_echoFirFilters,ya
 mov !noteEndInTicks,#$02
 
 .ret
@@ -583,14 +584,14 @@ echoParameters: ; Track command F7h
 call setUpEcho
 call getNextTrackDataByte : mov !echoFeedbackVolume,a
 call getNextTrackDataByte
-mov y,#$08 : mul ya : mov x,a
-mov y,#$0F
+mov y,#$08 : mul ya : mov y,a
+mov $F2,#$0F
 
 -
 {
-mov a,echoFirFilters+x : call writeDspRegisterDirect
-inc x
-mov a,y : clrc : adc a,#$10 : mov y,a
+mov a,(!p_echoFirFilters)+y : mov $F3,a
+inc y
+clrc : adc $F2,#$10
 bpl -
 }
 
@@ -680,13 +681,13 @@ miscCommandPointers:
 {
 dw \
     setNoteLengthTable,\
-    adsrGain,\
+    setEchoFirFilters,\
     setDPMiscCommand
 }
 
 miscCommandParameterBytes:
 {
-db $02,$03,$02
+db $02,$02,$02
 }
 
 setNoteLengthTable:
@@ -696,15 +697,10 @@ call getNextTrackDataByte : mov !p_noteRingLengthTable+1,a
 ret
 }
 
-adsrGain:
+setEchoFirFilters:
 {
-; Writes to ADSR2/GAIN before ADSR1 due to a hardware bug: https://snes.nesdev.org/wiki/S-DSP_registers#VxADSR
-mov a,x : xcn a : lsr a : or a,#$07
-mov !misc0,#$03
-
--
-push a : call getNextTrackDataByte : pop a : movw $F2,ya : dec a
-dbnz !misc0,-
+call getNextTrackDataByte : mov !p_echoFirFilters,a
+call getNextTrackDataByte : mov !p_echoFirFilters+1,a
 ret
 }
 
