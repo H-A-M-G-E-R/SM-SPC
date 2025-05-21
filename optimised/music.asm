@@ -14,6 +14,7 @@ ret
 ; $173B
 loadNewMusicData:
 {
+call keyOffMusicVoices
 call receiveDataFromCpu
 mov !cpuIo0_read_prev,a
 
@@ -52,7 +53,7 @@ mov !musicVoiceBitset,#$80
 
 -
 {
-mov a,#$FF : mov !trackVolumes+1+x,a
+mov a,#$FF : call staticVolume
 mov a,#$0A : call staticPanning
 mov !trackInstrumentIndices+x,a
 mov !trackSubtransposes+x,a
@@ -123,23 +124,16 @@ mov a,(!misc1)+y : mov !trackPointers+y,a : dec y : bpl -
 call determineSoundVoiceOrder
 
 ; Reset music tracks
-mov x,#$00
-mov !musicVoiceBitset,#$01
+mov x,#$0E
 
 -
 {
-mov a,!trackPointers+1+x : beq +
-mov a,!trackInstrumentIndices+x : bne +
-mov a,#$00 : call selectInstrument
-
-+
 mov a,#$00
 mov !trackRepeatedSubsectionCounters+x,a
 mov !trackDynamicVolumeTimers+x,a
 mov !trackDynamicPanningTimers+x,a
 inc a : mov !trackNoteTimers+x,a
-inc x : inc x
-asl !musicVoiceBitset : bne -
+dec x : dec x : bpl -
 }
 
 .branch_musicTrackPlaying
