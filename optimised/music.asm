@@ -14,7 +14,6 @@ ret
 ; $173B
 loadNewMusicData:
 {
-call keyOffMusicVoices
 call receiveDataFromCpu
 mov !cpuIo0_read_prev,a
 

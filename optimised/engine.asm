@@ -374,6 +374,9 @@ receiveDataFromCpu:
 ; Echo [CPU IO 0]
 ; [CPU IO 1] == 0
 
+; Key off music voices
+call keyOffMusicVoices : mov $F2,#$5C : mov $F3,a
+
 ; Silence echo and set up echo with echo delay = 0 so the data doesn't get clobbered by the echo buffer writes
 movw ya,!zero : call endEcho : mov !echoFeedbackVolume,a
 call setUpEcho
