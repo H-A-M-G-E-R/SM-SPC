@@ -54,7 +54,6 @@ mov !musicVoiceBitset,#$80
 {
 mov a,#$FF : call staticVolume
 mov a,#$0A : call staticPanning
-mov !trackInstrumentIndices+x,a
 mov !trackSubtransposes+x,a
 mov !trackTransposes+x,a
 mov !trackSlideLengths+x,a

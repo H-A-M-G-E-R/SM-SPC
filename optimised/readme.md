@@ -45,7 +45,7 @@ After patching a vanilla ROM with the ASM via asar, run:
 * `python repoint.py rom SM.smc SM_repointed.smc` (arbitrary filepaths)
 
 To repoint an NSPC file, run either:
-* `python repoint.py nspc music.nspc music_repointed.nspc --version=2 --p_spcEngine=32D --p_sharedTrackers=2592 --p_instrumentTable=2B04 --p_sampleTable=2C00 --p_sampleData=2D00 --p_extra=E0`
+* `python repoint.py nspc music.nspc music_repointed.nspc --version=2 --p_spcEngine=32D --p_sharedTrackers=258F --p_instrumentTable=2B04 --p_sampleTable=2C00 --p_sampleData=2D00 --p_extra=E0`
     * Where all the pointers are reported by asar when assembling the engine mod
 * `python repoint.py nspc music.nspc music_repointed.nspc --rom=SM.smc`
     * Where metadata is extracted from `--rom` argument (a patched ROM)
