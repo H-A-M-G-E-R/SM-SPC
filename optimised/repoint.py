@@ -1513,7 +1513,7 @@ class MusicData:
             p_aram = int.from_bytes(rom_in.read(2), 'little')
             #print(f'Found SPC block {formatLong(p_blockHeader)}: ({formatValue(blockSize):>5}, ${p_aram:04X})')
             if blockSize == 0:
-                p_engine = p_aram - 0xF # 0xF bytes of metadata
+                p_engine = p_aram
                 break
 
             data = AramStream(p_aram, [int.from_bytes(rom_in.read(1), 'little') for _ in range(blockSize)])
@@ -1624,7 +1624,7 @@ class MusicData:
         
         # Get SPC engine first, so we can read its metadata for `aramRegions`
         for (i_dataBlock, (p_blockHeader, data)) in enumerate(dataBlocks):
-            if data.p_aram == p_engine:
+            if data.p_aram + 0xF == p_engine or data.p_aram + 0xD == p_engine: # 0xF or 0xD bytes of metadata
                 init_spcEngine(p_blockHeader, data, i_dataBlock)
                 break
         
@@ -1657,13 +1657,13 @@ class MusicData:
         if self.sampleData is not None:
             self.sampleData.repoint(self.sampleData.p_aram + args.p_sampleData - 0x6E00)
 
-        if args.version == 1:
+        '''if args.version == 1 or self.noteLengthTable is None:
             p_trackers = self.sampleData.p_aram + self.sampleData.blockSize
         else:
             p_noteLengthTable = self.sampleData.p_aram + self.sampleData.blockSize
-            if self.noteLengthTable is not None:
-                self.noteLengthTable.repoint(self.noteLengthTable.p_aram + p_noteLengthTable - 0x5800)
-            p_trackers = p_noteLengthTable + self.noteLengthTable.blockSize
+            self.noteLengthTable.repoint(self.noteLengthTable.p_aram + p_noteLengthTable - 0x5800)
+            p_trackers = p_noteLengthTable + self.noteLengthTable.blockSize'''
+        p_trackers = self.sampleData.p_aram + self.sampleData.blockSize
 
         if self.trackers is not None:
             self.trackers.repoint(self.trackers.p_aram + p_trackers - 0x5820)
@@ -1683,8 +1683,8 @@ class MusicData:
         if self.sampleData is not None:
             self.sampleData.write(data)
 
-        if args.version != 1 and self.noteLengthTable is not None:
-            self.noteLengthTable.write(data)
+        '''if args.version != 1 and self.noteLengthTable is not None:
+            self.noteLengthTable.write(data)'''
 
         if self.trackers is not None:
             self.trackers.write(data)
@@ -1693,10 +1693,11 @@ class MusicData:
             self.spcEngine.write(data)
         
         # Write out location of p_trackers (newly required by engine change)
-        if args.version == 1:
+        '''if args.version == 1 or self.noteLengthTable is None:
             p_trackers = self.sampleData.p_aram + self.sampleData.blockSize
         else:
-            p_trackers = self.sampleData.p_aram + self.sampleData.blockSize + self.noteLengthTable.blockSize
+            p_trackers = self.sampleData.p_aram + self.sampleData.blockSize + self.noteLengthTable.blockSize'''
+        p_trackers = self.sampleData.p_aram + self.sampleData.blockSize
         data.writeInt(3, 2)
         data.writeInt(args.p_extra, 2)
         data.writeInt(p_trackers, 2)
@@ -1756,8 +1757,14 @@ music = [
 ]
 
 if args.mode == 'rom':
-    p_rom = snes2hex(0xCF_8000)
-    for (i_music, musicName) in enumerate(music):
+    # Hack these globals quickly to get MusicData.SpcEngine to read the reference ROM metadata into args
+    rom_in = args.rom_out
+    spcMusicData = MusicData(snes2hex(0xCF_8000), '', True)
+
+    # Skip repointing the SPC engine
+    p_rom = snes2hex(spcMusicData.p_eof) + 4
+    rom_in = args.rom_in
+    for (i_music, musicName) in enumerate(music[1:], start = 1):
         rom_in.seek(snes2hex(0x8F_E7E1) + i_music * 3)
         p_musicData = int.from_bytes(rom_in.read(3), 'little')
         rom_out.seek(snes2hex(0x8F_E7E1) + i_music * 3)

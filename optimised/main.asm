@@ -11,20 +11,21 @@ math pri on ; Use conventional maths priority (otherwise is strict left-to-right
 if defined("printRamMsl") || defined("printRamMap") : undef printAramSummary
 
 
-; The SPC engine data block is written directly via the spc700-inline arch,
-; which handles writing the data block header containing the block size and ARAM destination.
-; Note that an org statement defines a new data block (i.e. only use org once, at the beginning)
+; The SPC engine data block is written via the spc700 arch, and sets the base to !p_end_ram
+; This is a workaround for spcblock with labels referenced outside the spcblock
 
 lorom
-org $CF8104 ; The actual ROM location the data block is going to be written to
+org $CF8000 ; The actual ROM location the engine is going to be written to
 
 !version = 2
 
 incsrc "ram.asm"
 
-arch spc700-inline
-org !p_end_ram
+arch spc700
 
+dw main_eof-!p_end_ram, !p_end_ram
+base !p_end_ram
+{
 main_metadata:
 {
 db !version
@@ -61,6 +62,10 @@ main_sharedTrackers:
 incsrc "shared trackers.asm"
 
 main_eof:
+}
+
+; Instrument, sample and EOF blocks
+incsrc "samples.asm"
 
 if defined("printAramSummary")
     print "$",hex(!p_end_ram), ": RAM end"
@@ -76,7 +81,8 @@ if defined("printAramSummary")
     print "$",hex(main_eof), ": EOF"
     print "$",hex(!instrumentTable), ": Instrument table"
     print "$",hex(!sampleTable), ": Sample table"
-    print "$",hex(!sampleData), ": Sample data / note length table / trackers / echo buffer"
+    print "$",hex(!sampleData), ": Shared sample data"
+    print "$",hex(sampleData_eof), ": Song-specific sample data / trackers / echo buffer"
     print ""
     
     ; These are the options to pass to repoint.py
@@ -90,16 +96,3 @@ if defined("printAramSummary")
         " --p_sampleData=",hex(!sampleData),\
         " --p_extra=",hex(!p_extra)
 endif
-
-padbyte $00 : pad $CFC2EA ; Asar requires a CPU address here. Possibly a bug, if so fix this if the bug gets fixed
-warnpc $56E2
-
-; The inline arch writes a terminator data block, which we don't want. The below is reverting that
-arch 65816
-org $CFC2EA
-
-dw read2($CFC2EA), read2($CFC2EC)
-
-; Write engine pointer to EOF data block's ARAM destination
-org $D0E20B
-dw main_engine

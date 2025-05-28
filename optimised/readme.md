@@ -22,11 +22,11 @@ $E0   | Extra (*)
 $32D  | SPC engine
 $2B04 | Instrument table
 $2C00 | Sample table
-$2D00 | Sample data / note length table / trackers
+$2D00 | Sample data / trackers
 ```
 
 (*) Extra is a 3 byte block:
-* A two-byte ARAM address of the trackers within the "sample data / note length table / trackers" region
+* A two-byte ARAM address of the trackers within the "sample data / trackers" region
 * A one byte flag specifying late key-off, corresponding to mITroid's "disable key-off between patterns" and "disable key-off between notes" patches (bits 0 and 1 respectively)
 
 For the purposes of tooling, the first 13 bytes of the SPC engine are metadata (SPC engine block can be identified by looking for the SPC data block whose ARAM destination is also the terminator data block's destination - 0xD).
@@ -36,16 +36,17 @@ For the purposes of tooling, the first 13 bytes of the SPC engine are metadata (
     * 0x3: Shared trackers (part of the SPC engine)
     * 0x5: Instrument table
     * 0x7: Sample table
-    * 0x9: Sample data / note length table / trackers
+    * 0x9: Sample data / trackers
     * 0xB: Extra
 
 `repoint.py` is included to repoint vanilla NSPCs or mITroid generated NSPCs.
 
 After patching a vanilla ROM with the ASM via asar, run:
 * `python repoint.py rom SM.smc SM_repointed.smc` (arbitrary filepaths)
+    * Where `SM.smc` has the music you want to repoint and `SM_repointed.smc` is the patched ROM you want to insert the repointed music in
 
 To repoint an NSPC file, run either:
-* `python repoint.py nspc music.nspc music_repointed.nspc --version=2 --p_spcEngine=32D --p_sharedTrackers=258F --p_instrumentTable=2B04 --p_sampleTable=2C00 --p_sampleData=2D00 --p_extra=E0`
+* `python repoint.py nspc music.nspc music_repointed.nspc --version=2 --p_spcEngine=32D --p_sharedTrackers=258C --p_instrumentTable=2B04 --p_sampleTable=2C00 --p_sampleData=2D00 --p_extra=E0`
     * Where all the pointers are reported by asar when assembling the engine mod
 * `python repoint.py nspc music.nspc music_repointed.nspc --rom=SM.smc`
     * Where metadata is extracted from `--rom` argument (a patched ROM)

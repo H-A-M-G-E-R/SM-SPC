@@ -404,8 +404,8 @@ bpl .loop_dataByte
 cmp y,$F4 : bpl .loop_dataByte
 
 .branch_processDataBlock
-mov a,$F6 : mov y,$F7 : movw !misc0,ya
-mov y,$F4 : mov a,$F5 : mov $F4,y
+movw ya,$F6 : movw !misc0,ya
+mov a,$F5 : mov $F4,$F4
 bne .loop_dataBlock
 
 ; Reset CPU IO input latches and enable/reset timer 0
