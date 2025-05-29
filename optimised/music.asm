@@ -31,9 +31,6 @@ mov !cpuIo0_write,a
 ; Tracker pointer = [[!p_trackerData] + ([A] - 1) * 2]
 dec a : asl a : mov y,a : mov a,(!p_trackerData)+y : mov x,a : inc y : mov a,(!p_trackerData)+y : mov y,a : mov a,x : movw !p_tracker,ya
 
-; Music track status = new music track loaded
-mov !musicTrackStatus,#$02
-
 ; Fall through
 }
 
@@ -69,8 +66,9 @@ mov !dynamicMusicTempoTimer,a
 mov !musicTranspose,a
 mov !trackerTimer,a
 mov !percussionInstrumentsBaseIndex,a
-mov !musicVolume+1,#$C0
-mov !musicTempo+1,#$20
+mov y,a : movw !musicTrackClock,ya
+mov a,#$C0 : movw !musicVolume,ya
+mov a,#$20 : movw !musicTempo+1,ya
 mov a,#sharedNoteRingLengthTable&$FF : mov y,#sharedNoteRingLengthTable>>8 : movw !p_noteRingLengthTable,ya
 mov a,#sharedEchoFirFilters&$FF : mov y,#sharedEchoFirFilters>>8 : movw !p_echoFirFilters,ya
 mov !noteEndInTicks,#$02
@@ -88,12 +86,16 @@ mov a,!cpuIo0_read : mov !cpuIo0_read_prev,a
 cmp a,#$F0 : beq keyOffMusicVoices
 cmp a,#$F1 : beq +
 cmp a,#$FF : beq loadNewMusicData
-cmp y,!cpuIo0_read : bne loadNewMusicTrack
+cmp y,!cpuIo0_read : bne ++
 
 +
 mov a,!cpuIo0_write : beq musicTrackInitialisation_ret
-mov a,!musicTrackStatus : beq .branch_musicTrackPlaying
-dbnz !musicTrackStatus,musicTrackInitialisation
+bra .branch_musicTrackPlaying
+
+++
+call loadNewMusicTrack
+mov a,!cpuIo0_write : beq musicTrackInitialisation_ret
+call musicTrackInitialisation
 
 .loop_tracker
 {

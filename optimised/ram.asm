@@ -141,7 +141,6 @@ endmacro
 %generate_bytes(cpuIo, _read_prev, 4)
 }
 
-%declare_byte(musicTrackStatus)
 %declare_word(zero)
 
 ; Temporaries
@@ -207,7 +206,7 @@ endmacro
 ; Music
 {
 %declare_byte(musicTranspose)
-%declare_byte(musicTrackClock)
+%declare_word(musicTrackClock)
 %declare_word(musicTempo)
 %declare_byte(dynamicMusicTempoTimer)
 %declare_byte(targetMusicTempo)
@@ -442,7 +441,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $32D..2967: SPC engine
+; $32D..297E: SPC engine
 !p_ram = $2C00-($2A*6)
 
 %declare_byteArray(instrumentTable, $2A*6)

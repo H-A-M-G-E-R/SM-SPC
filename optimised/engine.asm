@@ -33,8 +33,8 @@ mov $F1,#$F0
 ; Timer 0 divider = 10h (2 ms)
 mov a,#$10 : mov $FA,a
 
-; Music tempo = 1000h (31.3 ticks / second)
-mov !musicTempo+1,a
+; Music tempo = 2000h (62.5 ticks / second)
+asl a : mov !musicTempo+1,a
 
 ; Enable timer 0
 mov $F1,#$01
@@ -99,7 +99,9 @@ inc !echoTimer
 .branch_soundFx_end
 
 ; Music track clock += (time since last loop) * ([music tempo] / 100h)
-mov a,!musicTempo+1 : pop y : mul ya : clrc : adc a,!musicTrackClock : mov !musicTrackClock,a
+pop y : push y : mov a,!musicTempo : mul ya : movw !misc0,ya
+pop y : mov a,!musicTempo+1 : mul ya : clrc : adc a,!misc0+1 : mov !misc0+1,a
+movw ya,!musicTrackClock : addw ya,!misc0 : movw !musicTrackClock,ya
 bcc .branch_musicTrack_end
 
 ; Music
