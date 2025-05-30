@@ -43,7 +43,7 @@ and a,!enableSoundEffectVoices : bne .skipVoice
 mov a,!misc1 : beq .ret
 dec a : mov !misc1,a
 asl a : inc a : mov y,a
-mov a,#$00 : mov x,!i_globalChannel : mov !sound_i_instructionLists+x,a
+mov a,#$00 : mov x,!i_globalChannel
 mov !sound_releaseFlags+x,a
 mov !sound_updateAdsrSettingsFlags+x,a
 mov !sound_pitchSlideFlags+x,a
@@ -105,9 +105,8 @@ getNextDataByte:
 ;; Parameters:
 ;;     X: Global channel index. Range 0..7
 mov a,!sound_p_instructionListsLow+x : mov y,!sound_p_instructionListsHigh+x : movw !misc0,ya
-mov a,!sound_i_instructionLists+x : mov y,a
-inc a : mov !sound_i_instructionLists+x,a
-mov a,(!misc0)+y
+mov y,#$00 : mov a,(!misc0)+y
+inc !sound_p_instructionListsLow+x : bne + : inc !sound_p_instructionListsHigh+x : +
 ret
 }
 
@@ -192,7 +191,8 @@ cmp a,#$FE : bne +
 
 ; FEh cc - set repeat pointer with repeat counter = c
 call getNextDataByte : mov !sound_repeatCounters+x,a
-mov a,!sound_i_instructionLists+x : mov !sound_repeatPoints+x,a
+mov a,!sound_p_instructionListsLow+x : mov !sound_repeatPointsLow+x,a
+mov a,!sound_p_instructionListsHigh+x : mov !sound_repeatPointsHigh+x,a
 call getNextDataByte
 
 +
@@ -203,7 +203,8 @@ mov a,!sound_repeatCounters+x : dec a : mov !sound_repeatCounters+x,a : bne + : 
 
 ; FBh - repeat
 .loop_repeatCommand
-mov a,!sound_repeatPoints+x : mov !sound_i_instructionLists+x,a
+mov a,!sound_repeatPointsLow+x : mov !sound_p_instructionListsLow+x,a
+mov a,!sound_repeatPointsHigh+x : mov !sound_p_instructionListsHigh+x,a
 call getNextDataByte
 
 .branch_repeatCommand

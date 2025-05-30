@@ -339,13 +339,13 @@ endif
 ; Sound channels
 {
 ; The real arrays
-%declare_byteArray(sound_i_instructionLists,                !n_channels)
 %declare_byteArray(sound_instructionTimers,                 !n_channels)
 %declare_byteArray(sound_voiceBitsets,                      !n_channels)
 %declare_byteArray(sound_voiceIndices,                      !n_channels)
 %declare_byteArray(sound_releaseFlags,                      !n_channels)
 %declare_byteArray(sound_repeatCounters,                    !n_channels)
-%declare_byteArray(sound_repeatPoints,                      !n_channels)
+%declare_byteArray(sound_repeatPointsLow,                   !n_channels)
+%declare_byteArray(sound_repeatPointsHigh,                  !n_channels)
 %declare_byteArray(sound_adsrSettingsLow,                   !n_channels)
 %declare_byteArray(sound_adsrSettingsHigh,                  !n_channels)
 %declare_byteArray(sound_updateAdsrSettingsFlags,           !n_channels)
@@ -359,13 +359,13 @@ endif
 %declare_byteArray(sound_panningBiases,                     !n_channels)
 
 ; The divisions of the arrays by sound library
-%generateIndirect_sounds(sound, _i_instructionLists,                !sound_i_instructionLists)
 %generateIndirect_sounds(sound, _instructionTimers,                 !sound_instructionTimers)
 %generateIndirect_sounds(sound, _voiceBitsets,                      !sound_voiceBitsets)
 %generateIndirect_sounds(sound, _voiceIndices,                      !sound_voiceIndices)
 %generateIndirect_sounds(sound, _releaseFlags,                      !sound_releaseFlags)
 %generateIndirect_sounds(sound, _repeatCounters,                    !sound_repeatCounters)
-%generateIndirect_sounds(sound, _repeatPoints,                      !sound_repeatPoints)
+%generateIndirect_sounds(sound, _repeatPointsLow,                   !sound_repeatPointsLow)
+%generateIndirect_sounds(sound, _repeatPointsHigh,                  !sound_repeatPointsHigh)
 %generateIndirect_sounds(sound, _adsrSettingsLow,                   !sound_adsrSettingsLow)
 %generateIndirect_sounds(sound, _adsrSettingsHigh,                  !sound_adsrSettingsHigh)
 %generateIndirect_sounds(sound, _updateAdsrSettingsFlags,           !sound_updateAdsrSettingsFlags)
@@ -379,13 +379,13 @@ endif
 %generateIndirect_sounds(sound, _panningBiases,                     !sound_panningBiases)
 
 ; The divisions of subarrays by channel for each sound library
-%generateIndirect_bytes(sound1_channel, _i_instructionList,                !sound1_i_instructionLists,                !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _instructionTimer,                 !sound1_instructionTimers,                 !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _voiceBitset,                      !sound1_voiceBitsets,                      !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _voiceIndex,                       !sound1_voiceIndices,                      !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _releaseFlag,                      !sound1_releaseFlags,                      !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _repeatCounter,                    !sound1_repeatCounters,                    !sound1_n_channels)
-%generateIndirect_bytes(sound1_channel, _repeatPoint,                      !sound1_repeatPoints,                      !sound1_n_channels)
+%generateIndirect_bytes(sound1_channel, _repeatPointLow,                   !sound1_repeatPointsLow,                   !sound1_n_channels)
+%generateIndirect_bytes(sound1_channel, _repeatPointHigh,                  !sound1_repeatPointsHigh,                  !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _adsrSettingsLow,                  !sound1_adsrSettingsLow,                   !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _adsrSettingsHigh,                 !sound1_adsrSettingsHigh,                  !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _updateAdsrSettingsFlag,           !sound1_updateAdsrSettingsFlags,           !sound1_n_channels)
@@ -398,13 +398,13 @@ endif
 %generateIndirect_bytes(sound1_channel, _pitchSlideLegatoFlag,             !sound1_pitchSlideLegatoFlags,             !sound1_n_channels)
 %generateIndirect_bytes(sound1_channel, _panningBias,                      !sound1_panningBiases,                     !sound1_n_channels)
 
-%generateIndirect_bytes(sound2_channel, _i_instructionList,                !sound2_i_instructionLists,                !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _instructionTimer,                 !sound2_instructionTimers,                 !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _voiceBitset,                      !sound2_voiceBitsets,                      !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _voiceIndex,                       !sound2_voiceIndices,                      !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _releaseFlag,                      !sound2_releaseFlags,                      !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _repeatCounter,                    !sound2_repeatCounters,                    !sound2_n_channels)
-%generateIndirect_bytes(sound2_channel, _repeatPoint,                      !sound2_repeatPoints,                      !sound2_n_channels)
+%generateIndirect_bytes(sound2_channel, _repeatPointLow,                   !sound2_repeatPointsLow,                   !sound2_n_channels)
+%generateIndirect_bytes(sound2_channel, _repeatPointHigh,                  !sound2_repeatPointsHigh,                  !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _adsrSettingsLow,                  !sound2_adsrSettingsLow,                   !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _adsrSettingsHigh,                 !sound2_adsrSettingsHigh,                  !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _updateAdsrSettingsFlag,           !sound2_updateAdsrSettingsFlags,           !sound2_n_channels)
@@ -417,13 +417,13 @@ endif
 %generateIndirect_bytes(sound2_channel, _pitchSlideLegatoFlag,             !sound2_pitchSlideLegatoFlags,             !sound2_n_channels)
 %generateIndirect_bytes(sound2_channel, _panningBias,                      !sound2_panningBiases,                     !sound2_n_channels)
 
-%generateIndirect_bytes(sound3_channel, _i_instructionList,                !sound3_i_instructionLists,                !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _instructionTimer,                 !sound3_instructionTimers,                 !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _voiceBitset,                      !sound3_voiceBitsets,                      !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _voiceIndex,                       !sound3_voiceIndices,                      !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _releaseFlag,                      !sound3_releaseFlags,                      !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _repeatCounter,                    !sound3_repeatCounters,                    !sound3_n_channels)
-%generateIndirect_bytes(sound3_channel, _repeatPoint,                      !sound3_repeatPoints,                      !sound3_n_channels)
+%generateIndirect_bytes(sound3_channel, _repeatPointLow,                   !sound3_repeatPointsLow,                   !sound3_n_channels)
+%generateIndirect_bytes(sound3_channel, _repeatPointHigh,                  !sound3_repeatPointsHigh,                  !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _adsrSettingsLow,                  !sound3_adsrSettingsLow,                   !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _adsrSettingsHigh,                 !sound3_adsrSettingsHigh,                  !sound3_n_channels)
 %generateIndirect_bytes(sound3_channel, _updateAdsrSettingsFlag,           !sound3_updateAdsrSettingsFlags,           !sound3_n_channels)
@@ -441,7 +441,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $32D..297E: SPC engine
+; $32D..2972: SPC engine
 !p_ram = $2C00-($2A*6)
 
 %declare_byteArray(instrumentTable, $2A*6)
