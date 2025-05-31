@@ -31,6 +31,9 @@ mov !cpuIo0_write,a
 ; Tracker pointer = [[!p_trackerData] + ([A] - 1) * 2]
 dec a : asl a : mov y,a : mov a,(!p_trackerData)+y : mov x,a : inc y : mov a,(!p_trackerData)+y : mov y,a : mov a,x : movw !p_tracker,ya
 
+; Music track status = new music track loaded
+mov !musicTrackStatus,#$02
+
 ; Fall through
 }
 
@@ -86,16 +89,12 @@ mov a,!cpuIo0_read : mov !cpuIo0_read_prev,a
 cmp a,#$F0 : beq keyOffMusicVoices
 cmp a,#$F1 : beq +
 cmp a,#$FF : beq loadNewMusicData
-cmp y,!cpuIo0_read : bne ++
+cmp y,!cpuIo0_read : bne loadNewMusicTrack
 
 +
 mov a,!cpuIo0_write : beq musicTrackInitialisation_ret
-bra .branch_musicTrackPlaying
-
-++
-call loadNewMusicTrack
-mov a,!cpuIo0_write : beq musicTrackInitialisation_ret
-call musicTrackInitialisation
+mov a,!musicTrackStatus : beq .branch_musicTrackPlaying
+dbnz !musicTrackStatus,musicTrackInitialisation
 
 .loop_tracker
 {

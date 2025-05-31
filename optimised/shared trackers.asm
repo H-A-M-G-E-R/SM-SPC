@@ -145,7 +145,8 @@ endmacro
 }
 
 sharedTrackerPointers:
-dw musicTrack1_tracker, musicTrack2_tracker, musicTrack3_tracker, musicTrack4_tracker
+; Dummy trackers 5..7 to prevent crashing in QuickMet
+dw musicTrack1_tracker, musicTrack2_tracker, musicTrack3_tracker, musicTrack4_tracker, !zero, !zero, !zero
 
 ; Samus fanfare
 musicTrack1:

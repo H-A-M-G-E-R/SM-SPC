@@ -38,9 +38,6 @@ and a,#$0F : beq .branch_silence : mov !misc1,a
 mov a,y : xcn a : and a,#$0F : mov !sound2Priority,a
 
 mov !i_globalChannel,#$00+!sound1_n_channels
-mov a,#$00
-mov !sound2_channel0_voiceBitset,a
-mov !sound2_channel1_voiceBitset,a
 call soundInitialisation
 }
 

@@ -38,6 +38,9 @@ asl a : mov !musicTempo+1,a
 
 ; Enable timer 0
 mov $F1,#$01
+
+; Set default !p_trackerData to prevent crashing in QuickMet
+mov a,#sharedTrackerPointers&$FF : mov y,#sharedTrackerPointers>>8 : movw !p_trackerData,ya
 }
 
 .loop_main
