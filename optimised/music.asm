@@ -69,9 +69,8 @@ mov !dynamicMusicTempoTimer,a
 mov !musicTranspose,a
 mov !trackerTimer,a
 mov !percussionInstrumentsBaseIndex,a
-mov y,a : movw !musicTrackClock,ya
-mov a,#$C0 : movw !musicVolume,ya
-mov a,#$20 : movw !musicTempo+1,ya
+mov y,#$C0 : movw !musicVolume,ya
+mov y,#$20 : movw !musicTempo,ya
 mov a,#sharedNoteRingLengthTable&$FF : mov y,#sharedNoteRingLengthTable>>8 : movw !p_noteRingLengthTable,ya
 mov a,#sharedEchoFirFilters&$FF : mov y,#sharedEchoFirFilters>>8 : movw !p_echoFirFilters,ya
 mov !noteEndInTicks,#$02
