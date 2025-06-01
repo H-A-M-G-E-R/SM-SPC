@@ -29,42 +29,46 @@ ret
 soundInitialisation:
 {
 ;; Parameters:
-;;     !misc1: number of sound channels
+;;     X: Global channel index. Range 0..7
+;;     !misc1: Number of sound channels (non-zero)
 
-; Requires !i_soundLibrary and !i_globalChannel to be set
+; Requires !i_soundLibrary to be set
 
-mov !misc0,#$07
+mov !misc0,#$08
 
 .loop
-mov y,!misc0 : mov a,!sound_voiceOrder+y : mov !misc0+1,a
+mov y,!misc0 : mov a,!sound_voiceOrder-1+y : mov !misc0+1,a
 lsr a : mov y,a : mov a,channelBitsets+y : mov !misc1+1,a
+
+; Check if voice is not occupied
 and a,!enableSoundEffectVoices : bne .skipVoice
 
-mov a,!misc1 : beq .ret
-dec a : mov !misc1,a
-asl a : inc a : mov y,a
-mov a,#$00 : mov x,!i_globalChannel
+; Initialise sound variables
+mov a,!misc1 : asl a : dec a : mov y,a
+mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionListsLow+x,a : inc y : mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionListsHigh+x,a
+mov a,!misc0+1 : mov !sound_voiceIndices+x,a
+mov a,#$00
 mov !sound_releaseFlags+x,a
 mov !sound_updateAdsrSettingsFlags+x,a
 mov !sound_pitchSlideFlags+x,a
 mov !sound_legatoFlags+x,a
 mov !sound_pitchSlideLegatoFlags+x,a
 inc a : mov !sound_instructionTimers+x,a
-mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionListsLow+x,a : inc y : mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionListsHigh+x,a
-
-mov a,!misc0+1 : mov !sound_voiceIndices+x,a
 mov a,#$0A : mov !sound_panningBiases+x,a
 
 mov a,!misc1+1
 tset !enableSoundEffectVoices,a
 tclr !echoEnableFlags,a
 mov !sound_voiceBitsets+x,a
-mov x,!i_soundLibrary : or a,!sound_enabledVoices+x : mov !sound_enabledVoices+x,a
+mov y,!i_soundLibrary : or a,!sound_enabledVoices+y : mov !sound_enabledVoices+y,a
 
-inc !i_globalChannel
+; Return if no channels left
+dec !misc1 : beq .ret
+
+inc x
 
 .skipVoice
-dec !misc0 : bpl .loop
+dbnz !misc0,.loop
 
 .ret
 ret
@@ -80,14 +84,10 @@ resetSoundChannel:
 
 mov a,!sound_voiceBitsets+x : beq +
 
-mov !i_globalChannel,x
-
-mov a,!sound_voiceIndices+x : mov !i_voice,a
-
-mov a,!sound_voiceBitsets+x : push a : eor a,#$FF : mov y,!i_soundLibrary : and a,!sound_enabledVoices+y : mov !sound_enabledVoices+y,a
-pop a : tclr !enableSoundEffectVoices,a
+tclr !enableSoundEffectVoices,a
 mov $F2,#$5C : mov $F3,a
 tset !sound_endedVoices,a
+eor a,#$FF : mov y,!i_soundLibrary : and a,!sound_enabledVoices+y : mov !sound_enabledVoices+y,a
 mov a,#$00 : mov !sound_voiceBitsets+x,a
 
 ; Reset sound if no enabled voices
@@ -251,7 +251,7 @@ mov a,#$00 : mov !sound_subnotes+x,a
 ; Length
 mov x,!i_globalChannel : call getNextDataByte : mov !sound_instructionTimers+x,a
 mov a,!sound_updateAdsrSettingsFlags+x : beq +
-mov a,!sound_voiceIndices+x : asl a : asl a : asl a : or a,#$05 : mov y,a : mov a,!sound_adsrSettingsLow+x : call writeDspRegisterDirect
+mov a,!i_voice : asl a : asl a : asl a : or a,#$05 : mov y,a : mov a,!sound_adsrSettingsLow+x : call writeDspRegisterDirect
 inc y : mov a,!sound_adsrSettingsHigh+x : call writeDspRegisterDirect
 
 +

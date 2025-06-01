@@ -37,7 +37,7 @@ mov y,#$00 : mov a,(!sound_instructionListPointerSet)+y : mov y,a
 and a,#$0F : beq .branch_silence : mov !misc1,a
 mov a,y : xcn a : and a,#$0F : mov !sound2Priority,a
 
-mov !i_globalChannel,#$00+!sound1_n_channels
+mov x,#$00+!sound1_n_channels
 call soundInitialisation
 }
 
