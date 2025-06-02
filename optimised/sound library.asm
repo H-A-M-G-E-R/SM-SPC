@@ -45,7 +45,7 @@ and a,!enableSoundEffectVoices : bne .skipVoice
 ; Initialise sound variables
 mov a,!i_soundLibrary : mov !sound_libraryIndices+x,a
 mov a,!misc1 : asl a : dec a : mov y,a
-mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionListsLow+x,a : inc y : mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionListsHigh+x,a
+mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionLists+x,a : inc y : mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionLists+1+x,a
 mov a,#$00
 mov !sound_releaseFlags+x,a
 mov !sound_updateAdsrSettingsFlags+x,a
@@ -114,9 +114,9 @@ getNextDataByte:
 {
 ;; Parameters:
 ;;     X: Track index. Range 0..Eh
-mov a,!sound_p_instructionListsLow+x : mov y,!sound_p_instructionListsHigh+x : movw !misc0,ya
+mov a,!sound_p_instructionLists+x : mov y,!sound_p_instructionLists+1+x : movw !misc0,ya
 mov y,#$00 : mov a,(!misc0)+y
-inc !sound_p_instructionListsLow+x : bne + : inc !sound_p_instructionListsHigh+x : +
+inc !sound_p_instructionLists+x : bne + : inc !sound_p_instructionLists+1+x : +
 ret
 }
 
@@ -212,8 +212,8 @@ cmp a,#$FE : bne +
 
 ; FEh cc - set repeat pointer with repeat counter = c
 call getNextDataByte : mov !sound_repeatCounters+x,a
-mov a,!sound_p_instructionListsLow+x : mov !sound_repeatPointsLow+x,a
-mov a,!sound_p_instructionListsHigh+x : mov !sound_repeatPointsHigh+x,a
+mov a,!sound_p_instructionLists+x : mov !sound_repeatPoints+x,a
+mov a,!sound_p_instructionLists+1+x : mov !sound_repeatPoints+1+x,a
 call getNextDataByte
 
 +
@@ -224,8 +224,8 @@ mov a,!sound_repeatCounters+x : dec a : mov !sound_repeatCounters+x,a : bne + : 
 
 ; FBh - repeat
 .loop_repeatCommand
-mov a,!sound_repeatPointsLow+x : mov !sound_p_instructionListsLow+x,a
-mov a,!sound_repeatPointsHigh+x : mov !sound_p_instructionListsHigh+x,a
+mov a,!sound_repeatPoints+x : mov !sound_p_instructionLists+x,a
+mov a,!sound_repeatPoints+1+x : mov !sound_p_instructionLists+1+x,a
 call getNextDataByte
 
 .branch_repeatCommand
@@ -253,9 +253,8 @@ mov a,!trackOutputVolumes+x : push a
 mov a,!trackPhaseInversionOptions+x : push a
 
 mov a,y : mov !trackOutputVolumes+x,a
-mov a,#$00 : mov !trackPhaseInversionOptions+x,a
-
-mov a,!sound_panningBiases+x : mov !panningBias+1,a : mov !panningBias,#$00
+mov a,!sound_panningBiases+x : mov !trackPhaseInversionOptions+x,a
+and a,#$1F : mov !panningBias+1,a : mov !panningBias,#$00
 call writeDspVoiceVolumes
 ; Restore track output volume and phase inversion options
 pop a : mov !trackPhaseInversionOptions+x,a

@@ -153,8 +153,7 @@ endmacro
 
 ; Sounds
 {
-%declare_bytePairArray(sound_p_instructionListsLow,  !n_tracks)
-%declare_bytePairArray(sound_p_instructionListsHigh, !n_tracks)
+%declare_wordArray(sound_p_instructionLists, !n_tracks)
 }
 
 %declare_wordArray(trackPointers, !n_tracks)
@@ -321,8 +320,6 @@ endif
 %declare_bytePairArray(sound_instructionTimers,                 !n_tracks)
 %declare_bytePairArray(sound_releaseFlags,                      !n_tracks)
 %declare_bytePairArray(sound_repeatCounters,                    !n_tracks)
-%declare_bytePairArray(sound_repeatPointsLow,                   !n_tracks)
-%declare_bytePairArray(sound_repeatPointsHigh,                  !n_tracks)
 %declare_bytePairArray(sound_updateAdsrSettingsFlags,           !n_tracks)
 %declare_bytePairArray(sound_notes,                             !n_tracks)
 %declare_bytePairArray(sound_subnotes,                          !n_tracks)
@@ -333,6 +330,7 @@ endif
 %declare_bytePairArray(sound_pitchSlideLegatoFlags,             !n_tracks)
 %declare_bytePairArray(sound_panningBiases,                     !n_tracks)
 
+%declare_wordArray(sound_repeatPoints,                          !n_tracks)
 %declare_wordArray(sound_adsrSettings,                          !n_tracks)
 
 %declare_byteArray(sound_voiceOrder, !n_tracks)
