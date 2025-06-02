@@ -1,22 +1,11 @@
 handleCpuIo2:
 {
-mov a,#$01 : mov !i_soundLibrary,a
+mov !i_soundLibrary,#$02
 
 mov y,!cpuIo2_read_prev
 mov a,!cpuIo2_read : mov !cpuIo2_read_prev,a
 mov !cpuIo2_write,a
-cmp y,!cpuIo2_read : bne .branch_change
-
-.branch_noChange
-mov a,!sound2 : bne +
-ret
-
-+
-jmp processSound2
-
-.branch_silence
-mov a,#$00 : mov !sound2,a
-ret
+cmp y,!cpuIo2_read : beq .branch_noChange
 
 .branch_change
 cmp a,#$00 : beq .branch_noChange
@@ -27,8 +16,7 @@ mov a,!sound2Priority : bne .branch_noChange
 
 +
 mov a,!sound2 : beq +
-mov x,#$00+!sound1_n_channels : call resetSoundChannel
-mov x,#$01+!sound1_n_channels : call resetSoundChannel
+call resetSound
 
 +
 mov x,!cpuIo2_write : mov !sound2,x
@@ -37,15 +25,13 @@ mov y,#$00 : mov a,(!sound_instructionListPointerSet)+y : mov y,a
 and a,#$0F : beq .branch_silence : mov !misc1,a
 mov a,y : xcn a : and a,#$0F : mov !sound2Priority,a
 
-mov x,#$00+!sound1_n_channels
 call soundInitialisation
-}
 
-processSound2:
-{
-mov x,#$00+!sound1_n_channels : call processSoundChannel
-mov x,#$01+!sound1_n_channels : call processSoundChannel
+.branch_noChange
+ret
 
+.branch_silence
+mov a,#$00 : mov !sound2,a
 ret
 }
 

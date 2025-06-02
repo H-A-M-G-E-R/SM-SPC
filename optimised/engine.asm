@@ -96,6 +96,9 @@ mov x,#$02 : call writeReadCpuIo
 call handleCpuIo3
 mov x,#$03 : call writeReadCpuIo
 
+; Process sounds
+call processSounds
+
 ; Echo timer
 cmp (!echoTimer),(!echoDelay) : beq .branch_soundFx_end
 inc !echoTimer
