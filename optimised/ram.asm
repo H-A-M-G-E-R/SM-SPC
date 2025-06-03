@@ -149,7 +149,6 @@ endmacro
 
 %declare_word(randomNumber)
 %declare_byte(enableSoundEffectVoices)
-%declare_word(p_return)
 
 ; Sounds
 {
@@ -225,13 +224,11 @@ endmacro
 ; Sounds
 {
 %declare_byte(sound_voiceBitset)
-%declare_byte(i_voice)
 %declare_byte(i_soundLibrary)
 }
 
 %declare_byte(fakeEchoEnableFlags)
 %declare_word(p_noteRingLengthTable)
-%declare_byte(noteEndInTicks) ; Note: Pocky & Rocky 2 changed this to 1 from 2
 %declare_byte(sound_endedVoices)
 %declare_word(p_echoFirFilters)
 
@@ -243,6 +240,8 @@ endif
 !p_ram #= !p_extra
 %declare_word(p_trackerData)
 %declare_byte(enableLateKeyOff)
+
+%declare_byte(noteEndInTicks) ; Note: Pocky & Rocky 2 changed this to 1 from 2
 
 ; $F0..FF: IO ports
 if !p_ram >= $F0
@@ -339,9 +338,9 @@ endif
 !p_end_ram #= !p_ram
 
 ; $31E..267C: SPC engine
-!p_ram = $2C00-($2A*6)
+!p_ram = $2800-($30*6)
 
-%declare_byteArray(instrumentTable, $2A*6)
+%declare_byteArray(instrumentTable, $30*6)
 
 ; Must be 100h aligned
 !p_ram #= !p_ram+$100-1
