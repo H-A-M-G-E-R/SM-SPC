@@ -241,11 +241,21 @@ jmp .loop_commands
 +
 endif
 
+cmp a,#$80 : bcs +
+; 0..7Fh - select instrument
+call setInstrumentSettings
+call getNextDataByte
+
 ; Process note instruction
 
-; Instrument index
-call setInstrumentSettings
++
+; Note
+; F0h is a tie
+cmp a,#$F0 : beq +
+mov !sound_notes+x,a
+mov a,#$00 : mov !sound_subnotes+x,a
 
++
 ; Volume
 call getNextDataByte : mov y,a
 ; Save track output volume and phase inversion options
@@ -260,14 +270,6 @@ call writeDspVoiceVolumes
 pop a : mov !trackPhaseInversionOptions+x,a
 pop a : mov !trackOutputVolumes+x,a
 
-; Note
-call getNextDataByte
-; F6h is a tie
-cmp a,#$F6 : beq +
-mov !sound_notes+x,a
-mov a,#$00 : mov !sound_subnotes+x,a
-
-+
 ; Length
 call getNextDataByte : mov !sound_instructionTimers+x,a
 mov a,!sound_updateAdsrSettingsFlags+x : beq +
