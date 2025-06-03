@@ -1084,7 +1084,7 @@ mov a,!trackNoteDeltas+1+x : mov y,a : mov a,!trackNoteDeltas+x : call adjustByT
 +
 mov a,!trackVibratoExtents+x : beq playNoteIfModified
 mov a,!trackVibratoDelays+x : cbne !trackVibratoDelayTimers+x,playNoteIfModified
-mov y,!musicTrackClock : mov a,!trackVibratoRates+x : mul ya : mov a,y : clrc : adc a,!trackVibratoPhases+x
+mov y,!musicTrackClock+1 : mov a,!trackVibratoRates+x : mul ya : mov a,y : clrc : adc a,!trackVibratoPhases+x
 jmp playNoteWithVibrato
 }
 
@@ -1093,8 +1093,8 @@ adjustByTicPercentage:
 {
 set7 !noteModifiedFlag
 mov !signBit,y : call absoluteValue : push y
-mov y,!musicTrackClock : mul ya : mov !misc0,y : mov !misc0+1,#$00
-mov y,!musicTrackClock : pop a : mul ya : addw ya,!misc0
+mov y,!musicTrackClock+1 : mul ya : mov !misc0,y : mov !misc0+1,#$00
+mov y,!musicTrackClock+1 : pop a : mul ya : addw ya,!misc0
 
 ; Fall through
 }
@@ -1111,7 +1111,7 @@ ret
 updatePlayingTrackOutputVolume:
 {
 set7 !noteModifiedFlag
-mov y,!musicTrackClock : mov a,!trackTremoloRates+x : mul ya : mov a,y : clrc : adc a,!trackTremoloPhases+x
+mov y,!musicTrackClock+1 : mov a,!trackTremoloRates+x : mul ya : mov a,y : clrc : adc a,!trackTremoloPhases+x
 
 ; Fall through
 }
