@@ -495,7 +495,6 @@ db $01 : dw ..voice0
 
 ; Sound 54h:
 .sound54
-;db $01 : dw ..voice0
 db $11 : dw ..voice0
 ..voice0 : db $14, $93,$B0,$05, $9C,$80,$0A, $9C,$40,$03, $9C,$30,$03, $FF
 
