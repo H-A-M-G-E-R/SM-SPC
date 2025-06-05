@@ -29,9 +29,18 @@ ret
 soundInitialisation:
 {
 ;; Parameters:
-;;     !misc1: Number of sound channels (non-zero)
+;;     YA: Pointer to sound instruction list pointer set
 
 ; Requires !i_soundLibrary to be set
+
+movw !sound_instructionListPointerSet,ya
+
+; First byte (configuration)
+mov y,#$00 : mov a,(!sound_instructionListPointerSet)+y : mov y,a
+; Number of channels in low nybble
+and a,#$0F : beq .ret : mov !misc1,a
+; Priority in high nybble
+mov a,y : xcn a : and a,#$0F : mov y,!i_soundLibrary : mov !sound_priorities-1+y,a
 
 mov !misc0,#$08
 
@@ -92,7 +101,7 @@ resetSoundChannel:
 ;; Parameters:
 ;;     X: Track index. Range 0..Eh
 
-; Requires !i_soundLibrary and !sound_voiceBitset to be set
+; Requires !sound_voiceBitset to be set
 
 mov a,!sound_voiceBitset : tclr !enableSoundEffectVoices,a
 mov $F2,#$5C : mov $F3,a

@@ -142,6 +142,9 @@ writeReadCpuIo:
 ;; Parameter:
 ;;     X: CPU IO index
 
+; Update previous value read from CPU IO [X]
+mov a,!cpuIo0_read+x : mov !cpuIo0_read_prev+x,a
+
 ; Write CPU IO [X]
 mov a,!cpuIo0_write+x : mov $F4+x,a
 

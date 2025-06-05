@@ -2,35 +2,21 @@ handleCpuIo1:
 {
 mov !i_soundLibrary,#$01
 
-mov y,!cpuIo1_read_prev
-mov a,!cpuIo1_read : mov !cpuIo1_read_prev,a
-mov !cpuIo1_write,a
-cmp y,!cpuIo1_read : beq .branch_noChange
+mov a,!cpuIo1_read : mov !cpuIo1_write,a
+beq .branch_noChange
+cmp a,!cpuIo1_read_prev : beq .branch_noChange
 
-.branch_change
-cmp a,#$00 : beq .branch_noChange
-mov a,!cpuIo1_read
 cmp a,#$03 : bcc +
 mov a,!sound1Priority : bne .branch_noChange
 
 +
-mov a,!sound1 : beq +
 call resetSound
 
-+
 mov x,!cpuIo1_write : mov !sound1,x
-mov a,sound1InstructionLists_high-1+x : mov y,a : mov a,sound1InstructionLists_low-1+x : movw !sound_instructionListPointerSet,ya
-mov y,#$00 : mov a,(!sound_instructionListPointerSet)+y : mov y,a
-and a,#$0F : beq .branch_silence : mov !misc1,a
-mov a,y : xcn a : and a,#$0F : mov !sound1Priority,a
-
+mov a,sound1InstructionLists_high-1+x : mov y,a : mov a,sound1InstructionLists_low-1+x
 call soundInitialisation
 
 .branch_noChange
-ret
-
-.branch_silence
-mov a,#$00 : mov !sound1,a
 ret
 }
 

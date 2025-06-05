@@ -83,12 +83,11 @@ ret
 handleMusicTrack:
 {
 ; Check CPU IO 0
-mov y,!cpuIo0_read_prev
-mov a,!cpuIo0_read : mov !cpuIo0_read_prev,a
+mov a,!cpuIo0_read
 cmp a,#$F0 : beq keyOffMusicVoices
 cmp a,#$F1 : beq +
 cmp a,#$FF : beq loadNewMusicData
-cmp y,!cpuIo0_read : bne loadNewMusicTrack
+cmp a,!cpuIo0_read_prev : bne loadNewMusicTrack
 
 +
 mov a,!cpuIo0_write : beq musicTrackInitialisation_ret

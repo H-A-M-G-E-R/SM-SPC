@@ -2,36 +2,23 @@ handleCpuIo3:
 {
 mov !i_soundLibrary,#$03
 
-mov y,!cpuIo3_read_prev
-mov a,!cpuIo3_read : mov !cpuIo3_read_prev,a
-mov !cpuIo3_write,a
-cmp y,!cpuIo3_read : beq .branch_noChange
+mov a,!cpuIo3_read : mov !cpuIo3_write,a
+beq .branch_noChange
+cmp a,!cpuIo3_read_prev : beq .branch_noChange
 
-.branch_change
-cmp a,#$00 : beq .branch_noChange
-mov a,!cpuIo3_read : cmp a,#$01 : beq +
+cmp a,#$01 : beq +
 mov y,!sound3Priority : cmp y,#$02 : beq .branch_noChange
-mov a,!cpuIo3_read : cmp a,#$02 : beq +
+cmp a,#$02 : beq +
 dec y : beq .branch_noChange
 
 +
-mov a,!sound3 : beq +
 call resetSound
 
-+
 mov x,!cpuIo3_write : mov !sound3,x
-mov a,sound3InstructionLists_high-1+x : mov y,a : mov a,sound3InstructionLists_low-1+x : movw !sound_instructionListPointerSet,ya
-mov y,#$00 : mov a,(!sound_instructionListPointerSet)+y : mov y,a
-and a,#$0F : beq .branch_silence : mov !misc1,a
-mov a,y : xcn a : and a,#$0F : mov !sound3Priority,a
-
+mov a,sound3InstructionLists_high-1+x : mov y,a : mov a,sound3InstructionLists_low-1+x
 call soundInitialisation
 
 .branch_noChange
-ret
-
-.branch_silence
-mov a,#$00 : mov !sound3,a
 ret
 }
 

@@ -232,6 +232,23 @@ endmacro
 %declare_byte(sound_endedVoices)
 %declare_word(p_echoFirFilters)
 
+; Sounds
+{
+%declare_byteArray(sounds, 3)
+%declare_byteArray(sound_enabledVoices, 3)
+%declare_byteArray(sound_priorities, 3)
+
+!sound1 = !sounds
+!sound2 = !sounds+1
+!sound3 = !sounds+2
+!sound1_enabledVoices = !sound_enabledVoices
+!sound2_enabledVoices = !sound_enabledVoices+1
+!sound3_enabledVoices = !sound_enabledVoices+2
+!sound1Priority = !sound_priorities
+!sound2Priority = !sound_priorities+1
+!sound3Priority = !sound_priorities+2
+}
+
 !p_extra = $E0
 if !p_ram >= !p_extra
     print "\!p_ram = ",hex(!p_ram)
@@ -296,23 +313,6 @@ endif
 %declare_wordArray(trackNoteDeltas,                        !n_tracks)
 }
 
-; Sounds
-{
-%declare_byteArray(sounds, 3)
-%declare_byteArray(sound_enabledVoices, 3)
-%declare_byteArray(sound_priorities, 3)
-
-!sound1 = !sounds
-!sound2 = !sounds+1
-!sound3 = !sounds+2
-!sound1_enabledVoices = !sound_enabledVoices
-!sound2_enabledVoices = !sound_enabledVoices+1
-!sound3_enabledVoices = !sound_enabledVoices+2
-!sound1Priority = !sound_priorities
-!sound2Priority = !sound_priorities+1
-!sound3Priority = !sound_priorities+2
-}
-
 ; Sound channels
 {
 !canInterleaveBytePairArray = 0
@@ -337,7 +337,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $31E..267C: SPC engine
+; $315..260A: SPC engine
 !p_ram = $2800-($30*6)
 
 %declare_byteArray(instrumentTable, $30*6)
