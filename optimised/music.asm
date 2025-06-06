@@ -911,12 +911,15 @@ ret
 ; $1C88
 handleCurrentNote:
 {
-mov a,!trackNoteRingTimers+x : beq .branch_continuePlaying
+movw ya,!p_tracker : push y : push a
+mov a,!trackNoteRingTimers+x : bne + : jmp .branch_continuePlaying : +
 dec !trackNoteRingTimers+x : beq +
-mov a,!noteEndInTicks : cbne !trackNoteTimers+x,.branch_continuePlaying
+mov a,!noteEndInTicks : cmp a,!trackNoteTimers+x : beq +
+jmp .branch_continuePlaying
 
 +
 ; Note ring has ended or note is ending in two ticks
+mov !misc1,!trackerTimer
 mov a,!trackRepeatedSubsectionCounters+x : mov !misc1+1,a
 mov a,!trackPointers+x : mov y,!trackPointers+1+x
 
@@ -945,14 +948,30 @@ push y : mov y,a : pop a : adc a,trackCommandParameterBytes-$E0+y : mov y,a
 bra .loop_commands
 
 .branch_end
-bbs0 !enableLateKeyOff,+
-mov a,!misc1+1 : beq .branch_note
-bra ++
+mov a,!misc1+1 : bne .branch_endSubsection
+bbc0 !enableLateKeyOff,.branch_note
+
+.loop_tracker
+call getNextTrackerCommand
+bne .branch_newTrackData
+mov y,a : beq .branch_note
+
+dec !misc1 : bpl +
+mov !misc1,a
 
 +
-mov a,!misc1+1 : beq .branch_continuePlaying
+call getNextTrackerCommand
+and !misc1,!misc1 : beq .loop_tracker
+movw !p_tracker,ya
+bra .loop_tracker
 
-++
+.branch_newTrackData
+movw !noteOrPanningBias,ya
+mov a,x : mov y,a
+mov a,(!noteOrPanningBias)+y : push a : inc y : mov a,(!noteOrPanningBias)+y : mov y,a : pop a
+bra .loop_sections
+
+.branch_endSubsection
 dbnz !misc1+1,+
 mov a,!trackRepeatedSubsectionReturnAddresses+1+x : push a : mov a,!trackRepeatedSubsectionReturnAddresses+x : pop y
 bra .loop_sections
@@ -963,13 +982,14 @@ bra .loop_sections
 
 .branch_repeatSubsection
 inc y : mov a,(!misc0)+y : push a : inc y : mov a,(!misc0)+y : mov y,a : pop a
-bra .loop_sections
+jmp .loop_sections
 
 .branch_note
-mov a,!musicVoiceBitset : mov y,#$5C : call writeDspRegister
+mov $F2,#$5C : mov $F3,!musicVoiceBitset
 
 .branch_continuePlaying
 clr7 !noteModifiedFlag
+pop a : pop y : movw !p_tracker,ya
 mov a,!trackPitchSlideTimers+x : beq .branch_pitchSlide_end
 mov a,!trackPitchSlideDelayTimers+x : beq +
 dec !trackPitchSlideDelayTimers+x
@@ -977,7 +997,7 @@ bra .branch_pitchSlide_end
 
 .branch_miscCommand
 inc y : mov a,(!misc0)+y : push y : mov y,a : pop a : adc a,miscCommandParameterBytes+y : mov y,a
-bra .loop_commands
+jmp .loop_commands
 
 +
 set7 !noteModifiedFlag
