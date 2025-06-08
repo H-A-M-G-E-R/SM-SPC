@@ -292,8 +292,8 @@ mov x,a
 ; Get pitch multiplier for note in octave 6
 mov a,pitchTable+1+y : mov !misc0+1,a : mov a,pitchTable+y : mov !misc0,a
 mov a,pitchTable+3+y : push a : mov a,pitchTable+2+y : pop y : subw ya,!misc0
-mov y,!note : mul ya : mov a,y : mov y,#$00 : addw ya,!misc0
-mov !misc0+1,y : asl a : rol !misc0+1 : mov !misc0,a
+push y : mov y,!note : mul ya : mov !misc1,y : mov !misc1+1,#$00
+pop a : mov y,!note : mul ya : addw ya,!misc1 : addw ya,!misc0 : movw !misc0,ya
 
 ; Adjust for actual octave
 bra +
@@ -453,7 +453,7 @@ db !echoVolumeLeft+1, !echoVolumeRight+1, !echoFeedbackVolume, !echoEnableFlags,
 
 ; $1E66
 pitchTable:
-dw $085F, $08DE, $0965, $09F4, $0A8C, $0B2C, $0BD6, $0C8B, $0D4A, $0E14, $0EEA, $0FCD, $10BE
+dw $10BE, $11BD, $12CB, $13E9, $1518, $1659, $17AD, $1916, $1A94, $1C28, $1DD5, $1F9B, $217C
 
 channelBitsets:
 db $01, $02, $04, $08, $10, $20, $40, $80
