@@ -985,7 +985,7 @@ inc y : mov a,(!misc0)+y : push a : inc y : mov a,(!misc0)+y : mov y,a : pop a
 jmp .loop_sections
 
 .branch_note
-mov $F2,#$5C : mov $F3,!musicVoiceBitset
+mov a,!musicVoiceBitset : mov y,#$5C : call writeDspRegister
 
 .branch_continuePlaying
 clr7 !noteModifiedFlag

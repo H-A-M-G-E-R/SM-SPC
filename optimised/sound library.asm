@@ -29,6 +29,7 @@ ret
 soundInitialisation:
 {
 ;; Parameters:
+;;     X: Sound index
 ;;     YA: Pointer to sound instruction list pointer set
 
 ; Requires !i_soundLibrary to be set
@@ -41,6 +42,8 @@ mov y,#$00 : mov a,(!sound_instructionListPointerSet)+y : mov y,a
 and a,#$0F : beq .ret : mov !misc1,a
 ; Priority in high nybble
 mov a,y : xcn a : and a,#$0F : mov y,!i_soundLibrary : mov !sound_priorities-1+y,a
+
+mov !sounds-1+y,x
 
 mov !misc0,#$08
 
@@ -176,80 +179,17 @@ endif
 
 .loop_commands
 call getNextDataByte
-cmp a,#$F6 : bne +
-
-; F6h pp - panning bias = p / 14h
-call getNextDataByte : mov !sound_panningBiases+x,a
-bra .loop_commands
-
-+
-cmp a,#$F9 : bne +
-
-; F9h aaaa - voice's ADSR settings = a
-call getNextDataByte : mov !sound_adsrSettings+x,a
-call getNextDataByte : mov !sound_adsrSettings+1+x,a
-mov a,#$FF : mov !sound_updateAdsrSettingsFlags+x,a
-bra .loop_commands
-
-+
-cmp a,#$F5 : bne +
-
-; F5h dd tt - legato pitch slide with subnote delta = d, target note = t
-mov !sound_pitchSlideLegatoFlags+x,a
-bra ++
-
-+
-cmp a,#$F8 : bne .branch_pitchSlide_end
-
-; F8h dd tt -        pitch slide with subnote delta = d, target note = t
-mov a,#$00 : mov !sound_pitchSlideLegatoFlags+x,a
-
-++
-call getNextDataByte : mov !sound_subnoteDeltas+x,a
-call getNextDataByte : mov !sound_targetNotes+x,a
-mov !sound_pitchSlideFlags+x,a
-call getNextDataByte
-.branch_pitchSlide_end
-
 cmp a,#$FF : bne +
 
 ; FFh - end
 jmp resetSoundChannel
 
 +
-cmp a,#$FE : bne +
-
-; FEh cc - set repeat pointer with repeat counter = c
-call getNextDataByte : mov !sound_repeatCounters+x,a
-mov a,!sound_p_instructionLists+x : mov !sound_repeatPoints+x,a
-mov a,!sound_p_instructionLists+1+x : mov !sound_repeatPoints+1+x,a
-call getNextDataByte
+cmp a,#$F5 : bcc +
+call handleSoundCommand
+bra .loop_commands
 
 +
-cmp a,#$FD : bne .branch_repeatCommand
-
-; FDh - decrement repeat counter and repeat if non-zero
-mov a,!sound_repeatCounters+x : dec a : mov !sound_repeatCounters+x,a : bne + : jmp .loop_commands : +
-
-; FBh - repeat
-.loop_repeatCommand
-mov a,!sound_repeatPoints+x : mov !sound_p_instructionLists+x,a
-mov a,!sound_repeatPoints+1+x : mov !sound_p_instructionLists+1+x,a
-call getNextDataByte
-
-.branch_repeatCommand
-cmp a,#$FB : bne + : jmp .loop_repeatCommand : +
-
-if defined("noiseSounds")
-cmp a,#$FC : bne +
-
-; FCh - enable noise
-or !noiseEnableFlags,!sound_voiceBitset
-jmp .loop_commands
-
-+
-endif
-
 cmp a,#$80 : bcs +
 ; 0..7Fh - select instrument
 call setInstrumentSettings
@@ -315,5 +255,92 @@ mov !sound_legatoFlags+x,a
 .branch_playNote
 mov a,!sound_notes+x : mov y,a : mov a,!sound_subnotes+x : movw !note,ya
 call playNoteDirect
+ret
+}
+
+
+handleSoundCommand:
+{
+asl a : mov y,a : mov a,soundCommandPointers-($F5*2&$FF)+1+y : push a : mov a,soundCommandPointers-($F5*2&$FF)+y : push a
+mov a,y
+ret
+}
+
+
+soundCommandPointers:
+{
+dw \
+    soundCommandF5_legatoPitchSlide,\
+    soundCommandF6_staticPanning,\
+    $0000,\
+    soundCommandF8_pitchSlide,\
+    soundCommandF9_setAdsrSettings,\
+    $0000,\
+    soundCommandFB_repeat,\
+    soundCommandFC_enableNoise,\
+    soundCommandFD_repeatLimited,\
+    soundCommandFE_setRepeat
+}
+
+
+soundCommandF8_pitchSlide:
+{
+mov a,#$00
+
+; Fall through
+}
+
+soundCommandF5_legatoPitchSlide:
+{
+mov !sound_pitchSlideLegatoFlags+x,a
+call getNextDataByte : mov !sound_subnoteDeltas+x,a
+call getNextDataByte : mov !sound_targetNotes+x,a
+mov !sound_pitchSlideFlags+x,a
+ret
+}
+
+soundCommandF6_staticPanning:
+{
+call getNextDataByte : mov !sound_panningBiases+x,a
+ret
+}
+
+soundCommandF9_setAdsrSettings:
+{
+mov !sound_updateAdsrSettingsFlags+x,a
+call getNextDataByte : mov !sound_adsrSettings+x,a
+call getNextDataByte : mov !sound_adsrSettings+1+x,a
+ret
+}
+
+soundCommandFC_enableNoise:
+{
+if defined("noiseSounds")
+or !noiseEnableFlags,!sound_voiceBitset
+ret
+endif
+}
+
+soundCommandFD_repeatLimited:
+{
+mov a,!sound_repeatCounters+x : dec a : mov !sound_repeatCounters+x,a : beq soundCommandFB_repeat_ret
+
+; Fall through
+}
+
+soundCommandFB_repeat:
+{
+mov a,!sound_repeatPoints+x : mov !sound_p_instructionLists+x,a
+mov a,!sound_repeatPoints+1+x : mov !sound_p_instructionLists+1+x,a
+
+.ret
+ret
+}
+
+soundCommandFE_setRepeat:
+{
+call getNextDataByte : mov !sound_repeatCounters+x,a
+mov a,!sound_p_instructionLists+x : mov !sound_repeatPoints+x,a
+mov a,!sound_p_instructionLists+1+x : mov !sound_repeatPoints+1+x,a
 ret
 }

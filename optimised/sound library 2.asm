@@ -13,7 +13,7 @@ mov a,!sound2Priority : bne .branch_noChange
 +
 call resetSound
 
-mov x,!cpuIo2_write : mov !sound2,x
+mov x,!cpuIo2_write
 mov a,sound2InstructionLists_high-1+x : mov y,a : mov a,sound2InstructionLists_low-1+x
 call soundInitialisation
 
@@ -554,7 +554,7 @@ db $01 : dw ..voice0
 ; Sound 63h: Mother Brain's ketchup beam
 .sound63
 db $02 : dw ..voice0, ..voice1
-..voice0 : db $00, $95,$E0,$05, $01, $A4,$E0,$05, $08,$9F,$E0,$04, $9C,$E0,$03, $A1,$E0,$03, $93,$E0,$04, $93,$E0,$08, $8B,$D0,$13, $89,$D0,$13, $85,$D0,$16, $82,$D0,$18, $FF
+..voice0 : db $00, $95,$E0,$05, $01, $A4,$E0,$05, $08, $9F,$E0,$04, $9C,$E0,$03, $A1,$E0,$03, $93,$E0,$04, $93,$E0,$08, $8B,$D0,$13, $89,$D0,$13, $85,$D0,$16, $82,$D0,$18, $FF
 ..voice1 : db $00, $95,$E0,$05, $18, $A4,$E0,$05, $9F,$E0,$04, $9C,$E0,$03, $A1,$E0,$03, $93,$E0,$04, $93,$E0,$08, $8C,$E0,$05, $87,$E0,$04, $84,$E0,$03, $FF
 
 ; Sound 64h: Holtz cry

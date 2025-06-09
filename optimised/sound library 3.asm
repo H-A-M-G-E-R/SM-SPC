@@ -14,7 +14,7 @@ dec y : beq .branch_noChange
 +
 call resetSound
 
-mov x,!cpuIo3_write : mov !sound3,x
+mov x,!cpuIo3_write
 mov a,sound3InstructionLists_high-1+x : mov y,a : mov a,sound3InstructionLists_low-1+x
 call soundInitialisation
 
