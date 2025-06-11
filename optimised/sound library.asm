@@ -126,8 +126,7 @@ getNextDataByte:
 {
 ;; Parameters:
 ;;     X: Track index. Range 0..Eh
-mov a,!sound_p_instructionLists+x : mov y,!sound_p_instructionLists+1+x : movw !misc0,ya
-mov y,#$00 : mov a,(!misc0)+y
+mov a,(!sound_p_instructionLists+x)
 inc !sound_p_instructionLists+x : bne + : inc !sound_p_instructionLists+1+x : +
 ret
 }
