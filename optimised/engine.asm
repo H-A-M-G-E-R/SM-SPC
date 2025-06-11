@@ -242,6 +242,7 @@ playNote:
 ; Else if [note] < 13h (G_2):
 ;     Note += -1 + ([note] - 13h) / 80h
 
+bbs0 !disablePsychoacousticAdjustment,playNoteDirect
 mov y,#$00
 mov a,!note+1 : setc : sbc a,#$34
 bcs +

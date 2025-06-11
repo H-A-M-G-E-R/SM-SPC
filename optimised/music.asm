@@ -69,6 +69,7 @@ mov !dynamicMusicTempoTimer,a
 mov !musicTranspose,a
 mov !trackerTimer,a
 mov !percussionInstrumentsBaseIndex,a
+mov !disablePsychoacousticAdjustment,a
 mov y,#$C0 : movw !musicVolume,ya
 mov y,#$20 : movw !musicTempo,ya
 mov a,#sharedNoteRingLengthTable&$FF : mov y,#sharedNoteRingLengthTable>>8 : movw !p_noteRingLengthTable,ya

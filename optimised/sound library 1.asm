@@ -65,7 +65,7 @@ db .sound1>>8,  .sound2>>8,  .sound3>>8,  .sound4>>8,  .sound5>>8,  .sound6>>8, 
 
 ; Otherwise:
 ;     nn vv tt
-;     n: Note (range 80h..D3h). F0h is a tie
+;     n: Note (range 80h..D3h, no psychoacoustic adjustment made). F0h is a tie
 ;     v: Volume
 ;     t: Length in tics. 1 tic = 16 ms
 
@@ -188,7 +188,7 @@ db $01 : dw ..voice0
 .sound13
 .sound16
 db $01 : dw ..voice0
-..voice0 : db $00,$98,$D0,$0C, $04,$80,$B0,$13, $FF
+..voice0 : db $00, $98,$D0,$0C, $04, $80,$B0,$13, $FF
 
 ; Sound 17h: Charged power beam
 .sound17

@@ -259,6 +259,7 @@ endif
 %declare_byte(enableLateKeyOff)
 
 %declare_byte(noteEndInTicks) ; Note: Pocky & Rocky 2 changed this to 1 from 2
+%declare_byte(disablePsychoacousticAdjustment)
 
 ; $F0..FF: IO ports
 if !p_ram >= $F0
@@ -337,7 +338,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $315..2638: SPC engine
+; $315..263D: SPC engine
 !p_ram = $2800-($30*6)
 
 %declare_byteArray(instrumentTable, $30*6)
