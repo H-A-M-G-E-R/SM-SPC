@@ -60,7 +60,9 @@ mov a,!misc1 : asl a : dec a : mov y,a
 mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionLists+x,a : inc y : mov a,(!sound_instructionListPointerSet)+y : mov !sound_p_instructionLists+1+x,a
 mov a,#$00
 mov !sound_releaseFlags+x,a
+if defined("adsrSoundCommand")
 mov !sound_updateAdsrSettingsFlags+x,a
+endif
 mov !sound_pitchSlideFlags+x,a
 mov !sound_legatoFlags+x,a
 mov !sound_pitchSlideLegatoFlags+x,a
@@ -220,11 +222,15 @@ pop a : mov !trackOutputVolumes+x,a
 
 ; Length
 call getNextDataByte : mov !sound_instructionTimers+x,a
+
+; Update ADSR
+if defined("adsrSoundCommand")
 mov a,!sound_updateAdsrSettingsFlags+x : beq +
 mov a,x : xcn a : lsr a : or a,#$05 : mov y,a : mov a,!sound_adsrSettings+x : call writeDspRegisterDirect
 inc y : mov a,!sound_adsrSettings+1+x : call writeDspRegisterDirect
 
 +
+endif
 mov a,!sound_legatoFlags+x : bne .branch_processInstruction_end
 or !keyOnFlags,!sound_voiceBitset
 
@@ -306,10 +312,12 @@ ret
 
 soundCommandF9_setAdsrSettings:
 {
+if defined("adsrSoundCommand")
 mov !sound_updateAdsrSettingsFlags+x,a
 call getNextDataByte : mov !sound_adsrSettings+x,a
 call getNextDataByte : mov !sound_adsrSettings+1+x,a
 ret
+endif
 }
 
 soundCommandFC_enableNoise:

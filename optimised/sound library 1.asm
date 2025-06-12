@@ -14,7 +14,7 @@ call resetSound
 
 mov x,!cpuIo1_write
 mov a,sound1InstructionLists_high-1+x : mov y,a : mov a,sound1InstructionLists_low-1+x
-call soundInitialisation
+jmp soundInitialisation
 
 .branch_noChange
 ret
@@ -56,9 +56,9 @@ db .sound1>>8,  .sound2>>8,  .sound3>>8,  .sound4>>8,  .sound5>>8,  .sound6>>8, 
 ;     F5h dd tt - legato pitch slide with subnote delta = d, target note = t
 ;     F6h pp - panning bias = (p & 1Fh) / 14h. If p & 80h, left side phase inversion is enabled. If p & 40h, right side phase inversion is enabled
 ;     F8h dd tt -        pitch slide with subnote delta = d, target note = t
-;     F9h aaaa - voice's ADSR settings = a
+;     F9h aaaa - voice's ADSR settings = a (unused in vanilla, removed by default)
 ;     FBh - repeat
-;     FCh - enable noise
+;     FCh - enable noise (unused in vanilla, removed by default)
 ;     FDh - decrement repeat counter and repeat if non-zero
 ;     FEh cc - set repeat pointer with repeat counter = c
 ;     FFh - end

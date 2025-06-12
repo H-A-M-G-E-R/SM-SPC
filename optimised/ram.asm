@@ -331,14 +331,16 @@ endif
 %declare_bytePairArray(sound_panningBiases,                     !n_tracks)
 
 %declare_wordArray(sound_repeatPoints,                          !n_tracks)
+if defined("adsrSoundCommand")
 %declare_wordArray(sound_adsrSettings,                          !n_tracks)
+endif
 
 %declare_byteArray(sound_voiceOrder, !n_tracks)
 }
 
 !p_end_ram #= !p_ram
 
-; $315..2635: SPC engine
+; $305..25FA: SPC engine
 !p_ram = $2800-($30*6)
 
 %declare_byteArray(instrumentTable, $30*6)
