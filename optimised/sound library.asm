@@ -63,7 +63,7 @@ mov !sound_releaseFlags+x,a
 if defined("adsrSoundCommand")
 mov !sound_updateAdsrSettingsFlags+x,a
 endif
-mov !sound_pitchSlideFlags+x,a
+mov !sound_targetNotes+x,a
 mov !sound_legatoFlags+x,a
 mov !sound_pitchSlideLegatoFlags+x,a
 inc a : mov !sound_instructionTimers+x,a
@@ -158,11 +158,10 @@ processSoundChannel:
 ; Requires !sound_voiceBitset to be set
 ; Valid indexed non-DP address mode opcodes are mov/cmp/adc/sbc/and/or/eor
 
-mov a,!sound_instructionTimers+x : dec a : mov !sound_instructionTimers+x,a : beq + : jmp .branch_processInstruction_end : +
+setp : dec.b !sound_instructionTimers+x : clrp : beq + : jmp .branch_processInstruction_end : +
 
 ; Note has ended
 mov a,!sound_legatoFlags+x : bne .loop_commands
-mov !sound_pitchSlideFlags+x,a
 mov !sound_subnoteDeltas+x,a
 mov !sound_targetNotes+x,a
 mov a,!sound_releaseFlags+x : bne +
@@ -236,7 +235,7 @@ or !keyOnFlags,!sound_voiceBitset
 
 .branch_processInstruction_end
 ; Handle pitch slide
-mov a,!sound_pitchSlideFlags+x : beq .branch_playNote
+mov a,!sound_targetNotes+x : beq .branch_playNote
 mov a,!sound_pitchSlideLegatoFlags+x : beq +
 mov !sound_legatoFlags+x,a
 
@@ -253,7 +252,7 @@ mov a,!sound_notes+x : inc a
 ++
 mov !sound_notes+x,a
 mov a,!sound_targetNotes+x : setc : sbc a,!sound_notes+x : bne .branch_playNote
-mov !sound_pitchSlideFlags+x,a
+mov !sound_targetNotes+x,a
 mov !sound_legatoFlags+x,a
 
 ; Play note
@@ -300,7 +299,6 @@ soundCommandF5_legatoPitchSlide:
 mov !sound_pitchSlideLegatoFlags+x,a
 call getNextDataByte : mov !sound_subnoteDeltas+x,a
 call getNextDataByte : mov !sound_targetNotes+x,a
-mov !sound_pitchSlideFlags+x,a
 ret
 }
 

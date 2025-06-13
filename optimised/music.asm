@@ -578,12 +578,13 @@ call getNextTrackDataByte : mov !echoFeedbackVolume,a
 call getNextTrackDataByte
 mov y,#$08 : mul ya : mov y,a
 mov $F2,#$0F
+clrc
 
 -
 {
 mov a,(!p_echoFirFilters)+y : mov $F3,a
 inc y
-clrc : adc $F2,#$10
+adc $F2,#$10
 bpl -
 }
 

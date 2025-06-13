@@ -23,8 +23,8 @@ incsrc "ram.asm"
 
 arch spc700
 
-dw main_eof-!p_end_ram, !p_end_ram
-base !p_end_ram
+dw main_eof-main_metadata, !p_end_ram-$D
+base !p_end_ram-$D
 {
 main_metadata:
 {
@@ -68,9 +68,7 @@ main_eof:
 incsrc "samples.asm"
 
 if defined("printAramSummary")
-    print "$",hex(!p_end_ram), ": RAM end"
-    print "$",hex(main_metadata), ": Metadata"
-    print "$",hex(main_engine), ": Engine"
+    print "$",hex(main_engine), ": RAM end / engine"
     print "$",hex(main_utility), ": Utility"
     print "$",hex(main_music), ": Music"
     print "$",hex(main_soundLibrary), ": Sound library"

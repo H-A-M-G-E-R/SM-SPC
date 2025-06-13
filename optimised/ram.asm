@@ -219,6 +219,7 @@ endmacro
 %declare_bytePairArray(trackVibratoExtents,             !n_tracks)
 %declare_bytePairArray(trackTremoloDelayTimers,         !n_tracks)
 %declare_bytePairArray(trackTremoloExtents,             !n_tracks)
+%declare_bytePairArray(trackNotes,                      !n_tracks)
 }
 
 ; Sounds
@@ -276,6 +277,7 @@ endif
 ; Note: These are referenced in code via $00 with direct page = $100
 %declare_bytePairArray(trackDynamicVibratoTimers,          !n_tracks)
 %declare_bytePairArray(sound_libraryIndices,               !n_tracks)
+%declare_bytePairArray(sound_instructionTimers,            !n_tracks)
 
 %declare_bytePairArray(trackNoteLengths,                   !n_tracks)
 %declare_bytePairArray(trackNoteRingLengths,               !n_tracks)
@@ -300,7 +302,6 @@ endif
 %declare_bytePairArray(trackTargetPanningBiases,           !n_tracks)
 %declare_bytePairArray(trackPhaseInversionOptions,         !n_tracks)
 %declare_bytePairArray(trackSubnotes,                      !n_tracks)
-%declare_bytePairArray(trackNotes,                         !n_tracks)
 %declare_bytePairArray(trackTargetNotes,                   !n_tracks)
 %declare_bytePairArray(trackSubtransposes,                 !n_tracks)
 
@@ -316,8 +317,6 @@ endif
 
 ; Sound channels
 {
-!canInterleaveBytePairArray = 0
-%declare_bytePairArray(sound_instructionTimers,                 !n_tracks)
 %declare_bytePairArray(sound_releaseFlags,                      !n_tracks)
 %declare_bytePairArray(sound_repeatCounters,                    !n_tracks)
 %declare_bytePairArray(sound_updateAdsrSettingsFlags,           !n_tracks)
@@ -325,7 +324,6 @@ endif
 %declare_bytePairArray(sound_subnotes,                          !n_tracks)
 %declare_bytePairArray(sound_subnoteDeltas,                     !n_tracks)
 %declare_bytePairArray(sound_targetNotes,                       !n_tracks)
-%declare_bytePairArray(sound_pitchSlideFlags,                   !n_tracks)
 %declare_bytePairArray(sound_legatoFlags,                       !n_tracks)
 %declare_bytePairArray(sound_pitchSlideLegatoFlags,             !n_tracks)
 %declare_bytePairArray(sound_panningBiases,                     !n_tracks)
@@ -340,7 +338,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $305..25FA: SPC engine
+; $2E8..25CC: SPC engine
 !p_ram = $2800-($30*6)
 
 %declare_byteArray(instrumentTable, $30*6)
