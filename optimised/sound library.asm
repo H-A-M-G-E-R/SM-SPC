@@ -37,7 +37,7 @@ soundInitialisation:
 movw !sound_instructionListPointerSet,ya
 
 ; First byte (configuration)
-mov y,#$00 : mov a,(!sound_instructionListPointerSet)+y : mov y,a
+mov y,#$00 : mov !dspVoiceVolumeIndex,y : mov a,(!sound_instructionListPointerSet)+y : mov y,a
 ; Number of channels in low nybble
 and a,#$0F : beq .ret : mov !misc1,a
 ; Priority in high nybble
@@ -53,6 +53,8 @@ lsr a : mov y,a : mov a,channelBitsets+y : mov !misc1+1,a
 
 ; Check if voice is not occupied
 and a,!enableSoundEffectVoices : bne .skipVoice
+
+inc !dspVoiceVolumeIndex
 
 ; Initialise sound variables
 mov a,!i_soundLibrary : mov !sound_libraryIndices+x,a
@@ -79,6 +81,9 @@ dec !misc1 : beq .ret
 
 .skipVoice
 dbnz !misc0,.loop
+
+; Could not initialise all channels, reset sound if no channels are initialised
+mov y,!i_soundLibrary : mov a,!dspVoiceVolumeIndex : beq resetSoundChannel_resetSound
 
 .ret
 ret
@@ -116,6 +121,8 @@ mov a,#$00 : mov !sound_libraryIndices+x,a
 
 ; Reset sound if no enabled voices
 mov a,!sound_enabledVoices-1+y : bne +
+
+.resetSound
 mov !sounds-1+y,a
 mov !sound_priorities-1+y,a
 
