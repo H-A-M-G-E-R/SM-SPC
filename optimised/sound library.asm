@@ -52,7 +52,7 @@ mov y,!misc0 : mov a,!sound_voiceOrder-1+y : mov x,a
 lsr a : mov y,a : mov a,channelBitsets+y : mov !misc1+1,a
 
 ; Check if voice is not occupied
-and a,!enableSoundEffectVoices : bne .skipVoice
+and a,!sound_activeVoices : bne .skipVoice
 
 inc !dspVoiceVolumeIndex
 
@@ -73,6 +73,7 @@ mov a,#$0A : mov !sound_panningBiases+x,a
 
 mov a,!misc1+1
 tset !enableSoundEffectVoices,a
+tset !sound_activeVoices,a
 tclr !echoEnableFlags,a
 mov y,!i_soundLibrary : or a,!sound_enabledVoices-1+y : mov !sound_enabledVoices-1+y,a
 
@@ -113,9 +114,8 @@ resetSoundChannel:
 
 ; Requires !sound_voiceBitset to be set
 
-mov a,!sound_voiceBitset : tclr !enableSoundEffectVoices,a
+mov a,!sound_voiceBitset : tclr !sound_activeVoices,a
 mov $F2,#$5C : mov $F3,a
-tset !sound_endedVoices,a
 eor a,#$FF : setp : mov.b y,!sound_libraryIndices+x : clrp : and a,!sound_enabledVoices-1+y : mov !sound_enabledVoices-1+y,a
 mov a,#$00 : mov !sound_libraryIndices+x,a
 

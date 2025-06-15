@@ -230,7 +230,7 @@ endmacro
 
 %declare_byte(fakeEchoEnableFlags)
 %declare_word(p_noteRingLengthTable)
-%declare_byte(sound_endedVoices)
+%declare_byte(sound_activeVoices)
 %declare_word(p_echoFirFilters)
 
 ; Sounds
@@ -338,7 +338,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $2E8..25D6: SPC engine
+; $2E8..25D4: SPC engine
 !p_ram = $2800-($30*6)
 
 %declare_byteArray(instrumentTable, $30*6)

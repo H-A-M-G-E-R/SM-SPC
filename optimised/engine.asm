@@ -176,14 +176,15 @@ call selectInstrument
 mov y,#$A4
 bra ++
 
-; Select current instrument if sound ended
+; Select current instrument if voice is sound effect enabled and sound is not active,
+; and disable sound effect enable flag if so
 +
-mov a,!sound_endedVoices : and a,!musicVoiceBitset : beq ++
+mov a,!enableSoundEffectVoices : and a,!musicVoiceBitset : beq ++
 push y : mov a,!trackInstrumentIndices+x : call setInstrumentSettings : pop y
 
 ++
-; Return if voice is sound effect enabled
-mov a,!enableSoundEffectVoices : and a,!musicVoiceBitset : bne writeReadCpuIo_ret
+; Return if sound is active
+mov a,!sound_activeVoices : and a,!musicVoiceBitset : bne writeReadCpuIo_ret
 
 ; Enable or disable echo according to fake echo enable flags
 mov a,!fakeEchoEnableFlags : and a,!musicVoiceBitset : beq .branch_disableEcho
@@ -334,8 +335,8 @@ writeDspRegister:
 ;;     A: Value to write
 ;;     Y: DSP register index
 
-; Return if voice is sound effect enabled or ended
-push a : mov a,!enableSoundEffectVoices : or a,!sound_endedVoices : and a,!musicVoiceBitset : pop a : bne writeDspRegisterDirect_ret
+; Return if voice is sound effect enabled
+push a : mov a,!enableSoundEffectVoices : and a,!musicVoiceBitset : pop a : bne writeDspRegisterDirect_ret
 
 ; Fall through
 }
