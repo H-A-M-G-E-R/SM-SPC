@@ -48,7 +48,6 @@ ret
 musicTrackInitialisation:
 {
 mov x,#$0E
-mov !musicVoiceBitset,#$80
 
 -
 {
@@ -59,8 +58,7 @@ mov !trackTransposes+x,a
 mov !trackSlideLengths+x,a
 mov !trackVibratoExtents+x,a
 mov !trackTremoloExtents+x,a
-dec x : dec x
-lsr !musicVoiceBitset : bne -
+dec x : dec x : bpl -
 }
 
 mov !dynamicMusicVolumeTimer,a
