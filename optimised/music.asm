@@ -541,6 +541,7 @@ ret
 staticEcho: ; Track command F5h
 {
 mov !fakeEchoEnableFlags,a
+and a,!enableSoundEffectVoices : mov !echoEnableFlags,a
 call getNextTrackDataByte : mov a,#$00 : movw !echoVolumeLeft,ya
 call getNextTrackDataByte : mov a,#$00 : movw !echoVolumeRight,ya
 clr5 !flg

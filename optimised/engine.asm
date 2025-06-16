@@ -186,15 +186,9 @@ push y : mov a,!trackInstrumentIndices+x : call setInstrumentSettings : pop y
 ; Return if sound is active
 mov a,!sound_activeVoices : and a,!musicVoiceBitset : bne writeReadCpuIo_ret
 
-; Enable or disable echo according to fake echo enable flags
-mov a,!fakeEchoEnableFlags : and a,!musicVoiceBitset : beq .branch_disableEcho
-tset !echoEnableFlags,a
-bra +
+; Enable echo according to fake echo enable flags
+mov a,!fakeEchoEnableFlags : and a,!musicVoiceBitset : tset !echoEnableFlags,a
 
-.branch_disableEcho
-mov a,!musicVoiceBitset : tclr !echoEnableFlags,a
-
-+
 ; Key-off voice if mITroid's "disable key-off between notes" is activated
 bbc1 !enableLateKeyOff,+
 mov $F2,#$5C : mov $F3,!musicVoiceBitset
