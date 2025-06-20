@@ -58,6 +58,8 @@ mov !trackTransposes+x,a
 mov !trackSlideLengths+x,a
 mov !trackVibratoExtents+x,a
 mov !trackTremoloExtents+x,a
+mov !trackDynamicVolumeTimers+x,a
+mov !trackDynamicPanningTimers+x,a
 dec x : dec x : bpl -
 }
 
@@ -126,8 +128,11 @@ mov x,#$0E
 {
 mov a,#$00
 mov !trackRepeatedSubsectionCounters+x,a
+bbs0 !enableLateKeyOff,+
 mov !trackDynamicVolumeTimers+x,a
 mov !trackDynamicPanningTimers+x,a
+
++
 inc a : mov !trackNoteTimers+x,a
 dec x : dec x : bpl -
 }

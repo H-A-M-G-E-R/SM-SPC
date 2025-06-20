@@ -165,8 +165,14 @@ processSoundChannel:
 ; Requires !sound_voiceBitset to be set
 ; Valid indexed non-DP address mode opcodes are mov/cmp/adc/sbc/and/or/eor
 
-setp : dec.b !sound_instructionTimers+x : clrp : beq + : jmp .branch_processInstruction_end : +
+; Note length of FFh = play forever
+mov a,!sound_instructionTimers+x : cmp a,#$FF : beq +
+dec a : mov !sound_instructionTimers+x,a : beq ++
 
++
+jmp .branch_processInstruction_end
+
+++
 ; Note has ended
 mov a,!sound_legatoFlags+x : bne .loop_commands
 mov !sound_subnoteDeltas+x,a

@@ -159,34 +159,31 @@ dw .track0, .track1, .track2, .track3, .track4, .track5, .track6, $0000
 
 .track0
 {
-%setPercussionInstrumentsIndex($26)
 %staticMusicTempo($12)
 %staticMusicVolume($B4)
 %staticEcho($0F, $0A, $0A)
 %echoParameters($02, $0A, $00)
 %selectInstrument($0B)
-%transpose($F4)
 %subtranspose($46)
-%staticPanning($0A)
 %staticVolume($AA)
 %dynamicVolume($18, $DC)
 %noteParameters($18, 7, $F)
-%note($B2)
+%note($A6)
 %staticVolume($AA)
 %dynamicVolume($18, $DC)
-%note($B5)
+%note($A9)
 %staticVolume($AA)
 %dynamicVolume($18, $DC)
-%note($B2)
+%note($A6)
 %staticVolume($AA)
 %dynamicVolume($18, $DC)
-%note($B0)
+%note($A4)
 %noteLength($30)
-%note($AD)
+%note($A1)
 %staticVolume($AA)
 %dynamicVolume($30, $82)
-%note($AD)
-%noteLength($0F)
+%note($A1)
+%noteLength($03)
 !rest
 !end
 }
@@ -194,76 +191,49 @@ dw .track0, .track1, .track2, .track3, .track4, .track5, .track6, $0000
 .track1
 {
 %selectInstrument($0B)
-%transpose($F4)
 %subtranspose($46)
-%staticPanning($0A)
 %noteLength($03)
 !rest
 %staticVolume($64)
 %dynamicVolume($28, $FA)
 %noteParameters($04, 7, $F)
-%note($A6)
-%note($A6)
-%note($A6)
-%note($A6)
-%note($A6)
-%note($A6)
-%note($A9)
-%note($A9)
-%note($A9)
-%note($A9)
-%note($A9)
-%note($A9)
+%note($9A)
+%note($9A)
+%note($9A)
+%note($9A)
+%note($9A)
+%note($9A)
+%note($9D)
+%note($9D)
+%note($9D)
+%note($9D)
+%note($9D)
+%note($9D)
 %staticVolume($FA)
 %dynamicVolume($28, $64)
-%note($A6)
-%note($A6)
-%note($A6)
-%note($A6)
-%note($A6)
-%note($A6)
-%note($A4)
-%note($A4)
-%note($A4)
-%note($A4)
-%note($A4)
-%note($A4)
+%note($9A)
+%note($9A)
+%note($9A)
+%note($9A)
+%note($9A)
+%note($9A)
+%note($98)
+%note($98)
+%note($98)
+%note($98)
+%note($98)
+%note($98)
 %staticVolume($3C)
 %dynamicVolume($0A, $E6)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
+%repeatSubsection(.track1_repeatedSubsection, $10)
 %staticVolume($E6)
 %dynamicVolume($1E, $3C)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%note($AD)
-%noteLength($0C)
-!rest
+%repeatSubsection(.track1_repeatedSubsection, $08)
 }
 
 .track2
 {
 %selectInstrument($0B)
-%transpose($00)
 %subtranspose($46)
 %staticVolume($C8)
 %staticPanning($03)
@@ -276,14 +246,13 @@ dw .track0, .track1, .track2, .track3, .track4, .track5, .track6, $0000
 %note($30)
 %note($82)
 %note($82)
-%noteLength($0F)
+%noteLength($03)
 !rest
 }
 
 .track3
 {
 %selectInstrument($0B)
-%transpose($00)
 %subtranspose($1E)
 %staticVolume($C8)
 %staticPanning($11)
@@ -299,33 +268,30 @@ dw .track0, .track1, .track2, .track3, .track4, .track5, .track6, $0000
 %note($82)
 %noteLength($2D)
 %note($82)
-%noteLength($0F)
+%noteLength($03)
 !rest
 }
 
 .track4
 {
 %selectInstrument($0B)
-%transpose($F4)
 %subtranspose($46)
 %staticVolume($BE)
-%staticPanning($0A)
 %noteParameters($18, 7, $F)
-%note($A2)
-%note($A1)
-%note($9F)
-%note($A1)
+%note($96)
+%note($95)
+%note($93)
+%note($95)
 %noteLength($30)
-%note($8E)
-%note($8E)
-%noteLength($0F)
+%note($82)
+%note($82)
+%noteLength($03)
 !rest
 }
 
 .track5
 {
 %selectInstrument($02)
-%transpose($00)
 %staticPanning($06)
 %staticVolume($3C)
 %dynamicVolume($32, $82)
@@ -369,14 +335,13 @@ dw .track0, .track1, .track2, .track3, .track4, .track5, .track6, $0000
 %staticVolume($AA)
 %dynamicVolume($1E, $14)
 %note($93)
-%noteLength($1C)
+%noteLength($10)
 !rest
 }
 
 .track6
 {
 %selectInstrument($02)
-%transpose($00)
 %staticPanning($0E)
 %staticVolume($3C)
 %dynamicVolume($32, $82)
@@ -420,10 +385,16 @@ dw .track0, .track1, .track2, .track3, .track4, .track5, .track6, $0000
 %dynamicVolume($1E, $14)
 %noteLength($04)
 %note($93)
-%noteLength($14)
+%noteLength($08)
 !rest
+}
+
+.track1_repeatedSubsection
+{
+%note($A1)
 !end
 }
+
 }
 
 ; Item fanfare
@@ -437,14 +408,12 @@ dw .track0, .track1, .track2, .track3, .track4, .track5, .track6, $0000
 
 .track0
 {
-%setPercussionInstrumentsIndex($26)
 %staticMusicTempo($2D)
 %staticMusicVolume($96)
 %staticEcho($0F,$0A,$0A)
 %echoParameters($02,$0A,$00)
 %selectInstrument($0B)
 %subtranspose($46)
-%transpose($00)
 %staticVolume($E6)
 %staticPanning($03)
 %noteParameters($60, 7, $F)
@@ -456,8 +425,6 @@ dw .track0, .track1, .track2, .track3, .track4, .track5, .track6, $0000
 %staticMusicVolume($AA)
 %dynamicMusicVolume($28,$3C)
 !tie
-%noteLength($04)
-!rest
 !end
 }
 
@@ -465,7 +432,6 @@ dw .track0, .track1, .track2, .track3, .track4, .track5, .track6, $0000
 {
 %selectInstrument($0B)
 %subtranspose($46)
-%transpose($00)
 %staticVolume($E6)
 %staticPanning($11)
 %noteParameters($60, 7, $F)
@@ -474,15 +440,12 @@ dw .track0, .track1, .track2, .track3, .track4, .track5, .track6, $0000
 %note($87)
 %noteLength($54)
 %note($82)
-%noteLength($04)
-!rest
 }
 
 .track2
 {
 %selectInstrument($0B)
 %subtranspose($46)
-%transpose($00)
 %staticVolume($DC)
 %staticPanning($06)
 %noteParameters($30, 7, $F)
@@ -499,15 +462,12 @@ dw .track0, .track1, .track2, .track3, .track4, .track5, .track6, $0000
 %note($9A)
 %noteLength($54)
 %note($9A)
-%noteLength($04)
-!rest
 }
 
 .track3
 {
 %selectInstrument($0B)
 %subtranspose($46)
-%transpose($00)
 %staticVolume($DC)
 %staticPanning($0E)
 %noteParameters($60, 7, $F)
@@ -516,17 +476,13 @@ dw .track0, .track1, .track2, .track3, .track4, .track5, .track6, $0000
 %note($9A)
 %noteLength($54)
 %note($95)
-%noteLength($04)
-!rest
 }
 
 .track4
 {
 %selectInstrument($0B)
 %subtranspose($46)
-%transpose($00)
 %staticVolume($D2)
-%staticPanning($0A)
 %noteLength($04)
 !rest
 %noteParameters($18, 7, $F)
@@ -544,7 +500,7 @@ dw .track0, .track1, .track2, .track3, .track4, .track5, .track6, $0000
 %note($A6)
 %note($A2)
 %note($9F)
-%noteLength($54)
+%noteLength($50)
 !rest
 }
 
@@ -552,7 +508,6 @@ dw .track0, .track1, .track2, .track3, .track4, .track5, .track6, $0000
 {
 %selectInstrument($0B)
 %subtranspose($46)
-%transpose($00)
 %staticVolume($DC)
 %staticPanning($08)
 %noteParameters($1C, 7, $F)
@@ -585,15 +540,12 @@ dw .track0, .track1, .track2, .track3, .track4, .track5, .track6, $0000
 %staticPanning($0A)
 %noteLength($54)
 %note($A1)
-%noteLength($04)
-!rest
 }
 
 .track6
 {
 %selectInstrument($0B)
 %subtranspose($46)
-%transpose($00)
 %staticVolume($AA)
 %staticPanning($0C)
 %noteLength($18)
@@ -602,35 +554,26 @@ dw .track0, .track1, .track2, .track3, .track4, .track5, .track6, $0000
 %note($A2)
 %noteLength($14)
 !rest
-%noteLength($18)
+%noteLength($1C)
 %note($A6)
-%noteLength($04)
-!tie
 %noteLength($14)
 !rest
 %noteLength($1C)
 %note($A4)
 %noteLength($14)
 !rest
-%noteLength($18)
+%noteLength($1C)
 %note($A4)
-%noteLength($04)
-!tie
 %noteLength($14)
 !rest
 %noteLength($1C)
 %note($A6)
 %noteLength($14)
 !rest
-%noteLength($18)
+%noteLength($1C)
 %note($9F)
-%noteLength($04)
-!tie
 %noteLength($50)
 !rest
-%noteLength($04)
-!rest
-!end
 }
 }
 
@@ -639,13 +582,13 @@ musicTrack3:
 {
 .tracker
 dw .introTrackPointers
-- : dw .loopTrackPointers, $00FF,-, $0000
+- : dw .loopTrackPointers, $00FF,-
 
 .loopTrackPointers
 dw .loopTrack0, .loopTrack1, .loopTrack2, .loopTrack3, $0000, $0000, $0000, $0000
 
 .introTrackPointers
-dw .introTrack0, .introTrack1, .introTrack2, .introTrack3, .introTrack4, $0000, $0000, $0000
+dw .introTrack0, $0000, $0000, $0000, $0000, $0000, $0000, $0000
 
 .loopTrack0
 {
@@ -678,14 +621,8 @@ dw .introTrack0, .introTrack1, .introTrack2, .introTrack3, .introTrack4, $0000, 
 !rest
 %noteLength($18)
 %note($B2)
-%noteLength($0C)
+%noteLength($7E)
 !rest
-%noteLength($24)
-!rest
-%noteLength($60)
-!rest
-!rest
-%noteLength($0C)
 !rest
 !end
 }
@@ -695,7 +632,6 @@ dw .introTrack0, .introTrack1, .introTrack2, .introTrack3, .introTrack4, $0000, 
 %selectInstrument($0C)
 %subtranspose($28)
 %staticVolume($32)
-%staticPanning($0A)
 %noteLength($30)
 !rest
 %noteParameters($18, 2, $F)
@@ -716,14 +652,8 @@ dw .introTrack0, .introTrack1, .introTrack2, .introTrack3, .introTrack4, $0000, 
 !rest
 %noteLength($18)
 %note($AA)
-%noteLength($0C)
+%noteLength($7E)
 !rest
-%noteLength($21)
-!rest
-%noteLength($60)
-!rest
-!rest
-%noteLength($0F)
 !rest
 }
 
@@ -783,12 +713,8 @@ dw .introTrack0, .introTrack1, .introTrack2, .introTrack3, .introTrack4, $0000, 
 %note($B0)
 %note($B6)
 %note($BB)
-%noteLength($11)
+%noteLength($6C)
 !rest
-%noteLength($60)
-!rest
-!rest
-%noteLength($07)
 !rest
 }
 
@@ -796,68 +722,15 @@ dw .introTrack0, .introTrack1, .introTrack2, .introTrack3, .introTrack4, $0000, 
 {
 %selectInstrument($0B)
 %subtranspose($46)
-%staticPanning($0A)
-%staticVolume($3C)
-%dynamicVolume($3C,$C8)
-%noteParameters($3C, 7, $F)
-%note($80)
-%staticVolume($C8)
-%dynamicVolume($30,$3C)
-%noteLength($30)
-!tie
-%repeatSubsection(.loopTrack3_repeatedSubsection, $05)
+%repeatSubsection(.loopTrack3_repeatedSubsection, $06)
 }
 
 .introTrack0
 {
-%setPercussionInstrumentsIndex($26)
 %staticMusicTempo($10)
 %staticMusicVolume($C8)
-%selectInstrument($0C)
-%subtranspose($28)
-%staticVolume($46)
 %staticEcho($0F,$0A,$0A)
 %echoParameters($02,$0A,$00)
-%staticPanning($07)
-%dynamicPanning($C0,$0D)
-%noteLength($0C)
-!rest
-!end
-}
-
-.introTrack1
-{
-%selectInstrument($0C)
-%subtranspose($28)
-%staticVolume($32)
-%noteLength($0C)
-!rest
-}
-
-.introTrack2
-{
-%selectInstrument($0C)
-%subtranspose($28)
-%staticVolume($3C)
-%noteLength($0C)
-!rest
-}
-
-.introTrack3
-{
-%selectInstrument($0B)
-%subtranspose($46)
-%staticPanning($0A)
-%noteLength($0C)
-!rest
-}
-
-.introTrack4
-{
-%selectInstrument($0C)
-%subtranspose($28)
-%staticVolume($28)
-%staticPanning($0D)
 %noteLength($0C)
 !rest
 !end
@@ -867,7 +740,7 @@ dw .introTrack0, .introTrack1, .introTrack2, .introTrack3, .introTrack4, $0000, 
 {
 %staticVolume($3C)
 %dynamicVolume($3C,$C8)
-%noteLength($3C)
+%noteParameters($3C, 7, $F)
 %note($80)
 %staticVolume($C8)
 %dynamicVolume($30,$3C)
@@ -881,21 +754,18 @@ dw .introTrack0, .introTrack1, .introTrack2, .introTrack3, .introTrack4, $0000, 
 musicTrack4:
 {
 .tracker
-- : dw .trackPointers, $00FF,-, $0000
+- : dw .trackPointers, $00FF,-
 
 .trackPointers
 dw .track0, $0000, $0000, $0000, $0000, $0000, $0000, $0000
 
 .track0
 {
-%setPercussionInstrumentsIndex($26)
 %staticMusicTempo($10)
 %staticMusicVolume($E6)
-%staticEcho($01,$00,$00)
-%echoParameters($02,$00,$00)
+%endEcho()
 %selectInstrument($0B)
 %subtranspose($46)
-%staticPanning($0A)
 %staticVolume($32)
 %dynamicVolume($3C,$B4)
 %noteParameters($3C, 7, $F)
@@ -904,15 +774,6 @@ dw .track0, $0000, $0000, $0000, $0000, $0000, $0000, $0000
 %dynamicVolume($30,$32)
 %noteLength($30)
 !tie
-%staticVolume($32)
-%dynamicVolume($3C,$B4)
-%noteLength($3C)
-%note($80)
-%staticVolume($B4)
-%dynamicVolume($30,$32)
-%noteLength($30)
-!tie
-!end
 !end
 }
 }

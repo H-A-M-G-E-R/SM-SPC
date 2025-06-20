@@ -74,7 +74,7 @@ db .sound1>>8,  .sound2>>8,  .sound3>>8,  .sound4>>8,  .sound5>>8,  .sound6>>8, 
 ;     nn vv tt
 ;     n: Note (range 80h..D3h, no psychoacoustic adjustment made). F0h is a tie
 ;     v: Volume
-;     t: Length in tics. 1 tic = 16 ms
+;     t: Length in tics. 1 tic = 16 ms. FFh = play forever
 
 ; There's a 1 tic delay after a note (except when there's legato)
 }
@@ -178,9 +178,7 @@ db $11 : dw ..voice0
 ; Sound 17h: Morph ball eye's ray
 .sound17
 db $11 : dw ..voice0
-..voice0 : db $F5,$70,$AA, $06, $A1,$40,$40,\
-              $FE,$00, $AA,$40,$F0, $FB,\
-              $FF
+..voice0 : db $F5,$70,$AA, $06, $A1,$40,$FF
 
 ; Sound 18h: Beacon
 .sound18
@@ -347,9 +345,9 @@ db $01 : dw ..voice0
 .sound37
 db $02 : dw ..voice0, ..voice1
 ..voice0 : db $03, $89,$90,$05, $F5,$F0,$BB, $07, $B0,$40,$20,\
-              $FE,$00, $BB,$40,$0A, $FB, $FF
+              $FE,$00, $BB,$40,$0A, $FB
 ..voice1 : db $03, $87,$90,$05, $F5,$F0,$C7, $07, $BC,$40,$20,\
-              $FE,$00, $0B, $B9,$10,$07, $FB, $FF
+              $FE,$00, $0B, $B9,$10,$07, $FB
 
 ; Sound 38h: Refill/map station disengaged
 .sound38
@@ -698,8 +696,7 @@ db $11 : dw ..voice0
 ; Sound 7Fh: Mother Brain charging her rainbow
 .sound7F
 db $02 : dw ..voice0, ..voice1
-..voice0 : db $FE,$00, $24, $84,$D0,$0D, $85,$D0,$0D, $87,$D0,$0D, $89,$D0,$0D, $8B,$D0,$0D, $8C,$D0,$0D, $8E,$D0,$0D, $90,$D0,$0D, $91,$D0,$0D, $93,$D0,$0D, $FB, $FF
+..voice0 : db $FE,$00, $24, $84,$D0,$0D, $85,$D0,$0D, $87,$D0,$0D, $89,$D0,$0D, $8B,$D0,$0D, $8C,$D0,$0D, $8E,$D0,$0D, $90,$D0,$0D, $91,$D0,$0D, $93,$D0,$0D, $FB
 ..voice1 : db $24, $00,$80,$04,\
-              $FE,$00, $84,$D0,$0D, $85,$D0,$0D, $87,$D0,$0D, $89,$D0,$0D, $8B,$D0,$0D, $8C,$D0,$0D, $8E,$D0,$0D, $90,$D0,$0D, $91,$D0,$0D, $93,$D0,$0D, $FB,\
-              $FF
+              $FE,$00, $84,$D0,$0D, $85,$D0,$0D, $87,$D0,$0D, $89,$D0,$0D, $8B,$D0,$0D, $8C,$D0,$0D, $8E,$D0,$0D, $90,$D0,$0D, $91,$D0,$0D, $93,$D0,$0D, $FB
 }

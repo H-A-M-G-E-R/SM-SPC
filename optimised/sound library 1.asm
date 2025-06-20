@@ -67,7 +67,7 @@ db .sound1>>8,  .sound2>>8,  .sound3>>8,  .sound4>>8,  .sound5>>8,  .sound6>>8, 
 ;     nn vv tt
 ;     n: Note (range 80h..D3h, no psychoacoustic adjustment made). F0h is a tie
 ;     v: Volume
-;     t: Length in tics. 1 tic = 16 ms
+;     t: Length in tics. 1 tic = 16 ms. FFh = play forever
 
 ; There's a 1 tic delay after a note (except when there's legato)
 }
@@ -119,8 +119,7 @@ db $01 : dw ..voice0
 .sound6
 db $01 : dw ..voice0
 ..voice0 : db $0D, $80,$50,$03, $85,$50,$04,\
-              $FE,$00, $02, $93,$50,$07, $93,$50,$03, $93,$50,$05, $93,$50,$08, $93,$50,$04, $93,$50,$06, $93,$50,$04, $FB,\
-              $FF
+              $FE,$00, $02, $93,$50,$07, $93,$50,$03, $93,$50,$05, $93,$50,$08, $93,$50,$04, $93,$50,$06, $93,$50,$04, $FB
 
 ; Sound 7: Grapple end
 .sound7
@@ -131,22 +130,18 @@ db $01 : dw ..voice0
 .sound8
 db $02 : dw ..voice0, ..voice1
 ..voice0 : db $05, $B4,$00,$15, $F5,$30,$C7, $B7,$50,$25,\
-              $FE,$00, $07, $C7,$60,$30, $FB,\
-              $FF
+              $FE,$00, $07, $C7,$60,$30, $FB
 ..voice1 : db $02, $9C,$00,$07, $9C,$10,$03, $9C,$00,$05, $9C,$20,$08
 
 ; Shared by charging beam and resume charging beam
 .resumeChargingBeamVoice
 db $02, $9C,$20,$04, $9C,$30,$06, $9C,$00,$04, $9C,$30,$03, $9C,$30,$07, $9C,$00,$0A, $9C,$30,$03, $9C,$00,$04, $9C,$40,$03, $9C,$40,$07, $9C,$00,$05, $9C,$40,$06, $9C,$40,$03, $9C,$00,$0A, $9C,$50,$03, $9C,$50,$03, $9C,$60,$05, $9C,$00,$06, $9C,$60,$07, $9C,$00,$03, $9C,$60,$04, $9C,$60,$03, $9C,$00,$03,\
-   $FE,$00, $9C,$40,$05, $9C,$40,$06, $9C,$40,$07, $9C,$40,$03, $9C,$40,$04, $9C,$40,$03, $9C,$40,$03, $FB,\
-   $FF
+   $FE,$00, $9C,$40,$05, $9C,$40,$06, $9C,$40,$07, $9C,$40,$03, $9C,$40,$04, $9C,$40,$03, $9C,$40,$03, $FB
 
 ; Sound 9: X-ray
 .sound9
 db $01 : dw ..voice0
-..voice0 : db $F5,$70,$AD, $06, $A4,$40,$40,\
-              $FE,$00, $AD,$40,$F0, $FB,\
-              $FF
+..voice0 : db $F5,$70,$AD, $06, $A4,$40,$FF
 
 ; Sound Bh: Uncharged power beam
 .soundB
@@ -232,7 +227,7 @@ db $01 : dw ..voice0
 ; Sound 23h: Ice SBA
 .sound23
 db $01 : dw ..voice0
-..voice0 : db $FE,$00, $10, $C0,$50,$03, $C1,$50,$03, $C3,$60,$03, $C5,$60,$03, $C7,$70,$03, $C5,$60,$03, $C3,$50,$03, $C1,$50,$03, $FB, $FF
+..voice0 : db $FE,$00, $10, $C0,$50,$03, $C1,$50,$03, $C3,$60,$03, $C5,$60,$03, $C7,$70,$03, $C5,$60,$03, $C3,$50,$03, $C1,$50,$03, $FB
 
 ; Sound 24h: Ice SBA end
 .sound24
@@ -292,18 +287,15 @@ db $01 : dw ..voice0
 
 ; Shared by resumed spin jump, spin jump and resumed space jump
 .resumedSpinJumpVoice
-db $FE,$00, $07, $C7,$80,$10, $FB,\
-   $FF
+db $FE,$00, $07, $C7,$80,$10, $FB
 
 ; Sound 33h: Screw attack
 .sound33
 db $02 : dw ..voice0, ..voice1
 ..voice0 : db $07, $C7,$30,$04, $C7,$40,$05, $C7,$50,$06, $C7,$60,$07, $C7,$70,$09, $C7,$80,$0D, $C7,$80,$0F,\
-              $FE,$00, $C7,$80,$10, $FB,\
-              $FF
+              $FE,$00, $C7,$80,$10, $FB
 ..voice1 : db $F5,$E0,$BC, $05, $98,$60,$0E, $F5,$E0,$BC, $A4,$70,$08, $F5,$E0,$BC, $B0,$80,$06,\
-              $FE,$00, $BC,$80,$03, $C4,$80,$03, $C6,$80,$03, $FB,\
-              $FF
+              $FE,$00, $BC,$80,$03, $C4,$80,$03, $C6,$80,$03, $FB
 
 ; Sound 3Eh: Space jump
 .sound3E
@@ -352,16 +344,15 @@ db $01 : dw ..voice0
 ; Sound 40h: Mother Brain's rainbow beam
 .sound40
 db $13 : dw ..voice0, ..voice1, ..voice2
-..voice0 : db $FE,$00, $23, $89,$D0,$07, $8B,$D0,$07, $8C,$D0,$07, $8E,$D0,$07, $90,$D0,$07, $91,$D0,$07, $93,$D0,$07, $95,$D0,$07, $97,$D0,$07, $FB, $FF
-..voice1 : db $FE,$00, $06, $BA,$D0,$F0, $FB, $FF
-..voice2 : db $FE,$00, $06, $B3,$D0,$F0, $FB, $FF
+..voice0 : db $FE,$00, $23, $89,$D0,$07, $8B,$D0,$07, $8C,$D0,$07, $8E,$D0,$07, $90,$D0,$07, $91,$D0,$07, $93,$D0,$07, $95,$D0,$07, $97,$D0,$07, $FB
+..voice1 : db $06, $BA,$D0,$FF
+..voice2 : db $06, $B3,$D0,$FF
 
 ; Sound 41h: Resume charging beam
 .sound41
 db $02 : dw ..voice0, .resumeChargingBeamVoice
 ..voice0 : db $F5,$70,$C7, $05, $C0,$50,$03,\
-              $FE,$00, $07, $C7,$60,$30, $FB,\
-              $FF
+              $FE,$00, $07, $C7,$60,$30, $FB
 
 ; Sound 42h:
 .sound42

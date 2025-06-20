@@ -66,7 +66,7 @@ db .sound1>>8,  .sound2>>8,  .sound3>>8,  .sound4>>8,  .sound5>>8,  .sound6>>8, 
 ;     nn vv tt
 ;     n: Note (range 80h..D3h, no psychoacoustic adjustment made). F0h is a tie
 ;     v: Volume
-;     t: Length in tics. 1 tic = 16 ms
+;     t: Length in tics. 1 tic = 16 ms. FFh = play forever
 
 ; There's a 1 tic delay after a note (except when there's legato)
 }
@@ -90,7 +90,7 @@ db $00
 ; Sound 2: Low health beep
 .sound2
 db $21 : dw ..voice0
-..voice0 : db $FE,$00, $15, $BC,$90,$F0, $FB, $FF
+..voice0 : db $15, $BC,$90,$FF
 
 ; Sound 3: Speed booster
 .sound3
@@ -102,8 +102,7 @@ db $F5,$E0,$C7, $05, $98,$60,$12, $F5,$E0,$C7, $A4,$70,$11, $F5,$E0,$C7, $B0,$80
 
 ; Shared by speed booster and resume speed booster / shinespark
 .resumeSpeedBoosterVoice
-db $FE,$00, $05, $C7,$60,$10, $FB,\
-   $FF
+db $FE,$00, $05, $C7,$60,$10, $FB
 
 ; Sound 4: Samus landed hard
 .sound4
@@ -147,8 +146,8 @@ db $11 : dw ..voice0
 ; Sound Bh: Elevator
 .soundB
 db $02 : dw ..voice0, ..voice1
-..voice0 : db $FE,$00, $0B, $80,$90,$70, $FB, $FF
-..voice1 : db $FE,$00, $06, $98,$40,$13, $FB, $FF
+..voice0 : db $FE,$00, $0B, $80,$90,$70, $FB
+..voice1 : db $FE,$00, $06, $98,$40,$13, $FB
 
 ; Sound Ch: Stored shinespark
 .soundC

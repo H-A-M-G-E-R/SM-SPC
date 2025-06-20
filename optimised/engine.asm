@@ -72,9 +72,14 @@ if defined("rng")
 mov a,!randomNumber : eor a,!randomNumber+1 : lsr a : lsr a : notc : ror !randomNumber : ror !randomNumber+1
 endif
 
-; Wait for timer 0 output to be non-zero
+; Read timer 0 output
+mov y,$FD
+
+; Wait for timer 0 to tick
 -
-mov y,$FD : beq -
+mov a,$FD : beq -
+
+inc y
 
 ; Save time since last loop
 push y
