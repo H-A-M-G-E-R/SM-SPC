@@ -102,7 +102,18 @@ call handleCpuIo3
 mov x,#$03 : call writeReadCpuIo
 
 ; Process sounds
-call processSounds
+{
+mov x,#$00
+mov !sound_voiceBitset,#$01
+
+-
+mov a,!sound_libraryIndices+x : beq +
+call processSoundChannel
+
++
+inc x : inc x
+asl !sound_voiceBitset : bne -
+}
 
 ; Echo timer
 cmp (!echoTimer),(!echoDelay) : beq .branch_soundFx_end
@@ -119,7 +130,7 @@ bcc .branch_musicTrack_end
 .branch_musicTrack
 call handleMusicTrack
 mov x,#$00 : call writeReadCpuIo
-bra .loop_main
+jmp .loop_main
 .branch_musicTrack_end
 
 mov a,!cpuIo0_write : beq ++

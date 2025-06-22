@@ -141,22 +141,6 @@ ret
 }
 
 
-processSounds:
-{
-mov x,#$00
-mov !sound_voiceBitset,#$01
-
--
-mov a,!sound_libraryIndices+x : beq +
-call processSoundChannel
-
-+
-inc x : inc x
-asl !sound_voiceBitset : bne -
-ret
-}
-
-
 processSoundChannel:
 {
 ;; Parameters:

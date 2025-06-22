@@ -281,7 +281,7 @@ endif
 
 %declare_bytePairArray(trackNoteLengths,                   !n_tracks)
 %declare_bytePairArray(trackNoteRingLengths,               !n_tracks)
-%declare_bytePairArray(trackNoteVolume,                    !n_tracks)
+%declare_bytePairArray(trackNoteVolumes,                   !n_tracks)
 %declare_bytePairArray(trackInstrumentIndices,             !n_tracks)
 %declare_bytePairArray(trackSlideLengths,                  !n_tracks)
 %declare_bytePairArray(trackSlideDelays,                   !n_tracks)
@@ -338,7 +338,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $2E8..24F9: SPC engine
+; $2E8..24EE: SPC engine
 !p_ram = $2800-($30*6)
 
 %declare_byteArray(instrumentTable, $30*6)

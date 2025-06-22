@@ -51,6 +51,9 @@ mov x,#$0E
 
 -
 {
+mov a,#$FC
+mov !trackNoteRingLengths+x,a
+mov !trackNoteVolumes+x,a
 mov a,#$FF : call staticVolume
 mov a,#$0A : call staticPanning
 mov !trackSubtransposes+x,a
@@ -170,7 +173,7 @@ bmi +
 
 ; Extended note parameters
 push a : xcn a : and a,#$07 : mov y,a : mov a,(!p_noteRingLengthTable)+y : mov !trackNoteRingLengths+x,a : pop a
-and a,#$0F : clrc : adc a,#$08 : mov y,a : mov a,(!p_noteRingLengthTable)+y : mov !trackNoteVolume+x,a
+and a,#$0F : clrc : adc a,#$08 : mov y,a : mov a,(!p_noteRingLengthTable)+y : mov !trackNoteVolumes+x,a
 call getNextTrackDataByte
 
 +
@@ -1154,7 +1157,7 @@ mov y,!trackTremoloExtents+x : mul ya : mov a,y : eor a,#$FF
 
 .noTremolo
 mov y,!musicVolume+1 : mul ya
-mov a,!trackNoteVolume+x : mul ya
+mov a,!trackNoteVolumes+x : mul ya
 mov a,!trackVolumes+1+x : mul ya
 mov a,y : mul ya
 mov a,y : mov !trackOutputVolumes+x,a
