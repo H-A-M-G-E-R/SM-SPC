@@ -31,7 +31,8 @@ db .sound1,  .sound2,  .sound3,  .sound4,  .sound5,  .sound6,  .sound7,  .sound8
    .sound41, .sound42, .sound43, .sound44, .sound45, .sound46, .sound47, .sound48, .sound49, .sound4A, .sound4B, .sound4C, .sound4D, .sound4E, .sound4F, .sound50,\
    .sound51, .sound52, .sound53, .sound54, .sound55, .sound56, .sound57, .sound58, .sound59, .sound5A, .sound5B, .sound5C, .sound5D, .sound5E, .sound5F, .sound60,\
    .sound61, .sound62, .sound63, .sound64, .sound65, .sound66, .sound67, .sound68, .sound69, .sound6A, .sound6B, .sound6C, .sound6D, .sound6E, .sound6F, .sound70,\
-   .sound71, .sound72, .sound73, .sound74, .sound75, .sound76, .sound77, .sound78, .sound79, .sound7A, .sound7B, .sound7C, .sound7D, .sound7E, .sound7F
+   .sound71, .sound72, .sound73, .sound74, .sound75, .sound76, .sound77, .sound78, .sound79, .sound7A, .sound7B, .sound7C, .sound7D, .sound7E, .sound7F, .sound80,\
+   .sound81
 
 .high
 db .sound1>>8,  .sound2>>8,  .sound3>>8,  .sound4>>8,  .sound5>>8,  .sound6>>8,  .sound7>>8,  .sound8>>8,  .sound9>>8,  .soundA>>8,  .soundB>>8,  .soundC>>8,  .soundD>>8,  .soundE>>8,  .soundF>>8,  .sound10>>8,\
@@ -41,7 +42,8 @@ db .sound1>>8,  .sound2>>8,  .sound3>>8,  .sound4>>8,  .sound5>>8,  .sound6>>8, 
    .sound41>>8, .sound42>>8, .sound43>>8, .sound44>>8, .sound45>>8, .sound46>>8, .sound47>>8, .sound48>>8, .sound49>>8, .sound4A>>8, .sound4B>>8, .sound4C>>8, .sound4D>>8, .sound4E>>8, .sound4F>>8, .sound50>>8,\
    .sound51>>8, .sound52>>8, .sound53>>8, .sound54>>8, .sound55>>8, .sound56>>8, .sound57>>8, .sound58>>8, .sound59>>8, .sound5A>>8, .sound5B>>8, .sound5C>>8, .sound5D>>8, .sound5E>>8, .sound5F>>8, .sound60>>8,\
    .sound61>>8, .sound62>>8, .sound63>>8, .sound64>>8, .sound65>>8, .sound66>>8, .sound67>>8, .sound68>>8, .sound69>>8, .sound6A>>8, .sound6B>>8, .sound6C>>8, .sound6D>>8, .sound6E>>8, .sound6F>>8, .sound70>>8,\
-   .sound71>>8, .sound72>>8, .sound73>>8, .sound74>>8, .sound75>>8, .sound76>>8, .sound77>>8, .sound78>>8, .sound79>>8, .sound7A>>8, .sound7B>>8, .sound7C>>8, .sound7D>>8, .sound7E>>8, .sound7F>>8
+   .sound71>>8, .sound72>>8, .sound73>>8, .sound74>>8, .sound75>>8, .sound76>>8, .sound77>>8, .sound78>>8, .sound79>>8, .sound7A>>8, .sound7B>>8, .sound7C>>8, .sound7D>>8, .sound7E>>8, .sound7F>>8, .sound80>>8,\
+   .sound81>>8
 
 ; Instruction list pointer set format:
 {
@@ -699,4 +701,15 @@ db $02 : dw ..voice0, ..voice1
 ..voice0 : db $FE,$00, $24, $84,$D0,$0D, $85,$D0,$0D, $87,$D0,$0D, $89,$D0,$0D, $8B,$D0,$0D, $8C,$D0,$0D, $8E,$D0,$0D, $90,$D0,$0D, $91,$D0,$0D, $93,$D0,$0D, $FB
 ..voice1 : db $24, $00,$80,$04,\
               $FE,$00, $84,$D0,$0D, $85,$D0,$0D, $87,$D0,$0D, $89,$D0,$0D, $8B,$D0,$0D, $8C,$D0,$0D, $8E,$D0,$0D, $90,$D0,$0D, $91,$D0,$0D, $93,$D0,$0D, $FB
+
+; Sound 80h: Halzyn hurt
+.sound80
+db $01 : dw ..voice0
+..voice0 : db $0A, $9E,$FF,$03, $96,$A0,$08, $FF
+
+; Sound 81h: Halzyn lunge
+.sound81
+db $11 : dw ..voice0
+..voice0 : db $0A, $8C,$A0,$03, $93,$C8,$03, $98,$FF,$03, $98,$00,$15, $9C,$FF,$05, $9C,$68,$05, $9C,$28,$05, $FF
+
 }

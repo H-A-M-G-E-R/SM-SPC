@@ -10,7 +10,7 @@ db $06,$FF,$E0,$B8,$01,$10
 db $07,$FF,$E0,$B8,$00,$30
 db $08,$FF,$E0,$B8,$02,$90
 db $09,$FF,$E0,$B8,$01,$90
-db $0A,$FF,$F4,$B8,$04,$90 ; Unused in this optimised engine; in vanilla, used only by sounds 32h and 34h in library 1 (silence)
+db $0A,$FF,$E0,$B8,$02,$84
 db $0B,$FF,$E0,$B8,$04,$90
 db $0C,$FF,$E0,$B8,$06,$F0
 db $0D,$FF,$E0,$B8,$05,$70
@@ -41,8 +41,8 @@ dw Sample06,Sample06+27
 dw Sample07,Sample07+27
 dw Sample08,Sample08+1530
 dw Sample09,Sample09+27
-dw Sample0A_0B,Sample0A_0B+864
-dw Sample0A_0B,Sample0A_0B+864
+dw Sample0A,Sample0A
+dw Sample0B,Sample0B+864
 dw Sample0C,Sample0C+27
 dw Sample0D,Sample0D+180
 dw Sample0E,Sample0E+396
@@ -74,7 +74,8 @@ Sample06: incbin "samples/Sample06.brr"
 Sample07: incbin "samples/Sample07.brr"
 Sample08: incbin "samples/Sample08.brr"
 Sample09: incbin "samples/Sample09.brr"
-Sample0A_0B: incbin "samples/Sample0A_0B.brr"
+Sample0A: incbin "samples/halzyn_10512hz.brr"
+Sample0B: incbin "samples/Sample0B.brr"
 Sample0C: incbin "samples/Sample0C.brr"
 Sample0D: incbin "samples/Sample0D.brr"
 Sample0E: incbin "samples/Sample0E.brr"
