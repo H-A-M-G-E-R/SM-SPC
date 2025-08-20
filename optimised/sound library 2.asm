@@ -705,11 +705,11 @@ db $02 : dw ..voice0, ..voice1
 ; Sound 80h: Halzyn hurt
 .sound80
 db $01 : dw ..voice0
-..voice0 : db $0A, $9E,$FF,$03, $96,$A0,$08, $FF
+..voice0 : db $0A, $AA,$FF,$03, $A2,$A0,$08, $FF
 
 ; Sound 81h: Halzyn lunge
 .sound81
 db $11 : dw ..voice0
-..voice0 : db $0A, $8C,$A0,$03, $93,$C8,$03, $98,$FF,$03, $98,$00,$15, $9C,$FF,$05, $9C,$68,$05, $9C,$28,$05, $FF
+..voice0 : db $0A, $98,$A0,$03, $9F,$C8,$03, $A4,$FF,$03, $A4,$00,$15, $A8,$FF,$05, $A8,$68,$05, $A8,$28,$05, $FF
 
 }
