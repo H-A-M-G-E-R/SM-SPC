@@ -13,7 +13,7 @@ mov a,!sound2Priority : bne .branch_noChange
 +
 call resetSound
 
-mov x,!cpuIo2_write
+mov x,!cpuIo2_write : cmp x,#$C0 : bcs .songSpecificSoundInitialisation
 mov a,sound2InstructionLists_high-1+x : mov y,a : mov a,sound2InstructionLists_low-1+x
 jmp soundInitialisation
 
