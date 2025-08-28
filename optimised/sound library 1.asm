@@ -12,9 +12,12 @@ mov a,!sound1Priority : bne .branch_noChange
 +
 call resetSound
 
-mov x,!cpuIo1_write
+mov x,!cpuIo1_write : cmp x,#$C0 : bcs .songSpecificSoundInitialisation
 mov a,sound1InstructionLists_high-1+x : mov y,a : mov a,sound1InstructionLists_low-1+x
 jmp soundInitialisation
+
+.songSpecificSoundInitialisation
+jmp songSpecificSoundInitialisation
 
 .branch_noChange
 ret

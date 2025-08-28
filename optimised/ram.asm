@@ -258,6 +258,7 @@ endif
 !p_ram #= !p_extra
 %declare_word(p_trackerData)
 %declare_byte(enableLateKeyOff)
+%declare_word(p_songSpecificSoundInstructionLists) ; shared across all libraries
 
 %declare_byte(noteEndInTicks) ; Note: Pocky & Rocky 2 changed this to 1 from 2
 %declare_byte(disablePsychoacousticAdjustment)

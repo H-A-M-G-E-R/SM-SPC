@@ -26,6 +26,20 @@ ret
 }
 
 
+songSpecificSoundInitialisation:
+{
+;; Parameters:
+;;     X: Sound index. Range C0h..FFh
+
+; Requires !i_soundLibrary to be set
+
+mov a,x : and a,#$3F : asl a : mov y,a
+mov a,(!p_songSpecificSoundInstructionLists)+y : push a : inc y : mov a,(!p_songSpecificSoundInstructionLists)+y : mov y,a : pop a
+
+; Fall through
+}
+
+
 soundInitialisation:
 {
 ;; Parameters:
