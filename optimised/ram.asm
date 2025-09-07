@@ -328,6 +328,7 @@ endif
 %declare_bytePairArray(sound_legatoFlags,                       !n_tracks)
 %declare_bytePairArray(sound_pitchSlideLegatoFlags,             !n_tracks)
 %declare_bytePairArray(sound_panningBiases,                     !n_tracks)
+%declare_bytePairArray(sound_subtransposes,                     !n_tracks)
 
 %declare_wordArray(sound_repeatPoints,                          !n_tracks)
 if defined("adsrSoundCommand")

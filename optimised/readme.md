@@ -19,7 +19,7 @@ In the engine mod (these ARAM addresses are just examples, read SPC engine metad
 ```
 _ARAM_|___Description____
 $E0   | Extra (*)
-$2E8  | SPC engine
+$2F7  | SPC engine
 $25E0 | Instrument table
 $2700 | Sample table
 $2800 | Sample data / trackers
@@ -47,7 +47,7 @@ After patching a vanilla ROM with the ASM via asar, run:
     * Where `SM.smc` has the music you want to repoint and `SM_repointed.smc` is the patched ROM you want to insert the repointed music in
 
 To repoint an NSPC file, run either:
-* `python repoint.py nspc music.nspc music_repointed.nspc --version=2 --p_spcEngine=2E8 --p_sharedTrackers=21FB --p_instrumentTable=25E0 --p_sampleTable=2700 --p_sampleData=2800 --p_extra=E0`
+* `python repoint.py nspc music.nspc music_repointed.nspc --version=2 --p_spcEngine=2F7 --p_sharedTrackers=221D --p_instrumentTable=25E0 --p_sampleTable=2700 --p_sampleData=2800 --p_extra=E0`
     * Where all the pointers are reported by asar when assembling the engine mod
 * `python repoint.py nspc music.nspc music_repointed.nspc --rom=SM.smc`
     * Where metadata is extracted from `--rom` argument (a patched ROM)

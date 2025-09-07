@@ -57,6 +57,7 @@ db .sound1>>8,  .sound2>>8,  .sound3>>8,  .sound4>>8,  .sound5>>8,  .sound6>>8, 
 ;     0..7Fh - select instrument
 ;     F5h dd tt - legato pitch slide with subnote delta = d, target note = t
 ;     F6h pp - panning bias = (p & 1Fh) / 14h. If p & 80h, left side phase inversion is enabled. If p & 40h, right side phase inversion is enabled
+;     F7h ss - subtranspose = s / 100h semitones
 ;     F8h dd tt -        pitch slide with subnote delta = d, target note = t
 ;     F9h aaaa - voice's ADSR settings = a (unused in vanilla, removed by default)
 ;     FBh - repeat

@@ -82,6 +82,7 @@ endif
 mov !sound_targetNotes+x,a
 mov !sound_legatoFlags+x,a
 mov !sound_pitchSlideLegatoFlags+x,a
+mov !sound_subtransposes+x,a
 inc a : mov !sound_instructionTimers+x,a
 mov a,#$0A : mov !sound_panningBiases+x,a
 
@@ -268,7 +269,8 @@ mov !sound_legatoFlags+x,a
 
 ; Play note
 .branch_playNote
-mov a,!sound_notes+x : mov y,a : mov a,!sound_subnotes+x : movw !note,ya
+mov a,!sound_subnotes+x : clrc : adc a,!sound_subtransposes+x : mov !note,a
+mov a,!sound_notes+x : adc a,#$00 : mov !note+1,a
 call playNoteDirect
 ret
 }
@@ -287,7 +289,7 @@ soundCommandPointers:
 dw \
     soundCommandF5_legatoPitchSlide,\
     soundCommandF6_staticPanning,\
-    $0000,\
+    soundCommandF7_subtranspose,\
     soundCommandF8_pitchSlide,\
     soundCommandF9_setAdsrSettings,\
     $0000,\
@@ -316,6 +318,12 @@ ret
 soundCommandF6_staticPanning:
 {
 call getNextDataByte : mov !sound_panningBiases+x,a
+ret
+}
+
+soundCommandF7_subtranspose:
+{
+call getNextDataByte : mov !sound_subtransposes+x,a
 ret
 }
 
