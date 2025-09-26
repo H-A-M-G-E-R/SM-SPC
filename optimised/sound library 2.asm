@@ -84,14 +84,11 @@ db .sound1>>8,  .sound2>>8,  .sound3>>8,  .sound4>>8,  .sound5>>8,  .sound6>>8, 
 }
 
 ; Sound 1: Collected small health drop
-.sound1
-db $11 : dw ..voice0
-..voice0 : db $15, $C7,$80,$0A, $C7,$50,$0A, $C7,$20,$0A, $FF
-
 ; Sound 2: Collected big health drop
+.sound1
 .sound2
 db $11 : dw ..voice0
-..voice0 : db $15, $C7,$E0,$0A, $C7,$60,$0A, $C7,$30,$0A, $FF
+..voice0 : db $15, $C7,$80,$0A, $C7,$50,$0A, $C7,$20,$0A, $FF
 
 ; Sound 3: Collected missile drop
 ; Sound 4: Collected super missile drop
@@ -108,11 +105,22 @@ db $01 : dw ..voice0
 ..voice0 : db $08, $98,$D0,$03, $95,$D0,$03, $9A,$D0,$03, $8C,$D0,$03, $FF
 
 ; Sound 7: (Super) missile hit wall
-; Sound 8: Bomb explosion
 .sound7
+  db $01 : dw ..voice0
+..voice0
+  db $08
+  !c4,200*1.15,20
+  !c4,200*36/128*1.15,20
+  !c4,200*12/128*1.15,20
+  db $FF
+
+; Sound 8: Bomb explosion
 .sound8
 db $01 : dw ..voice0
-..voice0 : db $08, $98,$E0,$03, $95,$E0,$03, $9A,$E0,$03, $8C,$E0,$03, $8C,$E0,$20, $FF
+..voice0
+db $08
+!c4,255,20
+db $FF
 
 ; Sound 9: Enemy killed
 .sound9
@@ -174,55 +182,89 @@ db $01 : dw ..voice0
 db $01 : dw ..voice0
 ..voice0 : db $0E, $80,$60,$0A, $87,$60,$10, $22, $84,$60,$1A, $0E, $80,$60,$0A, $84,$60,$07, $22, $91,$60,$16, $0E, $80,$60,$0A, $87,$60,$10, $FF
 
-; Sound 16h: Fake Kraid cry
-.sound16
-db $11 : dw ..voice0
-..voice0 : db $25, $A8,$60,$10, $FF
-
-; Sound 17h: Morph ball eye's ray
+; Sound 17h: SA-X's X-ray
 .sound17
-db $11 : dw ..voice0
+db $11 : dw sound1InstructionLists_xRayVoice
 ..voice0 : db $F5,$70,$AA, $06, $A1,$40,$FF
 
-; Sound 18h: Beacon
+; Sound 18h:
 .sound18
 db $01 : dw ..voice0
-..voice0 : db $0B, $8C,$20,$03, $8C,$30,$03, $8C,$40,$03, $8C,$50,$03, $8C,$60,$03, $8C,$70,$03, $8C,$80,$03, $8C,$60,$03, $8C,$50,$03, $8C,$40,$03, $8C,$30,$03, $FF
+..voice0
+db $1B
+db $97,$50,$50
+db $FF
 
-; Sound 19h: Tourian statue unlocking particle
+; Sound 19h:
 .sound19
-db $02 : dw ..voice0, ..voice1
-..voice0 : db $10, $C1,$50,$03, $C2,$40,$03, $C3,$30,$03, $C4,$20,$03, $C5,$10,$03, $C6,$10,$03, $C7,$10,$03, $C7,$00,$30, $C7,$60,$03, $C6,$50,$03, $C5,$30,$03, $C4,$30,$03, $C3,$20,$03, $C2,$20,$03, $C1,$10,$03, $C0,$10,$03, $FF
-..voice1 : db $08, $99,$D0,$03, $9C,$D0,$04, $0F, $8B,$30,$03, $8C,$40,$03, $8E,$50,$0E, $FF
-
-; Sound 1Ah: n00b tube shattering
-.sound1A
-db $02 : dw ..voice0, sound3InstructionLists_motherBrainGlassShatteringVoice1
-..voice0 : db $08, $94,$D0,$03, $97,$D0,$02, $98,$D0,$03, $9A,$D0,$04, $97,$D0,$03, $9A,$D0,$04, $9D,$D0,$03, $9F,$D0,$03, $94,$D0,$1A, $25, $8C,$40,$26, $FF
-
-; Sound 1Bh: Spike platform stops / tatori hits wall
-.sound1B
 db $01 : dw ..voice0
-..voice0 : db $08, $94,$D0,$19, $FF
+..voice0
+db $F5,$C0,$C4
+db $05
+db $B4,$50,$10
+db $FF
+
+; Sound 1Ah:
+.sound1A
+db $01 : dw ..voice0
+..voice0
+db $22
+db $98,$A0,$18
+db $FF
+
+; Sound 1Bh:
+; Sound 42h: Boulder bounces
+.sound1B
+.sound42
+db $01 : dw ..voice0
+..voice0
+db $08
+db $94,$D0,$19
+db $FF
 
 ; Sound 1Ch: Chozo grabs Samus
 .sound1C
 db $11 : dw ..voice0
-..voice0 : db $F6,$0C, $0D, $8B,$40,$02, $89,$50,$02, $87,$60,$03, $85,$50,$03, $FF
+..voice0 : db $0D, $8B,$40,$02, $89,$50,$02, $87,$60,$03, $85,$50,$03, $FF
 
-; Sound 1Dh: Dachora cry
+; Sound 1Dh:
 .sound1D
 db $01 : dw ..voice0
-..voice0 : db $14, $9F,$D0,$03, $A4,$D0,$03, $A4,$90,$03, $A3,$40,$03, $A2,$30,$03, $FF
+..voice0
+db $21
+db $98,$60,$10
+db $FF
 
-; Sound 1Eh: Sound library 2 version of Mother Brain's glass shattering
+; Sound 1Eh:
 .sound1E
-db $12 : dw sound3InstructionLists_motherBrainGlassShatteringVoice0, sound3InstructionLists_motherBrainGlassShatteringVoice1
+db $01 : dw ..voice0
+..voice0
+db $21
+db $98,$40,$10
+db $FF
 
-; Sound 1Fh: Fune spits
+; Sound 1Fh: SA-X's screw attack
 .sound1F
-db $11 : dw ..voice0
-..voice0 : db $25, $90,$D0,$09, $00, $97,$D8,$07, $FF
+db $02 : dw ..voice0, ..voice1
+..voice0
+db $07
+db $C7,$60,$07
+db $C7,$70,$09
+db $C7,$80,$0D
+db $C7,$80,$0F
+db $FE,$00
+db $C7,$80,$10
+db $FB
+
+..voice1
+db $F5,$E0,$BC
+db $20
+db $98,$80,$06
+db $FE,$00
+db $BC,$80,$03
+db $C4,$80,$03
+db $C6,$80,$03
+db $FB
 
 ; Sound 20h: Shot fly
 .sound20
@@ -244,37 +286,27 @@ db $01 : dw ..voice0
 ; Sound 23h: Shot slug / sidehopper / zoomer
 .sound23
 db $01 : dw ..voice0
-..voice0 : db $F6,$0C, $14, $84,$E0,$03, $89,$D0,$03, $84,$E0,$03, $89,$D0,$03, $FF
+..voice0 : db $14, $84,$E0,$03, $89,$D0,$03, $84,$E0,$03, $89,$D0,$03, $FF
 
 ; Sound 24h: Small explosion (enemy death)
+; Sound 28h:
+; Sound 2Ah:
 .sound24
+.sound28
+.sound2A
 db $01 : dw ..voice0
 ..voice0 : db $08, $98,$D0,$03, $95,$D0,$03, $9A,$D0,$03, $8C,$D0,$03, $8C,$D0,$25, $FF
 
 ; Sound 25h: Big explosion (Ceres door explosion / Crocomire flailing / Crocomire's wall explodes / Draygon tail whip, also used by Mother Brain)
-; Sound 76h: Quake (Crocomire moves / Kraid moves / Ridley's tail hits floor)
 .sound25
-.sound76
 db $01 : dw ..voice0
 ..voice0 : db $00, $91,$E0,$08, $08, $A1,$D0,$03, $9E,$D0,$03, $A3,$D0,$03, $8E,$D0,$03, $8E,$D0,$25, $FF
-
-; Sound 26h: Bomb Torizo explosive swipe
-.sound26
-db $01 : dw ..voice0
-..voice0 : db $00, $95,$D8,$05, $01, $A4,$90,$08, $F5,$F0,$80, $0B, $B0,$A0,$0E, $F5,$F0,$80, $B0,$70,$0E, $F5,$F0,$80, $B0,$30,$0E, $FF
 
 ; Sound 27h: Shot torizo
 .sound27
 db $12 : dw ..voice0, ..voice1
 ..voice0 : db $14, $8B,$D0,$11, $89,$D0,$20, $89,$80,$05, $89,$30,$05, $FF
 ..voice1 : db $14, $80,$D0,$09, $82,$D0,$20, $82,$80,$05, $82,$30,$05, $FF
-
-; Sound 28h:
-; Sound 2Ah:
-.sound28
-.sound2A
-db $01 : dw ..voice0
-..voice0 : db $08, $98,$D0,$03, $95,$D0,$03, $9A,$D0,$03, $8C,$D0,$03, $8C,$D0,$25, $FF
 
 ; Sound 29h: Mother Brain rising into phase 2
 .sound29
@@ -286,78 +318,88 @@ db $01 : dw ..voice0
 db $01 : dw ..voice0
 ..voice0 : db $08, $98,$D0,$03, $95,$D0,$03, $9A,$D0,$03, $98,$D0,$03, $95,$D0,$03, $9A,$D0,$03, $98,$D0,$03, $95,$D0,$03, $9A,$D0,$03, $8C,$D0,$20, $FF
 
-; Sound 2Ch: Shot Spore Spawn
+; Sound 2Ch:
 .sound2C
 db $12 : dw ..voice0, ..voice1
-..voice0 : db $25, $8E,$D0,$40, $FF
-..voice1 : db $25, $87,$00,$15, $87,$D0,$40, $FF
+..voice0
+db $F6,$09
+db $1C
+db $97,$38,$50
+db $FF
 
-; Sound 2Dh: Kraid's roar / Crocomire dying cry
+..voice1
+db $F6,$0D
+db $1C
+db $97,$00,$03
+db $97,$28,$50
+db $FF
+
+; Sound 2Dh: Electric water damage
 .sound2D
 db $11 : dw ..voice0
-..voice0 : db $25, $95,$D0,$45, $FF
-
-; Sound 2Eh: Kraid's dying cry
-.sound2E
-db $12 : dw ..voice0, ..voice1
-..voice0 : db $25, $9F,$D0,$60, $9A,$D0,$30, $98,$D0,$30, $FF
-..voice1 : db $25, $9A,$00,$45, $9C,$D0,$60, $97,$D0,$50, $FF
+..voice0
+db $02
+db $99,$50,$06
+db $FF
 
 ; Sound 2Fh: Yapping maw
 .sound2F
 db $01 : dw ..voice0
 ..voice0 : db $08, $AD,$50,$03, $AD,$50,$04, $F5,$90,$C7, $10, $BC,$40,$07, $C3,$20,$03, $FF
 
-; Sound 30h: Shot super-desgeega
+; Sound 30h:
 .sound30
 db $01 : dw ..voice0
-..voice0 : db $25, $93,$90,$06, $98,$B0,$10, $98,$40,$03, $98,$30,$03, $FF
+..voice0
+db $08
+db $98,$D0,$03
+db $95,$D0,$03
+db $F5,$90,$C7
+db $10
+db $BC,$40,$07
+db $C3,$20,$03
+db $FF
 
 ; Sound 31h: Brinstar plant chewing
 .sound31
 db $01 : dw ..voice0
 ..voice0 : db $0F, $8B,$70,$0D, $92,$80,$0D, $FF
 
-; Sound 32h: Etecoon wall-jump
+; Sound 32h:
 .sound32
 db $01 : dw ..voice0
-..voice0 : db $1D, $AC,$70,$0B, $FF
-
-; Sound 33h: Etecoon cry
-.sound33
-db $01 : dw ..voice0
-..voice0 : db $1D, $B4,$70,$04, $B0,$70,$04, $FF
+..voice0
+db $0F
+db $8F,$60,$0A
+db $FF
 
 ; Sound 34h: Spike shooting plant spikes
-; Sound 6Ah: Shot Maridia floater
 .sound34
-.sound6A
 db $01 : dw ..voice0
 ..voice0 : db $00, $90,$D8,$16, $FF
-
-; Sound 35h: Etecoon's theme
-.sound35
-db $11 : dw ..voice0
-..voice0 : db $1D, $A9,$70,$07, $A9,$20,$07, $AE,$70,$07, $AE,$20,$07, $B0,$70,$07, $B0,$20,$07, $B2,$70,$07, $B2,$20,$07, $B4,$70,$07, $B4,$20,$07, $B0,$70,$07, $B0,$20,$07, $AB,$70,$07, $AB,$20,$07, $B0,$70,$07, $B0,$20,$07, $B5,$70,$07, $B5,$20,$07, $B2,$70,$07, $B2,$20,$07, $AE,$70,$07, $AE,$20,$07, $AB,$70,$07, $AB,$20,$07, $AD,$70,$20, $FF
 
 ; Sound 36h: Shot rio / Norfair lava-jumping enemy / lava seahorse
 .sound36
 db $01 : dw ..voice0
 ..voice0 : db $14, $8C,$80,$03, $91,$A0,$05, $8C,$50,$03, $91,$30,$06, $FF
 
-; Sound 37h: Refill/map station engaged
+; Sound 37h:
 .sound37
-db $02 : dw ..voice0, ..voice1
-..voice0 : db $03, $89,$90,$05, $F5,$F0,$BB, $07, $B0,$40,$20,\
-              $FE,$00, $BB,$40,$0A, $FB
-..voice1 : db $03, $87,$90,$05, $F5,$F0,$C7, $07, $BC,$40,$20,\
-              $FE,$00, $0B, $B9,$10,$07, $FB
+db $01 : dw ..voice0
+..voice0
+db $F6,$11
+db $11
+db $C7,$A0,$B0
+db $FF
 
-; Sound 38h: Refill/map station disengaged
+; Sound 38h:
 .sound38
-db $02 : dw ..voice0, ..voice1
-..voice0 : db $F5,$F0,$B0, $07, $BB,$90,$08, $FF
-..voice1 : db $F5,$F0,$80, $0B, $B9,$10,$08, $FF
+db $01 : dw ..voice0
+..voice0
+db $F6,$04
+db $11
+db $C7,$A0,$B0
+db $FF
 
 ; Sound 39h: Dachora speed booster
 .sound39
@@ -366,15 +408,18 @@ db $01 : dw sound3InstructionLists_speedBoosterVoice
 ; Sound 3Ah: Tatori spinning
 .sound3A
 db $01 : dw ..voice0
-..voice0 : db $07, $C7,$60,$10, $FF
+..voice0
+db $07
+db $C7,$D0,$10
+db $FF
 
 ; Sound 3Bh: Dachora shinespark
 .sound3B
 db $01 : dw sound3InstructionLists_shinesparkVoice0
 
-; Sound 3Ch: Dachora shinespark ended
+; Sound 3Ch: Library 3 version of missile
 .sound3C
-db $01 : dw sound3InstructionLists_shinesparkEndedVoice
+db $01 : dw sound1InstructionLists_missileVoice
 
 ; Sound 3Dh: Dachora stored shinespark
 .sound3D
@@ -383,22 +428,17 @@ db $01 : dw sound3InstructionLists_storedShinesparkVoice
 ; Sound 3Eh: Shot Maridia spikey shells / Norfair erratic fireball / ripped / kamer / Maridia snail / yapping maw / Wrecked Ship orbs
 .sound3E
 db $01 : dw ..voice0
-..voice0 : db $13, $95,$60,$05, $95,$40,$03, $95,$10,$03, $FF
+..voice0
+db $13
+db $91,$60,$05
+db $91,$40,$03
+db $91,$10,$03
+db $FF
 
 ; Sound 3Fh: Alcoon spit / fake Kraid lint / ninja pirate spin jump
 .sound3F
 db $01 : dw ..voice0
 ..voice0 : db $00, $95,$70,$0C, $FF
-
-; Sound 40h:
-.sound40
-db $01 : dw ..voice0
-..voice0 : db $F5,$F0,$80, $0B, $C7,$30,$08, $FF
-
-; Sound 42h: Boulder bounces
-.sound42
-db $01 : dw ..voice0
-..voice0 : db $08, $94,$D0,$20, $FF
 
 ; Sound 43h: Boulder explodes
 .sound43
@@ -408,7 +448,11 @@ db $01 : dw ..voice0
 ; Sound 45h: Typewriter stroke - Ceres self destruct sequence
 .sound45
 db $01 : dw ..voice0
-..voice0 : db $03, $98,$50,$02, $98,$50,$02, $FF
+..voice0
+db $03
+db $98,$40,$02
+db $98,$30,$02
+db $FF
 
 ; Sound 46h: Lavaquake
 .sound46
@@ -423,36 +467,41 @@ db $01 : dw ..voice0
 ; Sound 48h: Torizo sonic boom
 .sound48
 db $01 : dw ..voice0
-..voice0 : db $00, $95,$D8,$08, $F5,$F0,$8C, $0B, $A3,$D0,$06, $F5,$F0,$8C, $A3,$B0,$06, $F5,$F0,$8C, $A3,$70,$06, $FF
+..voice0
+db $00
+db $95,$D8,$08
+db $F5,$F0,$8C
+db $05
+db $C3,$D0,$08
+db $F5,$F0,$8C
+db $C3,$B0,$07
+db $F5,$F0,$8C
+db $C3,$70,$06
+db $FF
 
 ; Sound 49h: Shot fish / crab / Maridia refill candy
 .sound49
 db $01 : dw ..voice0
 ..voice0 : db $14, $AB,$80,$04, $AB,$50,$04, $AB,$30,$04, $AB,$20,$04, $FF
 
-; Sound 4Ah: Shot mini-Draygon
-.sound4A
-db $01 : dw ..voice0
-..voice0 : db $24, $9C,$70,$03, $9A,$50,$04, $9A,$40,$06, $9A,$10,$06, $FF
-
 ; Sound 4Bh: Chozo / torizo footsteps
 .sound4B
 db $01 : dw ..voice0
-..voice0 : db $F6,$0C, $08, $98,$A0,$08, $FF
+..voice0 : db $08, $98,$A0,$08, $FF
 
 ; Sound 4Ch: Ki-hunter / eye door acid spit
 .sound4C
 db $01 : dw ..voice0
 ..voice0 : db $00, $9C,$40,$08, $0F, $93,$80,$13, $FF
 
-; Sound 4Dh: Gunship hover
+; Sound 4Dh: Absorb core-X (?)
 .sound4D
 db $01 : dw ..voice0
-..voice0 : db $0B, $89,$20,$03, $89,$30,$03, $89,$40,$03, $89,$50,$03, $89,$60,$03, $89,$70,$03, $89,$80,$03, $89,$60,$03, $89,$50,$03, $89,$40,$03, $89,$30,$03, $FF
-
-; Sound 4Eh: Ceres Ridley getaway
-.sound4E
-db $12 : dw sound1InstructionLists_PowerBombVoice0, sound1InstructionLists_PowerBombVoice1
+..voice0
+db $F5,$C0,$C4
+db $05
+db $B4,$50,$10
+db $FF
 
 ; Sound 4Fh:
 .sound4F
@@ -462,19 +511,16 @@ db $01 : dw ..voice0
 ; Sound 50h: Metroid draining Samus / random metroid cry
 .sound50
 db $12 : dw ..voice0, ..voice1
-..voice0 : db $24, $9A,$A0,$0E, $FF
-..voice1 : db $24, $8C,$00,$03, $98,$90,$14, $FF
+..voice0
+db $1C
+db $9A,$A0,$0E
+db $FF
 
-; Sound 51h: Shot Wrecked Ship ghost
-.sound51
-db $12 : dw ..voice0, ..voice1
-..voice0 : db $19, $A4,$60,$13, $A4,$50,$13, $A4,$30,$13, $A4,$10,$13, $FF
-..voice1 : db $19, $9F,$60,$16, $9F,$50,$16, $9F,$30,$16, $9F,$10,$16, $FF
-
-; Sound 52h: Shitroid feels remorse
-.sound52
-db $01 : dw ..voice0
-..voice0 : db $22, $92,$D0,$2B, $FF
+..voice1
+db $1C
+db $8C,$00,$03
+db $98,$90,$14
+db $FF
 
 ; Sound 53h: Shot mini-Crocomire
 .sound53
@@ -489,7 +535,15 @@ db $11 : dw ..voice0
 ; Sound 55h: Shot beetom
 .sound55
 db $01 : dw ..voice0
-..voice0 : db $F5,$F0,$80, $0B, $C5,$40,$04, $F5,$F0,$80, $F0,$30,$03, $F5,$F0,$80, $F0,$20,$03, $FF
+..voice0
+db $F5,$F0,$80
+db $0B
+db $C5,$40,$04
+db $F5,$F0,$80
+db $F6,$30,$03
+db $F5,$F0,$80
+db $F6,$20,$03
+db $FF
 
 ; Sound 56h: Acquired suit
 .sound56
@@ -503,20 +557,30 @@ db $01 : dw ..voice0
 ; Sound 58h: Shot mochtroid
 .sound58
 db $02 : dw ..voice0, ..voice1
-..voice0 : db $24, $98,$A0,$0D, $FF
-..voice1 : db $24, $94,$00,$03, $9A,$80,$15, $FF
+..voice0
+db $1C
+db $98,$A0,$0D
+db $FF
 
-; Sound 59h: Ridley's roar
-.sound59
-db $12 : dw ..voice0, ..voice1
-..voice0 : db $25, $9D,$D0,$30, $FF
-..voice1 : db $25, $A1,$D0,$30, $FF
+..voice1
+db $1C
+db $94,$00,$03
+db $9A,$80,$15
+db $FF
 
 ; Sound 5Ah: Shot metroid
 .sound5A
 db $02 : dw ..voice0, ..voice1
-..voice0 : db $24, $98,$A0,$15, $FF
-..voice1 : db $24, $96,$00,$03, $95,$80,$1D, $FF
+..voice0
+db $1C
+db $98,$A0,$15
+db $FF
+
+..voice1
+db $1C
+db $96,$00,$03
+db $95,$80,$1D
+db $FF
 
 ; Sound 5Ch: Skree hits the ground
 .sound5C
@@ -538,11 +602,6 @@ db $01 : dw ..voice0
 db $01 : dw ..voice0
 ..voice0 : db $14, $82,$90,$0A, $82,$80,$03, $82,$60,$03, $FF
 
-; Sound 60h:
-.sound60
-db $01 : dw ..voice0
-..voice0 : db $25, $AB,$70,$20, $FF
-
 ; Sound 61h: Dragon / magdollite spit / fire geyser
 .sound61
 db $01 : dw ..voice0
@@ -552,12 +611,6 @@ db $01 : dw ..voice0
 .sound62
 db $01 : dw ..voice0
 ..voice0 : db $F5,$F0,$B0, $09, $8C,$D0,$10, $FF
-
-; Sound 63h: Mother Brain's ketchup beam
-.sound63
-db $02 : dw ..voice0, ..voice1
-..voice0 : db $00, $95,$E0,$05, $01, $A4,$E0,$05, $08, $9F,$E0,$04, $9C,$E0,$03, $A1,$E0,$03, $93,$E0,$04, $93,$E0,$08, $8B,$D0,$13, $89,$D0,$13, $85,$D0,$16, $82,$D0,$18, $FF
-..voice1 : db $00, $95,$E0,$05, $18, $A4,$E0,$05, $9F,$E0,$04, $9C,$E0,$03, $A1,$E0,$03, $93,$E0,$04, $93,$E0,$08, $8C,$E0,$05, $87,$E0,$04, $84,$E0,$03, $FF
 
 ; Sound 64h: Holtz cry
 .sound64
@@ -575,16 +628,19 @@ db $01 : dw ..voice0
 ..voice0 : db $14, $98,$80,$0A, $98,$40,$03, $98,$30,$03, $FF
 
 ; Sound 67h: Space pirate / Mother Brain laser
-; Sound 6Bh:
 .sound67
-.sound6B
-db $01 : dw ..voice0
-..voice0 : db $00, $98,$D8,$05, $F5,$F0,$C7, $0B, $B0,$50,$03, $F5,$F0,$C7, $B0,$50,$03, $F5,$F0,$C7, $B0,$50,$03, $F5,$F0,$BC, $B0,$50,$03, $FF
-
-; Sound 68h: Shot Wrecked Ship robot
-.sound68
-db $01 : dw ..voice0
-..voice0 : db $1B, $94,$A0,$06, $8C,$90,$20, $FF
+db $01 : dw .laserVoice
+.laserVoice
+db $00
+db $98,$D8,$05
+db $F5,$F0,$C7
+db $09
+db $B0,$50,$03
+db $F5,$F0,$C7
+db $B0,$50,$03
+db $F5,$F0,$C7
+db $B0,$50,$06
+db $FF
 
 ; Sound 69h: Shot Shaktool
 .sound69
@@ -593,114 +649,152 @@ db $01 : dw ..voice0
 
 ; Sound 6Ch: Kago bug
 .sound6C
-db $01 : dw ..voice0
-..voice0 : db $00, $A8,$40,$08, $FF
+db $01 : dw .kagoBugVoice
+.kagoBugVoice : db $00, $A8,$40,$08, $FF
 
 ; Sound 6Dh: Ceres tiles falling from ceiling
 .sound6D
 db $01 : dw ..voice0
 ..voice0 : db $00, $91,$E0,$08, $08, $A1,$90,$03, $9E,$90,$03, $A3,$90,$03, $8E,$90,$03, $8E,$90,$25, $FF
 
-; Sound 6Eh: Shot Mother Brain phase 1
-.sound6E
-db $12 : dw ..voice0, ..voice1
-..voice0 : db $23, $80,$D0,$20, $FF
-..voice1 : db $23, $87,$D0,$20, $FF
-
-; Sound 6Fh: Mother Brain's cry - low pitch
-.sound6F
-db $12 : dw ..voice0, ..voice1
-..voice0 : db $25, $80,$E0,$C0, $FF
-..voice1 : db $24, $8C,$E0,$C0, $FF
-
-; Sound 70h: Maridia snail bounce
-.sound70
-db $01 : dw ..voice0
-..voice0 : db $1A, $AB,$60,$06, $B0,$60,$09, $FF
-
 ; Sound 15h: Maridia elevatube
+; Sound 16h: (Empty)
 ; Sound 41h: (Empty)
 ; Sound 44h: (Empty)
+; Sound 52h: (Empty)
 ; Sound 71h: Silence
+; Sound 72h..7Ch: Swappable sample specific 
 .sound15
+.sound16
 .sound41
 .sound44
+.sound52
 .sound71
+.sound72
+.sound73
+.sound74
+.sound75
+.sound76
+.sound77
+.sound78
+.sound79
+.sound7A
+.sound7B
+.sound7C
+.sound7D
+.sound7E
+.sound7F
 db $00
 
-; Sound 72h: Shitroid's cry
-.sound72
-db $12 : dw ..voice0, ..voice1
-..voice0 : db $24, $8C,$A0,$30, $FF
-..voice1 : db $24, $9D,$00,$03, $87,$80,$45, $FF
+;;; My sounds below
 
-; Sound 73h: Phantoon's cry / Draygon's cry
-.sound73
-db $12 : dw ..voice0, ..voice1
-..voice0 : db $25, $A3,$E0,$40, $FF
-..voice1 : db $25, $A6,$00,$0C, $A3,$80,$40, $FF
+; Hornoad hurt
+.sound26
+  db $01 : dw ..voice0
+..voice0
+  db $14
+  !c4,255*200/255,8
+  db $FF
 
-; Sound 74h: Crocomire's cry
-.sound74
-db $12 : dw ..voice0, ..voice1
-..voice0 : db $25, $92,$90,$53, $FF
-..voice1 : db $26, $A6,$E0,$09, $A4,$E0,$0D, $A2,$E0,$0D, $A0,$E0,$0D, $FF
+; Halzyn hurt
+.sound2E
+  db $01 : dw ..voice0
+..voice0
+  db $14
+  !fs4,255*200/255,4-1
+  !as3,160*200/255,5
+  db $FF
 
-; Sound 75h: Crocomire's skeleton collapses
-.sound75
-db $12 : dw ..voice0, ..voice1
-..voice0 : db $F6,$0C, $0D, $A3,$00,$05, $A3,$A0,$02, $A1,$C0,$02, $9F,$C0,$03, $9D,$C0,$03, $9C,$B0,$03, $9A,$A0,$02, $A3,$90,$02, $98,$90,$04, $97,$A0,$02, $95,$C0,$02, $93,$C0,$03, $91,$C0,$03, $90,$B0,$03, $8E,$A0,$02, $97,$90,$02, $8C,$90,$04, $FF
-..voice1 : db $F6,$0C, $0D, $97,$A0,$02, $90,$B0,$03, $91,$C0,$03, $91,$C0,$03, $90,$B0,$03, $97,$90,$02, $97,$90,$02, $8C,$90,$04, $8B,$A0,$02, $8B,$90,$02, $87,$C0,$03, $85,$C0,$03, $89,$C0,$02, $84,$B0,$03, $89,$C0,$02, $80,$90,$04, $FF
+; Halzyn lunge
+.sound33
+  db $01 : dw ..voice0
+..voice0
+  db $14
+  !c3,160*200/255,3-1
+  !g3,200*200/255,4-1
+  !c4,255*200/255,3-1
+  !c4,0,9-1
+  !e4,255*200/255,6-1
+  !e4,104*200/255,4-1
+  !e4,40*200/255,4
+  db $FF
 
-; Sound 77h: Crocomire melting cry
-.sound77
-db $12 : dw ..voice0, ..voice1
-..voice0 : db $25, $A7,$D0,$15, $A3,$D0,$20, $A2,$D0,$63, $A2,$00,$09, $A2,$D0,$60, $A2,$00,$09, $A2,$D0,$60, $A2,$00,$09, $A3,$D0,$20, $A2,$D0,$33, $FF
-..voice1 : db $26, $A6,$D0,$0D, $A6,$D0,$0D, $A5,$D0,$0D, $A4,$D0,$0D, $A7,$D0,$0D, $A2,$D0,$0D, $AA,$00,$7B, $AA,$00,$90, $A7,$D0,$0D, $A6,$D0,$0D, $A5,$D0,$0D, $A4,$D0,$0D, $A3,$D0,$0D, $A2,$D0,$0D, $FF
+; Moto hurt
+.sound35
+  db $01 : dw ..voice0
+..voice0
+  db !sampleMotoCry
+  !d3,160*200/255,4-1
+  !c4,255*200/255,4-1
+  !g3,160*200/255,10
+  db $FF
 
-; Sound 78h: Shitroid draining
-.sound78
-db $02 : dw ..voice0, ..voice1
-..voice0 : db $24, $9C,$A0,$20, $FF
-..voice1 : db $24, $9D,$00,$05, $95,$80,$40, $FF
+; Yameba hurt
+.sound40
+  db $01 : dw ..voice0
+..voice0
+  db !sampleMotoCry
+  !f5,255*200/255,6-1
+  !c5,104*200/255,7
+  db $FF
 
-; Sound 79h: Phantoon appears 1
-.sound79
-db $02 : dw ..voice0, ..voice1
-..voice0 : db $26, $95,$D0,$38, $FF
-..voice1 : db $26, $95,$00,$0A, $9C,$D0,$38, $FF
+; Sciser hurt
+.sound4A
+  db $01 : dw ..voice0
+..voice0
+  db !sampleMotoCry
+  !d4,255*200/255,4-1
+  !a3,160*200/255,4-1
+  !f3,104*200/255,4
+  db $FF
 
-; Sound 7Ah: Phantoon appears 2
-.sound7A
-db $02 : dw ..voice0, ..voice1
-..voice0 : db $26, $8E,$D0,$40, $FF
-..voice1 : db $26, $8E,$00,$0A, $99,$D0,$40, $FF
+; Gold sciser hurt
+.sound4E
+  db $01 : dw ..voice0
+..voice0
+  db !sampleMotoCry
+  !gs4,255*200/255,4-1
+  !cs4,160*200/255,4-1
+  !a3,104*200/255,4
+  db $FF
 
-; Sound 7Bh: Phantoon appears 3
-.sound7B
-db $02 : dw ..voice0, ..voice1
-..voice0 : db $26, $9E,$D0,$3D, $FF
-..voice1 : db $26, $9E,$00,$0A, $9D,$D0,$3D, $FF
+; Geemer hurt
+.sound51
+  db $01 : dw ..voice0
+..voice0
+  db $14
+  !a4,160*128/255,4-1
+  !c5,104*128/255,4-1
+  !f5,104*128/255,4
+  db $FF
 
-; Sound 7Ch: Botwoon spit
-.sound7C
-db $11 : dw ..voice0
-..voice0 : db $24, $94,$90,$1A, $94,$30,$10, $FF
+; Kihunter hurt
+.sound59
+  db $01 : dw ..voice0
+..voice0
+  db $14
+  !a3,160*200/255,3-1
+  !g4,160*200/255,3-1
+  !e4,160*200/255,3-1
+  db $FF
 
-; Sound 7Dh: Shitroid feels guilty
-.sound7D
-db $11 : dw ..voice0
-..voice0 : db $22, $88,$D0,$90, $8E,$D0,$37, $FF
+; Reo hurt
+.sound60
+  db $01 : dw ..voice0
+..voice0
+  db $14
+  !d3,160*200/255,3-1
+  !d4,160*200/255,3-1
+  db $F9,$FF,$F6
+  !a3,160*200/255,14
+  db $FF
 
-; Sound 7Eh: Mother Brain's cry - high pitch / Phantoon's dying cry
-.sound7E
-db $11 : dw ..voice0
-..voice0 : db $25, $87,$D0,$C0, $FF
-
-; Sound 7Fh: Mother Brain charging her rainbow
-.sound7F
-db $02 : dw ..voice0, ..voice1
-..voice0 : db $FE,$00, $24, $84,$D0,$0D, $85,$D0,$0D, $87,$D0,$0D, $89,$D0,$0D, $8B,$D0,$0D, $8C,$D0,$0D, $8E,$D0,$0D, $90,$D0,$0D, $91,$D0,$0D, $93,$D0,$0D, $FB
-..voice1 : db $24, $00,$80,$04,\
-              $FE,$00, $84,$D0,$0D, $85,$D0,$0D, $87,$D0,$0D, $89,$D0,$0D, $8B,$D0,$0D, $8C,$D0,$0D, $8E,$D0,$0D, $90,$D0,$0D, $91,$D0,$0D, $93,$D0,$0D, $FB
+.sound63
+.sound68
+.sound6A
+.sound6B
+.sound6E
+.sound6F
+.sound70
+db $00
 }

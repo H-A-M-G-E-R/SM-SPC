@@ -14,10 +14,18 @@ if defined("printRamMsl") || defined("printRamMap") : undef printAramSummary
 ; The SPC engine data block is written via the spc700 arch, and sets the base to !p_end_ram
 ; This is a workaround for spcblock with labels referenced outside the spcblock
 
-lorom
-org $CF8000 ; The actual ROM location the engine is going to be written to
+if defined("patchRom")
+    lorom
+    org $CF8000 ; The actual ROM location the engine is going to be written to
+else
+    norom
+    org 0
+endif
 
 !version = 2
+
+; Defines that must be defined
+!adsrSoundCommand = 1
 
 incsrc "ram.asm"
 

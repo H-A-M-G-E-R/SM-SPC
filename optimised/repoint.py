@@ -1381,15 +1381,15 @@ class MusicData:
 
             self.samples = [[data.readInt(2), data.readInt(2)] for i in range(n_samples)]
 
-        def repoint(self, p_aram):
+        def repoint(self, p_aram, p_sampleOffset = 0):
             diff = p_aram - self.p_aram
             self.p_aram += diff
             for i in range(len(self.samples)):
                 if self.samples[i][0] == 0xFFFF:
                     continue
 
-                self.samples[i][0] += diff
-                self.samples[i][1] += diff
+                self.samples[i][0] += diff + p_sampleOffset
+                self.samples[i][1] += diff + p_sampleOffset
 
         def write(self, data):
             data.writeInt(self.blockSize, 2)
@@ -1652,10 +1652,10 @@ class MusicData:
             self.instrumentTable.repoint(self.instrumentTable.p_aram + args.p_instrumentTable - 0x6C00)
 
         if self.sampleTable is not None:
-            self.sampleTable.repoint(self.sampleTable.p_aram + args.p_sampleTable - 0x6D00)
+            self.sampleTable.repoint(self.sampleTable.p_aram + args.p_sampleTable - 0x6D00, 0x1000)
 
         if self.sampleData is not None:
-            self.sampleData.repoint(self.sampleData.p_aram + args.p_sampleData - 0x6E00)
+            self.sampleData.repoint(self.sampleData.p_aram + args.p_sampleData - 0x6E00 + 0x1000)
 
         '''if args.version == 1 or self.noteLengthTable is None:
             p_trackers = self.sampleData.p_aram + self.sampleData.blockSize

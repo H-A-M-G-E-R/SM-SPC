@@ -1,3 +1,8 @@
+This is my and PJ's modification of the SPC engine, modified for Metaquarius's X-Fusion hack (https://metroidconstruction.com/hack.php?id=837)
+with my improvements (https://github.com/H-A-M-G-E-R/my-sm-asms/tree/main/xf).
+
+# Original description
+
 SPC engine modification. Frees up just under 8.9kb of ARAM, which can be used for any of: sample data, tracker data, or echo buffer (each echo frames are 2kb each).
 ARAM is rearranged so that sample data, tracker data, and echo buffer all use up the same pool of memory; so one can e.g. cut down on sample data to get more echo buffer space.
 

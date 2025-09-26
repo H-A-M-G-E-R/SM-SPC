@@ -7,6 +7,79 @@
 !canInterleaveBytePairArray = 0
 !lastBytePairN = 0
 
+!c2 = "db $80"
+!cs2 = "db $81"
+!d2 = "db $82"
+!ds2 = "db $83"
+!e2 = "db $84"
+!f2 = "db $85"
+!fs2 = "db $86"
+!g2 = "db $87"
+!gs2 = "db $88"
+!a2 = "db $89"
+!as2 = "db $8A"
+!b2 = "db $8B"
+!c3 = "db $8C"
+!cs3 = "db $8D"
+!d3 = "db $8E"
+!ds3 = "db $8F"
+!e3 = "db $90"
+!f3 = "db $91"
+!fs3 = "db $92"
+!g3 = "db $93"
+!gs3 = "db $94"
+!a3 = "db $95"
+!as3 = "db $96"
+!b3 = "db $97"
+!c4 = "db $98"
+!cs4 = "db $99"
+!d4 = "db $9A"
+!ds4 = "db $9B"
+!e4 = "db $9C"
+!f4 = "db $9D"
+!fs4 = "db $9E"
+!g4 = "db $9F"
+!gs4 = "db $A0"
+!a4 = "db $A1"
+!as4 = "db $A2"
+!b4 = "db $A3"
+!c5 = "db $A4"
+!cs5 = "db $A5"
+!d5 = "db $A6"
+!ds5 = "db $A7"
+!e5 = "db $A8"
+!f5 = "db $A9"
+!fs5 = "db $AA"
+!g5 = "db $AB"
+!gs5 = "db $AC"
+!a5 = "db $AD"
+!as5 = "db $AE"
+!b5 = "db $AF"
+!c6 = "db $B0"
+!cs6 = "db $B1"
+!d6 = "db $B2"
+!ds6 = "db $B3"
+!e6 = "db $B4"
+!f6 = "db $B5"
+!fs6 = "db $B6"
+!g6 = "db $B7"
+!gs6 = "db $B8"
+!a6 = "db $B9"
+!as6 = "db $BA"
+!b6 = "db $BB"
+!c7 = "db $BC"
+!cs7 = "db $BD"
+!d7 = "db $BE"
+!ds7 = "db $BF"
+!e7 = "db $C0"
+!f7 = "db $C1"
+!fs7 = "db $C2"
+!g7 = "db $C3"
+!gs7 = "db $C4"
+!a7 = "db $C5"
+!as7 = "db $C6"
+!b7 = "db $C7"
+
 macro declare(name, n)
 {
     if defined("printRamMap") : print "$", hex(!p_ram), " = \!<name>"
@@ -340,10 +413,10 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $2E8..24EE: SPC engine
-!p_ram = $2700-($30*6)
+; $307..1D2E: SPC engine
+!p_ram = $1F00-($40*6)
 
-%declare_byteArray(instrumentTable, $30*6)
+%declare_byteArray(instrumentTable, $40*6)
 
 ; Must be 100h aligned
 !p_ram #= !p_ram+$100-1
@@ -357,3 +430,9 @@ endif
 ; Trackers float around here somewhere
 
 !echoBufferEnd = $10000
+
+!sampleSamusFootstep = $30
+!sampleSamusLand = $31
+!sampleHeatDamage = $32
+!sampleLavaDamage = $33
+!sampleMotoCry = $34

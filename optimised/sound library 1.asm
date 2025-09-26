@@ -87,7 +87,6 @@ db $04 : dw .PowerBombVoice0, .PowerBombVoice1, .PowerBombVoice2, .PowerBombVoic
 ; Sound 2: Silence
 ; Sound Ah: X-ray end
 ; Sound 29h: Wave SBA end
-; Sound 2Bh: (Empty)
 ; Sound 2Ch: (Empty)
 ; Sound 2Dh: (Empty)
 ; Sound 32h: Spin jump end
@@ -96,7 +95,6 @@ db $04 : dw .PowerBombVoice0, .PowerBombVoice1, .PowerBombVoice2, .PowerBombVoic
 .sound2
 .soundA
 .sound29
-.sound2B
 .sound2C
 .sound2D
 .sound32
@@ -106,8 +104,8 @@ db $00
 
 ; Sound 3: Missile
 .sound3
-db $01 : dw ..voice0
-..voice0 : db $00, $95,$D8,$08, $01, $8B,$D8,$30, $FF
+db $01 : dw .missileVoice
+.missileVoice : db $00, $95,$D8,$08, $01, $8B,$D8,$30, $FF
 
 ; Sound 4: Super missile
 .sound4
@@ -133,182 +131,350 @@ db $01 : dw ..voice0
 ; Sound 8: Charging beam
 .sound8
 db $02 : dw ..voice0, ..voice1
-..voice0 : db $05, $B4,$00,$15, $F5,$30,$C7, $B7,$50,$25,\
-              $FE,$00, $07, $C7,$60,$30, $FB
-..voice1 : db $02, $9C,$00,$07, $9C,$10,$03, $9C,$00,$05, $9C,$20,$08
+..voice0
+db $F5,$50,$C7
+db $05
+db $B7,$40,$30
+db $C7,$50,$FF
+
+..voice1
+db $02
+db $9C,$00,$07
+db $9C,$10,$03
+db $9C,$00,$05
+db $9C,$20,$08
 
 ; Shared by charging beam and resume charging beam
 .resumeChargingBeamVoice
-db $02, $9C,$20,$04, $9C,$30,$06, $9C,$00,$04, $9C,$30,$03, $9C,$30,$07, $9C,$00,$0A, $9C,$30,$03, $9C,$00,$04, $9C,$40,$03, $9C,$40,$07, $9C,$00,$05, $9C,$40,$06, $9C,$40,$03, $9C,$00,$0A, $9C,$50,$03, $9C,$50,$03, $9C,$60,$05, $9C,$00,$06, $9C,$60,$07, $9C,$00,$03, $9C,$60,$04, $9C,$60,$03, $9C,$00,$03,\
-   $FE,$00, $9C,$40,$05, $9C,$40,$06, $9C,$40,$07, $9C,$40,$03, $9C,$40,$04, $9C,$40,$03, $9C,$40,$03, $FB
+db $02
+db $9C,$20,$04
+db $9C,$30,$06
+db $9C,$00,$04
+db $9C,$30,$03
+db $9C,$30,$07
+db $9C,$00,$0A
+db $9C,$30,$03
+db $9C,$00,$04
+db $9C,$40,$03
+db $9C,$40,$07
+db $9C,$00,$05
+db $9C,$40,$06
+db $9C,$40,$03
+db $9C,$00,$0A
+db $9C,$50,$03
+db $9C,$50,$03
+db $9C,$60,$05
+db $9C,$00,$06
+db $9C,$60,$07
+db $9C,$00,$03
+db $9C,$60,$04
+db $9C,$60,$03
+db $9C,$00,$03
+db $FE,$00
+db $9C,$40,$05
+db $9C,$40,$06
+db $9C,$40,$07
+db $9C,$40,$03
+db $9C,$40,$04
+db $9C,$40,$03
+db $9C,$40,$03
+db $FB
 
 ; Sound 9: X-ray
 .sound9
-db $01 : dw ..voice0
-..voice0 : db $F5,$70,$AD, $06, $A4,$40,$FF
+db $01 : dw .xRayVoice
+.xRayVoice : db $F5,$70,$AD, $06, $A4,$40,$FF
 
 ; Sound Bh: Uncharged power beam
 .soundB
 db $01 : dw ..voice0
-..voice0 : db $04, $89,$90,$03, $84,$90,$0E, $FF
+..voice0
+db $04
+db $98,$70,$18
+db $FF
 
-; Sound Ch: Uncharged ice beam
-; Sound Eh: Uncharged ice + wave beam
+; Sound Ch: Uncharged plasma beam
+; Sound Fh: Uncharged wide beam
+; Sound 10h: Uncharged wide + plasma beam
+; Sound 11h: Uncharged wide + plasma + wave beam
 .soundC
-.soundE
+.soundF
+.sound10
+.sound11
 db $01 : dw ..voice0
-..voice0 : db $04, $8B,$B0,$03, $89,$B0,$07, $F5,$90,$C7, $10, $BC,$90,$0A, $C3,$60,$06, $C7,$30,$03, $C7,$20,$03, $FF
+..voice0
+db $04
+db $98,$B0,$18
+db $FF
 
 ; Sound Dh: Uncharged wave beam
 .soundD
 db $01 : dw ..voice0
-..voice0 : db $04, $89,$90,$03, $84,$70,$0B, $84,$30,$08, $FF
+..voice0
+db $04
+db $98,$70,$0B
+db $97,$30,$18
+db $FF
 
-; Sound Fh: Uncharged spazer beam
-; Sound 12h: Uncharged spazer + wave beam
-.soundF
+; Sound Eh: Uncharged plasma + wave beam
+.soundE
+db $01 : dw ..voice0
+..voice0
+db $04
+db $98,$B0,$0B
+db $97,$50,$18
+db $FF
+
+; Sound 12h: Uncharged wide + wave beam
 .sound12
 db $01 : dw ..voice0
-..voice0 : db $00, $98,$D0,$0C, $04, $80,$C0,$10, $80,$30,$08, $80,$10,$06, $FF
+..voice0
+db $04
+db $98,$B0,$0B
+db $97,$40,$18
+db $FF
 
-; Sound 10h: Uncharged spazer + ice beam
-; Sound 11h: Uncharged spazer + ice + wave beam
-; Sound 14h: Uncharged plasma + ice beam
-; Sound 15h: Uncharged plasma + ice + wave beam
-.sound10
-.sound11
+; Sound 13h: Overcharged beam
+.sound13
+db $01 : dw ..voice0
+..voice0
+db $00
+db $9A,$E0,$06
+db $F5,$E0,$99
+db $04
+db $90,$F0,$10
+db $99,$50,$14
+db $FF
+
+; Sound 14h:
+; Sound 15h:
+; Sound 16h:
+; Sound 20h:
+; Sound 21h:
+; Sound 22h:
+; Sound 23h:
+; Sound 2Ah:
 .sound14
 .sound15
-db $01 : dw ..voice0
-..voice0 : db $00, $98,$D0,$0C, $F5,$90,$C7, $10, $BC,$90,$0A, $C3,$60,$06, $C7,$30,$03, $C7,$20,$03, $FF
-
-; Sound 13h: Uncharged plasma beam
-; Sound 16h: Uncharged plasma + wave beam
-.sound13
 .sound16
+.sound20
+.sound21
+.sound22
+.sound23
+.sound2A
 db $01 : dw ..voice0
-..voice0 : db $00, $98,$D0,$0C, $04, $80,$B0,$13, $FF
+..voice0
+db $09
+db $B5,$60,$10
+db $FF
 
 ; Sound 17h: Charged power beam
 .sound17
 db $01 : dw ..voice0
-..voice0 : db $04, $84,$D0,$05, $80,$D0,$0C, $02, $98,$80,$03, $98,$60,$03, $98,$50,$03, $FF
+..voice0
+db $00
+db $98,$D0,$05
+db $04
+db $97,$D0,$10
+db $97,$30,$18
+db $FF
 
-; Sound 18h: Charged ice beam
-; Sound 1Ah: Charged ice + wave beam
-; Sound 1Ch: Charged spazer + ice beam
-; Sound 1Dh: Charged spazer + ice + wave beam
-; Sound 20h: Charged plasma + ice beam
-; Sound 21h: Charged plasma + ice + wave beam
+; Sound 18h: Charged plasma beam
+; Sound 1Ah: Charged plasma + wave beam
+; Sound 1Ch: Charged wide + plasma beam
+; Sound 1Dh: Charged wide + plasma + wave beam
 .sound18
 .sound1A
 .sound1C
 .sound1D
-.sound20
-.sound21
 db $01 : dw ..voice0
-..voice0 : db $00, $98,$E0,$0C, $F5,$B0,$C7, $10, $BC,$E0,$0A, $C3,$70,$06, $C7,$30,$03, $C7,$20,$03, $FF
+..voice0
+db $00
+db $98,$E0,$06
+db $04
+db $98,$E0,$10
+db $98,$40,$14
+db $FF
 
 ; Sound 19h: Charged wave beam
 .sound19
 db $01 : dw ..voice0
-..voice0 : db $04, $84,$E0,$03, $80,$E0,$10, $80,$50,$04, $80,$30,$09, $FF
+..voice0
+db $04
+db $84,$E0,$03
+db $97,$E0,$10
+db $97,$50,$04
+db $96,$40,$06
+db $95,$28,$06
+db $FF
 
-; Sound 1Bh: Charged spazer beam
-; Sound 1Eh: Charged spazer + wave beam
+; Sound 1Bh: Charged wide beam
+; Sound 1Eh: Charged wide + wave beam
 .sound1B
 .sound1E
 db $01 : dw ..voice0
-..voice0 : db $00, $95,$D0,$08, $04, $80,$D0,$0F, $80,$80,$0D, $80,$20,$0A, $FF
+..voice0
+db $00
+db $98,$D0,$08
+db $04
+db $98,$D0,$10
+db $98,$40,$10
+db $FF
 
-; Sound 1Fh: Charged plasma beam / hyper beam
-; Sound 22h: Charged plasma + wave beam
+; Sound 1Fh: Disruptor beam
+; Sound 25h:
+; Sound 26h:
 .sound1F
-.sound22
-db $01 : dw ..voice0
-..voice0 : db $00, $98,$D0,$0E, $04, $80,$D0,$10, $80,$70,$10, $80,$30,$10, $FF
-
-; Sound 23h: Ice SBA
-.sound23
-db $01 : dw ..voice0
-..voice0 : db $FE,$00, $10, $C0,$50,$03, $C1,$50,$03, $C3,$60,$03, $C5,$60,$03, $C7,$70,$03, $C5,$60,$03, $C3,$50,$03, $C1,$50,$03, $FB
-
-; Sound 24h: Ice SBA end
-.sound24
-db $02 : dw ..voice0, ..voice1
-..voice0 : db $10, $BC,$D0,$0A, $C3,$70,$06, $C7,$30,$03, $C7,$20,$03, $C3,$50,$06, $C7,$40,$03, $C7,$40,$03, $C3,$30,$06, $C7,$20,$03, $C7,$20,$03, $FF
-..voice1 : db $04, $80,$D0,$10, $80,$70,$10, $80,$30,$10, $FF
-
-; Sound 25h: Spazer SBA
 .sound25
-db $01 : dw ..voice0
-..voice0 : db $04, $80,$D0,$10, $80,$70,$10, $80,$30,$02, $80,$D0,$10, $80,$70,$10, $80,$30,$10, $FF
-
-; Sound 26h: Spazer SBA end
 .sound26
 db $01 : dw ..voice0
-..voice0 : db $04, $80,$D0,$10, $80,$70,$04, $80,$30,$02, $80,$30,$06, $80,$30,$06, $80,$70,$07, $80,$70,$07, $FF
+..voice0
+db $04
+db $98,$A0,$18
+db $FF
 
-; Sound 27h: Plasma SBA
-.sound27
+; Sound 24h: Diffusion missile explosion
+.sound24
 db $02 : dw ..voice0, ..voice1
-..voice0 : db $F5,$30,$C7, $07, $B7,$90,$25, $F5,$30,$B7, $F0,$90,$25, $F5,$B0,$C7, $F0,$90,$25, $FF
-..voice1 : db $F5,$30,$C7, $05, $B7,$90,$27, $F5,$30,$B7, $F0,$90,$27, $F5,$B0,$C7, $F0,$90,$27, $FF
+..voice0
+db $10
+db $BC,$90,$0A
+db $C3,$60,$06
+db $C7,$20,$03
+db $C7,$10,$03
+db $C3,$40,$06
+db $C7,$30,$03
+db $C7,$30,$03
+db $FF
 
-; Sound 28h: Wave SBA
+..voice1
+db $F5,$30,$C5
+db $11
+db $B7,$70,$20
+db $F5,$60,$C7
+db $B7,$50,$20
+db $FF
+
+; Sound 27h:
+.sound27
+db $02 : dw ..voice0, .sound24_voice1
+..voice0
+db $F5,$20,$B7
+db $07
+db $F6,$B0,$20
+db $F5,$20,$C7
+db $F6,$B0,$20
+db $FF
+
+; Sound 28h:
 .sound28
 db $01 : dw ..voice0
-..voice0 : db $F5,$30,$C7, $05, $B7,$50,$25, $FF
+..voice0
+db $F5,$60,$C7
+db $05
+db $B7,$50,$20
+db $FF
 
-; Sound 2Ah: Selected save file
-.sound2A
-db $01 : dw ..voice0
-..voice0 : db $07, $C5,$90,$12, $FF
+; Sound 2Bh: Message popup
+.sound2B
+db $13 : dw ..voice0, ..voice1, ..voice2
+..voice0
+db $0A
+db $98,$F0,$10
+db $98,$30,$10
+db $FF
+
+..voice1
+db $0A
+db $98,$C0,$18
+db $98,$18,$08
+db $FF
+
+..voice2
+db $0A
+db $98,$00,$08
+db $98,$60,$10
+db $FF
 
 ; Sound 2Eh: Saving
 .sound2E
 db $04 : dw ..voice0, ..voice1, ..voice2, ..voice3
-..voice0 : db $F5,$F0,$B1, $06, $99,$45,$19, $B1,$45,$80, $F5,$F0,$99, $B1,$45,$19, $FF
-..voice1 : db $F5,$F0,$A7, $06, $8F,$45,$19, $A7,$45,$80, $F5,$F0,$8F, $A7,$45,$19, $FF
-..voice2 : db $F5,$F0,$A0, $06, $88,$45,$19, $A0,$45,$80, $F5,$F0,$88, $A0,$45,$19, $FF
-..voice3 : db $F5,$F0,$98, $06, $80,$45,$19, $98,$45,$80, $F5,$F0,$80, $98,$45,$19, $FF
+..voice0
+db $F5,$F0,$B1
+db $06
+db $99,$45,$19
+db $B1,$45,$70
+db $FF
+
+..voice1
+db $F5,$F0,$A7
+db $06
+db $8F,$45,$19
+db $A7,$45,$70
+db $FF
+
+..voice2
+db $F5,$F0,$A0
+db $06
+db $88,$45,$19
+db $A0,$45,$70
+db $FF
+
+..voice3
+db $F5,$F0,$98
+db $06
+db $80,$45,$19
+db $98,$45,$70
+db $FF
 
 ; Sound 2Fh: Underwater space jump (without gravity suit)
 .sound2F
-db $01 : dw ..voice0
-..voice0 : db $07, $C7,$80,$10, $FF
+db $02 : dw ..voice0, ..voice1
+..voice0
+db $07
+db $CA,$60,$04
+db $C9,$60,$10
+db $FF
 
-; Sound 30h: Resumed spin jump
-; Sound 3Fh: Resumed space jump
-.sound30
-.sound3F
-db $01 : dw .resumedSpinJumpVoice
+..voice1
+db $0B
+db $97,$50,$14
+db $FF
 
 ; Sound 31h: Spin jump
 .sound31
 db $01 : dw ..voice0
-..voice0 : db $07, $C5,$30,$10, $C6,$40,$10, $C7,$50,$10
+..voice0
+db $FE,$00
+db $0B
+db $98,$60,$07
+db $98,$30,$07
+db $FB
 
-; Shared by resumed spin jump, spin jump and resumed space jump
-.resumedSpinJumpVoice
-db $FE,$00, $07, $C7,$80,$10, $FB
-
+; Sound 30h: Resumed spin jump
 ; Sound 33h: Screw attack
-.sound33
-db $02 : dw ..voice0, ..voice1
-..voice0 : db $07, $C7,$30,$04, $C7,$40,$05, $C7,$50,$06, $C7,$60,$07, $C7,$70,$09, $C7,$80,$0D, $C7,$80,$0F,\
-              $FE,$00, $C7,$80,$10, $FB
-..voice1 : db $F5,$E0,$BC, $05, $98,$60,$0E, $F5,$E0,$BC, $A4,$70,$08, $F5,$E0,$BC, $B0,$80,$06,\
-              $FE,$00, $BC,$80,$03, $C4,$80,$03, $C6,$80,$03, $FB
-
 ; Sound 3Eh: Space jump
+; Sound 3Fh: Resumed space jump
+.sound30
+.sound33
 .sound3E
-db $01 : dw .sound33_voice0
+.sound3F
+db $01 : dw ..voice0
+..voice0
+db $FE,$00
+db $0B
+db $98,$60,$10
+db $FB
 
 ; Sound 35h: Samus damaged
 .sound35
-db $11 : dw ..voice0
-..voice0 : db $13, $A4,$60,$10, $A4,$10,$07, $FF
+  db $11 : dw ..voice0
+..voice0
+  db $13
+  !c4,255,4-1
+  !c4,80,4-1
+  !c4,24,4
+  db $FF
 
 ; Sound 36h: Scrolling map
 .sound36
@@ -318,49 +484,99 @@ db $01 : dw ..voice0
 ; Sound 37h: Toggle reserve mode / moved cursor
 .sound37
 db $01 : dw ..voice0
-..voice0 : db $03, $9C,$60,$04, $FF
+..voice0
+db $03
+db $9C,$50,$04
+db $FF
 
 ; Sound 38h: Pause menu transition / toggled equipment
 .sound38
-db $01 : dw ..voice0
-..voice0 : db $F5,$90,$C7, $15, $B0,$90,$15, $FF
+db $01 : dw .unpauseVoice
+.unpauseVoice : db $F5,$90,$C7, $15, $B0,$90,$15, $FF
 
 ; Sound 39h: Switch HUD item
 .sound39
-db $01 : dw ..voice0
-..voice0 : db $03, $9C,$40,$03, $FF
+  db $01 : dw ..voice0
+..voice0
+  db $03
+  !c4,255,3-1
+  !c4,64,4
+  db $FF
 
-; Sound 3Bh: Hexagon map -> square map transition
+; Sound 3Bh:
 .sound3B
 db $01 : dw ..voice0
-..voice0 : db $05, $9C,$90,$0B, $F5,$F0,$C2, $9C,$90,$12, $FF
+..voice0
+db $16
+db $A9,$30,$03
+db $FF
 
-; Sound 3Ch: Square map -> hexagon map transition
+; Sound 3Ch:
 .sound3C
 db $01 : dw ..voice0
-..voice0 : db $05, $9C,$90,$0B, $F5,$F0,$80, $9C,$90,$12, $FF
+..voice0
+db $10
+db $8F,$20,$03
+db $FF
 
 ; Sound 3Dh: Dud shot
 .sound3D
 db $01 : dw ..voice0
 ..voice0 : db $08, $99,$70,$03, $9C,$70,$05, $FF
 
-; Sound 40h: Mother Brain's rainbow beam
+; Sound 40h: Message popup 2
 .sound40
 db $13 : dw ..voice0, ..voice1, ..voice2
-..voice0 : db $FE,$00, $23, $89,$D0,$07, $8B,$D0,$07, $8C,$D0,$07, $8E,$D0,$07, $90,$D0,$07, $91,$D0,$07, $93,$D0,$07, $95,$D0,$07, $97,$D0,$07, $FB
-..voice1 : db $06, $BA,$D0,$FF
-..voice2 : db $06, $B3,$D0,$FF
+..voice0
+db $F6,$10
+db $0A
+db $97,$F0,$10
+db $FF
+
+..voice1
+db $F6,$04
+db $0A
+db $98,$D0,$14
+db $F6,$06
+db $98,$20,$08
+db $FF
+
+..voice2
+db $0A
+db $97,$00,$08
+db $98,$50,$10
+db $FF
 
 ; Sound 41h: Resume charging beam
 .sound41
 db $02 : dw ..voice0, .resumeChargingBeamVoice
-..voice0 : db $F5,$70,$C7, $05, $C0,$50,$03,\
-              $FE,$00, $07, $C7,$60,$30, $FB
+..voice0
+db $F5,$70,$C7
+db $05
+db $C0,$50,$03
+db $C7,$50,$FF
 
-; Sound 42h:
+; Sound 42h: Refill/map station engaged (moved from library 2)
 .sound42
 db $02 : dw ..voice0, ..voice1
-..voice0 : db $24, $9C,$A0,$20, $FF
-..voice1 : db $24, $9D,$00,$05, $95,$80,$40, $FF
+..voice0
+db $03
+db $89,$90,$05
+db $F5,$F0,$BB
+db $07
+db $B0,$40,$20
+db $FE,$00
+db $BB,$40,$0A
+db $FB
+
+..voice1
+db $03
+db $87,$90,$05
+db $F5,$F0,$C7
+db $07
+db $BC,$40,$20
+db $FE,$00
+db $06
+db $A9,$10,$07
+db $FB
 }

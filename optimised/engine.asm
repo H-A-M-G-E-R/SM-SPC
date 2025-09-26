@@ -15,8 +15,8 @@ mov !misc1+1,#main-!p_stackBegin>>8
 mov !misc1,#main-!p_stackBegin
 call memclear
 
-; Set up echo with echo delay = 0
-mov a,#$00 : mov !echoDelay,a : call setUpEcho_spcInitialisation
+; Set up echo with echo delay = 5 (that's the max echo delay in XF)
+mov a,#$05 : mov !echoDelay,a : call setUpEcho_spcInitialisation
 
 ; DSP left/right track master volume = 60h
 mov y,#$60
@@ -37,9 +37,6 @@ asl a : mov !musicTempo+1,a
 
 ; Enable timer 0
 mov $F1,#$01
-
-; Set default !p_trackerData to prevent crashing in QuickMet
-mov a,#sharedTrackerPointers&$FF : mov y,#sharedTrackerPointers>>8 : movw !p_trackerData,ya
 }
 
 .loop_main
@@ -396,13 +393,6 @@ receiveDataFromCpu:
 ; Echo [CPU IO 0]
 ; [CPU IO 1] == 0
 
-; Key off music voices
-call keyOffMusicVoices : mov $F2,#$5C : mov $F3,a
-
-; Silence echo and set up echo with echo delay = 0 so the data doesn't get clobbered by the echo buffer writes
-movw ya,!zero : call endEcho : mov !echoFeedbackVolume,a
-call setUpEcho
-
 mov $F4,#$AA
 mov $F5,#$BB
 
@@ -433,13 +423,6 @@ bne .loop_dataBlock
 ; Reset CPU IO input latches and enable/reset timer 0
 mov $F1,#$31
 
-; Write shared tracker pointers to new tracker data location
-mov y,#$07
-
--
-mov a,sharedTrackerPointers+y : mov (!p_trackerData)+y,a
-dec y : bpl -
-
 ret
 }
 
@@ -453,6 +436,10 @@ db $7F,$00,$00,$00,$00,$00,$00,$00 ; None
 db $58,$BF,$DB,$F0,$FE,$07,$0C,$0C ; High-pass
 db $0C,$21,$2B,$2B,$13,$FE,$F3,$F9 ; Low-pass
 db $34,$33,$00,$D9,$E5,$01,$FC,$EB ; Band-pass
+; Weird FIR filters (was pointing to middle of code)
+db $D6,$0B,$8B,$0C,$4A,$0D,$14,$0E ; index 8
+db $F0,$AB,$15,$2F,$EC,$10,$EA,$5E ; index 10h
+db $C5,$EF,$03,$C5,$F6,$03,$E4,$05 ; index 1Fh
 
 ; $1E52
 dspRegisterAddresses: ; For DSP update

@@ -14,6 +14,21 @@ ret
 ; $173B
 loadNewMusicData:
 {
+; Key off music voices
+call keyOffMusicVoices : mov $F2,#$5C : mov $F3,a
+
+mov a,!echoDelay : push a
+
+; Silence echo and set up echo with echo delay = 0 so the data doesn't get clobbered by the echo buffer writes
+movw ya,!zero : call endEcho : mov !echoFeedbackVolume,a
+call setUpEcho
+
+; Clear former echo buffer to prevent crackling
+pop a : asl a : asl a : asl a : mov !misc1+1,a
+eor a,#$FF : inc a : mov !misc0+1,a
+mov !misc1,#$00 : mov !misc0,#$00
+call memclear
+
 call receiveDataFromCpu
 mov !cpuIo0_read_prev,a
 
@@ -78,6 +93,7 @@ mov y,#$20 : movw !musicTempo,ya
 mov a,#sharedNoteRingLengthTable&$FF : mov y,#sharedNoteRingLengthTable>>8 : movw !p_noteRingLengthTable,ya
 mov a,#sharedEchoFirFilters&$FF : mov y,#sharedEchoFirFilters>>8 : movw !p_echoFirFilters,ya
 mov !noteEndInTicks,#$02
+call endEcho
 
 .ret
 ret
@@ -88,13 +104,17 @@ handleMusicTrack:
 {
 ; Check CPU IO 0
 mov a,!cpuIo0_read
-cmp a,#$F0 : beq keyOffMusicVoices
-cmp a,#$F1 : beq +
-cmp a,#$FF : beq loadNewMusicData
-cmp a,!cpuIo0_read_prev : bne loadNewMusicTrack
+cmp a,#$F1 : bne +
+call receiveDataFromCpu
+mov !cpuIo0_read,a
+bra ++
 
 +
-mov a,!cpuIo0_write : beq musicTrackInitialisation_ret
+cmp a,#$FF : bne + : jmp loadNewMusicData : +
+cmp a,!cpuIo0_read_prev : beq + : jmp loadNewMusicTrack : +
+
+++
+mov a,!cpuIo0_write : cmp a,#$05 : bcc musicTrackInitialisation_ret
 mov a,!musicTrackStatus : beq .branch_musicTrackPlaying
 dbnz !musicTrackStatus,musicTrackInitialisation
 
