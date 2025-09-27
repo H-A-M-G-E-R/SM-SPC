@@ -247,7 +247,6 @@ endmacro
 
 ; Echo
 {
-%declare_byte(echoTimer)
 %declare_byte(echoDelay)
 %declare_byte(echoFeedbackVolume)
 }
@@ -413,8 +412,8 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $307..1D2E: SPC engine
-!p_ram = $1F00-($40*6)
+; $307..1D9F: SPC engine
+!p_ram = $2000-($40*6)
 
 %declare_byteArray(instrumentTable, $40*6)
 
@@ -436,3 +435,4 @@ endif
 !sampleHeatDamage = $32
 !sampleLavaDamage = $33
 !sampleMotoCry = $34
+!sampleSidehopperCry = $35

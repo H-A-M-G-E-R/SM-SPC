@@ -36,6 +36,7 @@ spcblock 6*$30+!instrumentTable nspc
   db !sampleHeatDamage,$FF,$E0,$00,$02,$84
   db !sampleLavaDamage,$FF,$E0,$00,$00,$F2
   db !sampleMotoCry,$FF,$E0,$00,$02,$84
+  db !sampleSidehopperCry,$FF,$E0,$00,$02,$62
 }
 endspcblock
 
@@ -73,6 +74,7 @@ spcblock 4*$30+!sampleTable nspc
   dw SampleHeatDamage,0
   dw SampleLavaDamage,SampleLavaDamage+16*9/16
   dw SampleMotoCry,SampleMotoCry+16*9/16
+  dw SampleSidehopperCry,SampleSidehopperCry+16*9/16
 }
 endspcblock
 
@@ -117,6 +119,7 @@ SampleSamusLand: incbin "samples/samus_land_10512_noloop.brr"
 SampleHeatDamage: incbin "samples/heat_damage_10512_noloop_fixed.brr"
 SampleLavaDamage: incbin "samples/lava_damage_3951.924_16.brr"
 SampleMotoCry: incbin "samples/moto_cry_10512_16.brr"
+SampleSidehopperCry: incbin "samples/sidehopper_cry_9956.52_loop16.brr"
 
 sampleData_eof:
 }

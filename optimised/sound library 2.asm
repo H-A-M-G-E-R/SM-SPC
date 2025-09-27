@@ -658,14 +658,12 @@ db $01 : dw ..voice0
 ..voice0 : db $00, $91,$E0,$08, $08, $A1,$90,$03, $9E,$90,$03, $A3,$90,$03, $8E,$90,$03, $8E,$90,$25, $FF
 
 ; Sound 15h: Maridia elevatube
-; Sound 16h: (Empty)
 ; Sound 41h: (Empty)
 ; Sound 44h: (Empty)
 ; Sound 52h: (Empty)
 ; Sound 71h: Silence
 ; Sound 72h..7Ch: Swappable sample specific 
 .sound15
-.sound16
 .sound41
 .sound44
 .sound52
@@ -789,12 +787,72 @@ db $00
   !a3,160*200/255,14
   db $FF
 
+; Sidehopper hurt
 .sound63
+  db $01 : dw ..voice0
+..voice0
+  db !sampleSidehopperCry
+  !a5,255*200/255,5-1
+  !f5,224*200/255,9
+  db $FF
+
+; Dessgeega hurt
 .sound68
+  db $01 : dw ..voice0
+..voice0
+  db !sampleSidehopperCry
+  !a4,255*200/255,5-1
+  !c5,224*200/255,9
+  db $FF
+
+; Geruda hurt
 .sound6A
+  db $01 : dw ..voice0
+..voice0
+  db !sampleSidehopperCry
+  !c5,255*200/255,5-1
+  db $F9,$FF,$F6
+  db $14
+  !f4,200*200/255,10
+  db $FF
+
+; Placeholders for skultera hurt which I will add later
 .sound6B
 .sound6E
-.sound6F
-.sound70
 db $00
+
+; Yard hurt
+.sound6F
+  db $01 : dw ..voice0
+..voice0
+  db !sampleMotoCry
+  !f4,255*200/255,7-1
+  db !sampleSidehopperCry
+  !c4,200*200/255,7-1
+  db !sampleMotoCry
+  !c4,160*200/255,5
+  db $FF
+
+; Geruboss hurt
+.sound70
+  db $01 : dw ..voice0
+..voice0
+  db !sampleSidehopperCry
+  !g4,255*200/255,4-1
+  !g5,255*200/255,4-1
+  !c5,200*200/255,4-1
+  !d5,200*200/255,6
+  db $FF
+
+; Waver hurt
+.sound16
+  db $01 : dw ..voice0
+..voice0
+  db !sampleSidehopperCry
+  !c4,200*200/255,4-1
+  db $F5,0 : !b7 ; enable legato
+  !f4,255*200/255,6
+  db $F9,$FF,$FB
+  !f4,255*200/255,4
+  db $FF
 }

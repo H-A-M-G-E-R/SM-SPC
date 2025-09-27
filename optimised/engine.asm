@@ -16,7 +16,7 @@ mov !misc1,#main-!p_stackBegin
 call memclear
 
 ; Set up echo with echo delay = 5 (that's the max echo delay in XF)
-mov a,#$05 : mov !echoDelay,a : call setUpEcho_spcInitialisation
+mov a,#$05 : mov !echoDelay,a : mov a,#$00 : call setUpEcho_spcInitialisation
 
 ; DSP left/right track master volume = 60h
 mov y,#$60
@@ -46,13 +46,6 @@ mov y,#$0A
 
 .loop_updateDsp
 {
-cmp y,#$05 : beq .branch_flg : bcs .branch_doUpdateDsp
-cmp (!echoTimer),(!echoDelay) : bne .branch_next
-
-.branch_flg
-bbs7 !echoTimer,.branch_next
-
-.branch_doUpdateDsp
 mov a,dspRegisterAddresses-1+y : mov $F2,a
 mov a,directPageAddresses-1+y : mov x,a : mov a,(x) : mov $F3,a
 
@@ -111,9 +104,6 @@ inc x : inc x
 asl !sound_voiceBitset : bne -
 }
 
-; Echo timer
-cmp (!echoTimer),(!echoDelay) : beq .branch_soundFx_end
-inc !echoTimer
 .branch_soundFx_end
 
 ; Music track clock += (time since last loop) * ([music tempo] / 100h)

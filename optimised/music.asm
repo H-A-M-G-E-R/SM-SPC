@@ -17,17 +17,9 @@ loadNewMusicData:
 ; Key off music voices
 call keyOffMusicVoices : mov $F2,#$5C : mov $F3,a
 
-mov a,!echoDelay : push a
-
 ; Silence echo and set up echo with echo delay = 0 so the data doesn't get clobbered by the echo buffer writes
 movw ya,!zero : call endEcho : mov !echoFeedbackVolume,a
 call setUpEcho
-
-; Clear former echo buffer to prevent crackling
-pop a : asl a : asl a : asl a : mov !misc1+1,a
-eor a,#$FF : inc a : mov !misc0+1,a
-mov !misc1,#$00 : mov !misc0,#$00
-call memclear
 
 call receiveDataFromCpu
 mov !cpuIo0_read_prev,a
@@ -623,17 +615,11 @@ ret
 setUpEcho:
 {
 mov !echoDelay,a
-mov $F2,#$7D : mov a,$F3 : cmp a,!echoDelay : beq .branch_noChange
-
-; Echo timer = min(0, [echo timer]) - 1 - [DSP echo delay]
-and a,#$0F : eor a,#$FF
-bbc7 !echoTimer,+
-clrc : adc a,!echoTimer
-
-+
-mov !echoTimer,a
+mov $F2,#$7D : mov a,$F3 : cmp a,!echoDelay : beq setPercussionInstrumentsIndex_ret
 
 .spcInitialisation
+push a
+
 ; Clear echo DSP registers
 mov y,#$04
 
@@ -644,19 +630,50 @@ dbnz y,-
 ; Disable echo buffer writes
 mov $F2,#$6C : set5 $F3
 
-mov a,!echoDelay : mov $F2,#$7D : mov $F3,a
+; DSP echo delay = [echo delay]
+mov a,!echoDelay
+mov y,#$7D
+call writeDspRegisterDirect
 
-.branch_noChange
 ; DSP echo buffer address = $10000 - [echo delay] * 800h
-asl a : asl a : asl a : eor a,#$FF : inc a ;: setc : adc a,#!echoBufferEnd>>8
+xcn a : lsr a : eor a,#$FF : inc a ;: setc : adc a,#!echoBufferEnd>>8
+mov !misc1+1,a
 mov y,#$6D
-jmp writeDspRegisterDirect
+call writeDspRegisterDirect
+
+; Wait for ESA to update (taken from https://github.com/KungFuFurby/AddMusicKFF/blob/master/asm/main.asm)
+pop a : xcn a : lsr a : mov !misc0,a
+beq +
+mov !misc0+1,#$00
+
+-
+nop : nop
+dbnz !misc0+1,-
+dbnz !misc0,-
+
++
+; Clear echo buffer to prevent crackling
+mov a,!echoDelay : beq .branch_zeroEdl
+mov a,#$00 : mov !misc1,a : mov y,a
+
+-
+mov (!misc1)+y,a : dbnz y,-
+inc !misc1+1 : bne -
+
+.ret
+ret
+
+.branch_zeroEdl
+mov $00,a : mov $01,a : mov $02,a : mov $03,a
+ret
 }
 
 ; $1AF1
 setPercussionInstrumentsIndex: ; Track command FAh
 {
 mov !percussionInstrumentsBaseIndex,a
+
+.ret
 ret
 }
 
