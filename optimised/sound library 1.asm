@@ -130,55 +130,24 @@ db $01 : dw ..voice0
 
 ; Sound 8: Charging beam
 .sound8
-db $02 : dw ..voice0, ..voice1
+db $02 : dw ..voice0, .chargingBeamVoice1
 ..voice0
-db $F5,$50,$C7
-db $05
-db $B7,$40,$30
-db $C7,$50,$FF
+  db $F5,(($A4+32/64*12)-($A4-47/64*12))/52*256 : !b7
+  %make_sound_subnote_with_instr(!sampleChargingBeamCommon, "!c5", -47/64*12, 80, 52)
+  db $F5,0 : !b7
+.resumeChargingBeamVoice0
+  %make_sound_subnote_with_instr(!sampleChargingBeamCommon, "!c5", 32/64*12, 80, 255)
 
-..voice1
-db $02
-db $9C,$00,$07
-db $9C,$10,$03
-db $9C,$00,$05
-db $9C,$20,$08
+.chargingBeamVoice1
+  db $F5,(($A4+32/64*12)-($A4-47/64*12))/52*256 : !b7
+  %make_sound_subnote_with_instr(!sampleChargingBeam1, "!c5", -47/64*12, 27*3, 52)
+  db $F5,0 : !b7
+.resumeChargingBeamVoice1
+  %make_sound_subnote_with_instr(!sampleChargingBeam1, "!c5", 32/64*12, 22*3, 255)
 
-; Shared by charging beam and resume charging beam
-.resumeChargingBeamVoice
-db $02
-db $9C,$20,$04
-db $9C,$30,$06
-db $9C,$00,$04
-db $9C,$30,$03
-db $9C,$30,$07
-db $9C,$00,$0A
-db $9C,$30,$03
-db $9C,$00,$04
-db $9C,$40,$03
-db $9C,$40,$07
-db $9C,$00,$05
-db $9C,$40,$06
-db $9C,$40,$03
-db $9C,$00,$0A
-db $9C,$50,$03
-db $9C,$50,$03
-db $9C,$60,$05
-db $9C,$00,$06
-db $9C,$60,$07
-db $9C,$00,$03
-db $9C,$60,$04
-db $9C,$60,$03
-db $9C,$00,$03
-db $FE,$00
-db $9C,$40,$05
-db $9C,$40,$06
-db $9C,$40,$07
-db $9C,$40,$03
-db $9C,$40,$04
-db $9C,$40,$03
-db $9C,$40,$03
-db $FB
+; Sound 41h: Resume charging beam
+.sound41
+db $02 : dw .resumeChargingBeamVoice0, .resumeChargingBeamVoice1
 
 ; Sound 9: X-ray
 .sound9
@@ -194,17 +163,23 @@ db $98,$70,$18
 db $FF
 
 ; Sound Ch: Uncharged plasma beam
-; Sound Fh: Uncharged wide beam
 ; Sound 10h: Uncharged wide + plasma beam
 ; Sound 11h: Uncharged wide + plasma + wave beam
 .soundC
-.soundF
 .sound10
 .sound11
 db $01 : dw ..voice0
 ..voice0
 db $04
-db $98,$B0,$18
+db $98,$B0,52
+db $FF
+
+; Sound Fh: Uncharged wide beam
+.soundF
+db $01 : dw ..voice0
+..voice0
+db $04
+db $98,$B0,40
 db $FF
 
 ; Sound Dh: Uncharged wave beam
@@ -222,7 +197,7 @@ db $01 : dw ..voice0
 ..voice0
 db $04
 db $98,$B0,$0B
-db $97,$50,$18
+db $97,$50,52
 db $FF
 
 ; Sound 12h: Uncharged wide + wave beam
@@ -231,7 +206,7 @@ db $01 : dw ..voice0
 ..voice0
 db $04
 db $98,$B0,$0B
-db $97,$40,$18
+db $97,$40,40
 db $FF
 
 ; Sound 13h: Overcharged beam
@@ -243,7 +218,7 @@ db $9A,$E0,$06
 db $F5,$E0,$99
 db $04
 db $90,$F0,$10
-db $99,$50,$14
+db $99,$50,52
 db $FF
 
 ; Sound 14h:
@@ -293,7 +268,7 @@ db $00
 db $98,$E0,$06
 db $04
 db $98,$E0,$10
-db $98,$40,$14
+db $98,$40,52
 db $FF
 
 ; Sound 19h: Charged wave beam
@@ -318,7 +293,7 @@ db $00
 db $98,$D0,$08
 db $04
 db $98,$D0,$10
-db $98,$40,$10
+db $98,$40,30
 db $FF
 
 ; Sound 1Fh: Disruptor beam
@@ -546,15 +521,6 @@ db $0A
 db $97,$00,$08
 db $98,$50,$10
 db $FF
-
-; Sound 41h: Resume charging beam
-.sound41
-db $02 : dw ..voice0, .resumeChargingBeamVoice
-..voice0
-db $F5,$70,$C7
-db $05
-db $C0,$50,$03
-db $C7,$50,$FF
 
 ; Sound 42h: Refill/map station engaged (moved from library 2)
 .sound42

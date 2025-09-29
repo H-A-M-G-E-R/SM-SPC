@@ -80,6 +80,25 @@
 !as7 = "db $C6"
 !b7 = "db $C7"
 
+macro make_sound_subnote_with_instr(instr, note, delta, vol, len)
+  if <delta> < 0
+    db $F7,-<delta>*256
+  else
+    db $F7,<delta>*256
+  endif
+  db <instr>
+  <note>+<delta>,<vol>,<len>
+endmacro
+
+macro make_sound_subnote(note, delta, vol, len)
+  if <delta> < 0
+    db $F7,-<delta>*256
+  else
+    db $F7,<delta>*256
+  endif
+  <note>+<delta>,<vol>,<len>
+endmacro
+
 macro declare(name, n)
 {
     if defined("printRamMap") : print "$", hex(!p_ram), " = \!<name>"
@@ -436,3 +455,5 @@ endif
 !sampleLavaDamage = $33
 !sampleMotoCry = $34
 !sampleSidehopperCry = $35
+!sampleChargingBeamCommon = $36
+!sampleChargingBeam1 = $37

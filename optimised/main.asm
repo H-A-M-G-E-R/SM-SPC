@@ -4,6 +4,8 @@
 ; where SM.sfc is your vanilla ROM with an sfc extension (asar requirement).
 ; The `--fix-checksum=off` is there because asar's checksum generation is incorrect (probably related to the bottom of this file)
 
+asar 1.91
+
 warnings disable Wfeature_deprecated ; The workarounds for the things warned about do not work
 math pri on ; Use conventional maths priority (otherwise is strict left-to-right evaluation)
 

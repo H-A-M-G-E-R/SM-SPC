@@ -37,6 +37,7 @@ spcblock 6*$30+!instrumentTable nspc
   db !sampleLavaDamage,$FF,$E0,$00,$00,$F2
   db !sampleMotoCry,$FF,$E0,$00,$02,$84
   db !sampleSidehopperCry,$FF,$E0,$00,$02,$62
+  db !sampleChargingBeamCommon,$FF,$E0,$B8,$02,$84
 }
 endspcblock
 
@@ -75,6 +76,7 @@ spcblock 4*$30+!sampleTable nspc
   dw SampleLavaDamage,SampleLavaDamage+16*9/16
   dw SampleMotoCry,SampleMotoCry+16*9/16
   dw SampleSidehopperCry,SampleSidehopperCry+16*9/16
+  dw Sample05,Sample05+36
 }
 endspcblock
 
@@ -89,8 +91,8 @@ Sample03: incbin "samples/missile_toggle_10512_noloop.brr"
 Sample04:
 }
 
-dw Sample0B-(Sample04+$0D41), Sample04+$0D41
-base Sample04+$0D41
+dw Sample0B-(Sample04+$16F5), Sample04+$16F5
+base Sample04+$16F5
 {
 Sample05: incbin "samples/Sample05.brr"
 Sample06: incbin "samples/Sample06.brr"
