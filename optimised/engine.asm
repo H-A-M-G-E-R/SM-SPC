@@ -383,6 +383,9 @@ receiveDataFromCpu:
 ; Echo [CPU IO 0]
 ; [CPU IO 1] == 0
 
+; Reset CPU IO input latches and enable/reset timer 0 (in case [CPU IO 0] is already CCh)
+mov $F1,#$31
+
 mov $F4,#$AA
 mov $F5,#$BB
 

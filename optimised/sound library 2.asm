@@ -540,9 +540,9 @@ db $F5,$F0,$80
 db $0B
 db $C5,$40,$04
 db $F5,$F0,$80
-db $F6,$30,$03
+db $F0,$30,$03
 db $F5,$F0,$80
-db $F6,$20,$03
+db $F0,$20,$03
 db $FF
 
 ; Sound 56h: Acquired suit

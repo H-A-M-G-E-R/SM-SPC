@@ -336,9 +336,9 @@ db $02 : dw ..voice0, .sound24_voice1
 ..voice0
 db $F5,$20,$B7
 db $07
-db $F6,$B0,$20
+db $F0,$B0,$20
 db $F5,$20,$C7
-db $F6,$B0,$20
+db $F0,$B0,$20
 db $FF
 
 ; Sound 28h:
