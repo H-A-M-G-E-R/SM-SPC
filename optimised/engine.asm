@@ -172,15 +172,8 @@ processNewNote:
 cmp y,#$C8 : beq writeReadCpuIo_ret
 cmp y,#$C9 : beq writeReadCpuIo_ret
 
-; Percussion note check
-cmp y,#$CA : bcc +
-call selectInstrument
-mov y,#$A4
-bra ++
-
 ; Select current instrument if voice is sound effect enabled and sound is not active,
 ; and disable sound effect enable flag if so
-+
 mov a,!enableSoundEffectVoices : and a,!musicVoiceBitset : beq ++
 push y : mov a,!trackInstrumentIndices+x : call setInstrumentSettings : pop y
 
@@ -191,11 +184,6 @@ mov a,!sound_activeVoices : and a,!musicVoiceBitset : bne writeReadCpuIo_ret
 ; Enable echo according to fake echo enable flags
 mov a,!fakeEchoEnableFlags : and a,!musicVoiceBitset : tset !echoEnableFlags,a
 
-; Key-off voice if mITroid's "disable key-off between notes" is activated
-bbc1 !enableLateKeyOff,+
-mov $F2,#$5C : mov $F3,!musicVoiceBitset
-
-+
 ; Set track note according to [Y] after transposition
 mov a,y : and a,#$7F : clrc : adc a,!musicTranspose : clrc : adc a,!trackTransposes+x : mov !trackNotes+x,a
 mov a,!trackSubtransposes+x : mov !trackSubnotes+x,a
@@ -239,7 +227,6 @@ playNote:
 ; Else if [note] < 13h (G_2):
 ;     Note += -1 + ([note] - 13h) / 80h
 
-bbs0 !disablePsychoacousticAdjustment,playNoteDirect
 mov y,#$00
 mov a,!note+1 : setc : sbc a,#$34
 bcs +

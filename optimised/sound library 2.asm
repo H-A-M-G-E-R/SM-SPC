@@ -7,7 +7,6 @@ beq .branch_noChange
 cmp a,!cpuIo2_read_prev : beq .branch_noChange
 
 cmp a,#$71 : beq +
-cmp a,#$7E : beq +
 mov a,!sound2Priority : bne .branch_noChange
 
 +
@@ -304,9 +303,9 @@ db $01 : dw ..voice0
 
 ; Sound 27h: Shot torizo
 .sound27
-db $12 : dw ..voice0, ..voice1
-..voice0 : db $14, $8B,$D0,$11, $89,$D0,$20, $89,$80,$05, $89,$30,$05, $FF
-..voice1 : db $14, $80,$D0,$09, $82,$D0,$20, $82,$80,$05, $82,$30,$05, $FF
+;db $12 : dw ..voice0, ..voice1
+;..voice0 : db $14, $8B,$D0,$11, $89,$D0,$20, $89,$80,$05, $89,$30,$05, $FF
+;..voice1 : db $14, $80,$D0,$09, $82,$D0,$20, $82,$80,$05, $82,$30,$05, $FF
 
 ; Sound 29h: Mother Brain rising into phase 2
 .sound29
@@ -816,10 +815,39 @@ db $00
   !f4,200*200/255,10
   db $FF
 
-; Placeholders for skultera hurt which I will add later
+; Small skultera hurt
 .sound6B
+  db $01 : dw ..voice0
+..voice0
+  db $F5,0 : !b7 ; enable legato
+  db !sampleSidehopperCry
+  !ds4,160,2
+  %make_sound_subnote("!a4", -29/64*12, 160, 2)
+  %make_sound_subnote("!a4", -26/64*12, 160, 2)
+  %make_sound_subnote("!a4", -23/64*12, 160, 2)
+  %make_sound_subnote("!a4", -19/64*12, 160, 1)
+  %make_sound_subnote("!a4", -19/64*12, 160, 1)
+  %make_sound_subnote("!a4", -13/64*12, 160, 1)
+  %make_sound_subnote("!a4", -9/64*12, 160, 1)
+  %make_sound_subnote("!a4", -9/64*12, 160, 2)
+  db $FF
+
+; Large skultera hurt
 .sound6E
-db $00
+  db $01 : dw ..voice0
+..voice0
+  db $F5,0 : !b7 ; enable legato
+  db !sampleSidehopperCry
+  !c4,200,2
+  %make_sound_subnote("!c4", -1/64*12, 200, 1)
+  %make_sound_subnote("!c4", -1/64*12, 200, 3)
+  %make_sound_subnote("!c4", -3/64*12, 200, 3)
+  %make_sound_subnote("!c4", -3/64*12, 200, 2)
+  %make_sound_subnote("!c4", -10/64*12, 200, 1)
+  %make_sound_subnote("!c4", -10/64*12, 200, 3)
+  %make_sound_subnote("!c4", -19/64*12, 200, 3)
+  %make_sound_subnote("!c4", -19/64*12, 200, 1)
+  db $FF
 
 ; Yard hurt
 .sound6F

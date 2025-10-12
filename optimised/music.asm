@@ -78,13 +78,10 @@ mov !dynamicEchoVolumeTimer,a
 mov !dynamicMusicTempoTimer,a
 mov !musicTranspose,a
 mov !trackerTimer,a
-mov !percussionInstrumentsBaseIndex,a
-mov !disablePsychoacousticAdjustment,a
 mov y,#$C0 : movw !musicVolume,ya
 mov y,#$20 : movw !musicTempo,ya
 mov a,#sharedNoteRingLengthTable&$FF : mov y,#sharedNoteRingLengthTable>>8 : movw !p_noteRingLengthTable,ya
 mov a,#sharedEchoFirFilters&$FF : mov y,#sharedEchoFirFilters>>8 : movw !p_echoFirFilters,ya
-mov !noteEndInTicks,#$02
 call endEcho
 
 .ret
@@ -134,7 +131,6 @@ mov y,#$0F
 
 -
 mov a,(!misc1)+y : mov !trackPointers+y,a : dec y : bpl -
-call determineSoundVoiceOrder
 
 ; Reset music tracks
 mov x,#$0E
@@ -143,11 +139,8 @@ mov x,#$0E
 {
 mov a,#$00
 mov !trackRepeatedSubsectionCounters+x,a
-bbs0 !enableLateKeyOff,+
 mov !trackDynamicVolumeTimers+x,a
 mov !trackDynamicPanningTimers+x,a
-
-+
 inc a : mov !trackNoteTimers+x,a
 dec x : dec x : bpl -
 }
@@ -335,11 +328,6 @@ setInstrumentSettings:
 ; Voice gain settings = [[$14] + 3]
 ; Track instrument pitch multiplier = [[$14] + 4] * 100h + [[$14] + 5]
 
-; Percussion instrument check
-mov y,a : bpl +
-setc : sbc a,#$CA : clrc : adc a,!percussionInstrumentsBaseIndex
-
-+
 mov y,#$06 : mul ya : movw !misc0,ya : clrc : adc !misc0,#!instrumentTable&$FF : adc !misc0+1,#!instrumentTable>>8
 mov a,!sound_activeVoices : and a,!musicVoiceBitset : bne .ret
 mov a,!musicVoiceBitset : tclr !enableSoundEffectVoices,a
@@ -615,7 +603,7 @@ ret
 setUpEcho:
 {
 mov !echoDelay,a
-mov $F2,#$7D : mov a,$F3 : cmp a,!echoDelay : beq setPercussionInstrumentsIndex_ret
+mov $F2,#$7D : mov a,$F3 : cmp a,!echoDelay : beq .ret
 
 .spcInitialisation
 push a
@@ -665,15 +653,6 @@ ret
 
 .branch_zeroEdl
 mov $00,a : mov $01,a : mov $02,a : mov $03,a
-ret
-}
-
-; $1AF1
-setPercussionInstrumentsIndex: ; Track command FAh
-{
-mov !percussionInstrumentsBaseIndex,a
-
-.ret
 ret
 }
 
@@ -815,7 +794,7 @@ dw \
     echoParameters,\
     dynamicEchoVolume,\
     pitchSlide,\
-    setPercussionInstrumentsIndex,\
+    $0000,\
     miscCommand
 }
 
@@ -960,7 +939,7 @@ handleCurrentNote:
 movw ya,!p_tracker : push y : push a
 mov a,!trackNoteRingTimers+x : bne + : jmp .branch_continuePlaying : +
 dec !trackNoteRingTimers+x : beq +
-mov a,!noteEndInTicks : cmp a,!trackNoteTimers+x : beq +
+mov a,#$02 : cmp a,!trackNoteTimers+x : beq +
 jmp .branch_continuePlaying
 
 +
@@ -982,10 +961,6 @@ mov a,(!misc0)+y
 bpl .loop_noteParameters
 
 .branch_command
-bbc1 !enableLateKeyOff,+
-cmp a,#$C9 : bcc .branch_continuePlaying
-
-+
 cmp a,#$C8 : beq .branch_continuePlaying
 cmp a,#$EF : beq .branch_repeatSubsection
 cmp a,#$FB : beq .branch_miscCommand
@@ -994,30 +969,7 @@ push y : mov y,a : pop a : adc a,trackCommandParameterBytes-$E0+y : mov y,a
 bra .loop_commands
 
 .branch_end
-mov a,!misc1+1 : bne .branch_endSubsection
-bbc0 !enableLateKeyOff,.branch_note
-
-.loop_tracker
-call getNextTrackerCommand
-bne .branch_newTrackData
-mov y,a : beq .branch_note
-
-dec !misc1 : bpl +
-mov !misc1,a
-
-+
-call getNextTrackerCommand
-and !misc1,!misc1 : beq .loop_tracker
-movw !p_tracker,ya
-bra .loop_tracker
-
-.branch_newTrackData
-movw !noteOrPanningBias,ya
-mov a,x : mov y,a
-mov a,(!noteOrPanningBias)+y : push a : inc y : mov a,(!noteOrPanningBias)+y : mov y,a : pop a
-bra .loop_sections
-
-.branch_endSubsection
+mov a,!misc1+1 : beq .branch_note
 dbnz !misc1+1,+
 mov a,!trackRepeatedSubsectionReturnAddresses+1+x : push a : mov a,!trackRepeatedSubsectionReturnAddresses+x : pop y
 bra .loop_sections

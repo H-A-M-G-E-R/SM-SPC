@@ -1,31 +1,3 @@
-determineSoundVoiceOrder:
-{
-mov y,#7
-
-; Empty tracks
-mov x,#7*2
-
--
-mov a,!trackPointers+1+x : bne +
-mov a,x : mov !sound_voiceOrder+y,a : dec y
-
-+
-dec x : dec x : bpl -
-
-; Non-empty tracks
-mov x,#7*2
-
--
-mov a,!trackPointers+1+x : beq +
-mov a,x : mov !sound_voiceOrder+y,a : dec y
-
-+
-dec x : dec x : bpl -
-
-ret
-}
-
-
 songSpecificSoundInitialisation:
 {
 ;; Parameters:
@@ -59,10 +31,10 @@ mov a,y : xcn a : and a,#$0F : mov y,!i_soundLibrary : mov !sound_priorities-1+y
 
 mov !sounds-1+y,x
 
-mov !misc0,#$08
+mov !misc0,#$0E
 
 .loop
-mov y,!misc0 : mov a,!sound_voiceOrder-1+y : mov x,a
+mov a,!misc0 : mov x,a
 lsr a : mov y,a : mov a,channelBitsets+y : mov !misc1+1,a
 
 ; Check if voice is not occupied
@@ -96,7 +68,7 @@ mov y,!i_soundLibrary : or a,!sound_enabledVoices-1+y : mov !sound_enabledVoices
 dec !misc1 : beq .ret
 
 .skipVoice
-dbnz !misc0,.loop
+dec !misc0 : dbnz !misc0,.loop
 
 ; Could not initialise all channels, reset sound if no channels are initialised
 mov y,!i_soundLibrary : mov a,!dspVoiceVolumeIndex : beq resetSoundChannel_resetSound

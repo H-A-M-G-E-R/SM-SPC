@@ -86,7 +86,15 @@ db $04 : dw .PowerBombVoice0, .PowerBombVoice1, .PowerBombVoice2, .PowerBombVoic
 
 ; Sound 2: Silence
 ; Sound Ah: X-ray end
+; Sound 14h:
+; Sound 15h:
+; Sound 16h:
+; Sound 20h:
+; Sound 21h:
+; Sound 22h:
+; Sound 23h:
 ; Sound 29h: Wave SBA end
+; Sound 2Ah:
 ; Sound 2Ch: (Empty)
 ; Sound 2Dh: (Empty)
 ; Sound 32h: Spin jump end
@@ -94,7 +102,15 @@ db $04 : dw .PowerBombVoice0, .PowerBombVoice1, .PowerBombVoice2, .PowerBombVoic
 ; Sound 3Ah: (Empty)
 .sound2
 .soundA
+.sound14
+.sound15
+.sound16
+.sound20
+.sound21
+.sound22
+.sound23
 .sound29
+.sound2A
 .sound2C
 .sound2D
 .sound32
@@ -219,28 +235,6 @@ db $F5,$E0,$99
 db $04
 db $90,$F0,$10
 db $99,$50,52
-db $FF
-
-; Sound 14h:
-; Sound 15h:
-; Sound 16h:
-; Sound 20h:
-; Sound 21h:
-; Sound 22h:
-; Sound 23h:
-; Sound 2Ah:
-.sound14
-.sound15
-.sound16
-.sound20
-.sound21
-.sound22
-.sound23
-.sound2A
-db $01 : dw ..voice0
-..voice0
-db $09
-db $B5,$60,$10
 db $FF
 
 ; Sound 17h: Charged power beam

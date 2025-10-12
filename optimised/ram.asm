@@ -283,7 +283,6 @@ endmacro
 %declare_byte(targetMusicVolume)
 %declare_word(musicVolumeDelta)
 %declare_byte(musicVoiceVolumeUpdateBitset)
-%declare_byte(percussionInstrumentsBaseIndex)
 }
 
 ; Echo
@@ -348,11 +347,7 @@ if !p_ram >= !p_extra
 endif
 !p_ram #= !p_extra
 %declare_word(p_trackerData)
-%declare_byte(enableLateKeyOff)
 %declare_word(p_songSpecificSoundInstructionLists) ; shared across all libraries
-
-%declare_byte(noteEndInTicks) ; Note: Pocky & Rocky 2 changed this to 1 from 2
-%declare_byte(disablePsychoacousticAdjustment)
 
 ; $F0..FF: IO ports
 if !p_ram >= $F0
@@ -425,8 +420,6 @@ endif
 if defined("adsrSoundCommand")
 %declare_wordArray(sound_adsrSettings,                          !n_tracks)
 endif
-
-%declare_byteArray(sound_voiceOrder, !n_tracks)
 }
 
 !p_end_ram #= !p_ram
