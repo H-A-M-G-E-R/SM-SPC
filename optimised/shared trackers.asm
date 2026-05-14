@@ -141,6 +141,10 @@ endmacro
 macro setDPMiscCommand(p_ram, value)
     db $FB, $02, <p_ram>, <value>
 endmacro
+
+macro toggleEcho()
+    db $FB, $03
+endmacro
 }
 }
 

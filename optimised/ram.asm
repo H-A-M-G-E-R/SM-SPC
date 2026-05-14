@@ -260,7 +260,7 @@ endif
 %declare_byte(enableLateKeyOff)
 %declare_word(p_songSpecificSoundInstructionLists) ; shared across all libraries
 
-%declare_byte(noteEndInTicks) ; Note: Pocky & Rocky 2 changed this to 1 from 2
+%declare_byte(noteEndInTicks) ; Note: Pocky & Rocky 2 changed this to 1 from 2, !WaitTime in AddMusicKFF
 %declare_byte(disablePsychoacousticAdjustment)
 
 ; $F0..FF: IO ports
@@ -340,7 +340,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $2E8..24EE: SPC engine
+; $2E8..257A: SPC engine
 !p_ram = $2700-($30*6)
 
 %declare_byteArray(instrumentTable, $30*6)

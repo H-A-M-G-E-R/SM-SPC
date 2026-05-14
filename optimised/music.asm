@@ -415,6 +415,7 @@ ret
 staticMusicVolume: ; Track command E5h
 {
 mov a,#$00 : movw !musicVolume,ya
+mov !musicVoiceVolumeUpdateBitset,#$FF ; to change volume in the middle of note, was not present in vanilla
 ret
 }
 
@@ -510,6 +511,7 @@ ret
 staticVolume: ; Track command EDh
 {
 mov !trackVolumes+1+x,a : mov a,#$00 : mov !trackVolumes+x,a
+or (!musicVoiceVolumeUpdateBitset),(!musicVoiceBitset) ; to change volume in the middle of note, was not present in vanilla
 ret
 }
 
@@ -547,11 +549,19 @@ ret
 staticEcho: ; Track command F5h
 {
 mov !fakeEchoEnableFlags,a
-mov a,!enableSoundEffectVoices : eor a,#$FF : and a,!fakeEchoEnableFlags : mov !echoEnableFlags,a
 call getNextTrackDataByte : mov a,#$00 : movw !echoVolumeLeft,ya
 call getNextTrackDataByte : mov a,#$00 : movw !echoVolumeRight,ya
 clr5 !flg
+
+.echoChannels
+mov a,!enableSoundEffectVoices : eor a,#$FF : and a,!fakeEchoEnableFlags : mov !echoEnableFlags,a
 ret
+}
+
+addMusicCommandF4_toggleEcho:
+{
+eor (!fakeEchoEnableFlags),(!musicVoiceBitset)
+bra staticEcho_echoChannels
 }
 
 ; $1A5E
@@ -682,12 +692,13 @@ miscCommandPointers:
 dw \
     setNoteLengthTable,\
     setEchoFirFilters,\
-    setDPMiscCommand
+    setDPMiscCommand,\
+    addMusicCommandF4_toggleEcho
 }
 
 miscCommandParameterBytes:
 {
-db $02,$02,$02
+db $02,$02,$02,$00
 }
 
 setNoteLengthTable:
