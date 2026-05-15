@@ -144,6 +144,7 @@ dec x : dec x : bpl -
 mov x,#$00
 mov !musicVoiceVolumeUpdateBitset,x
 mov !musicVoiceBitset,#$01
+mov !sound_voiceBitset,#$01
 
 .loop_track
 {
@@ -197,7 +198,8 @@ call maybeDoPitchSlide
 
 .branch_noTrackCommands
 inc x : inc x
-asl !musicVoiceBitset : bne .loop_track
+asl !musicVoiceBitset
+asl !sound_voiceBitset : bne .loop_track
 }
 }
 
@@ -338,13 +340,13 @@ mov y,#$00
 if defined("noiseInstruments")
 mov a,(!misc0)+y : bpl +
 and a,#$1F : and !flg,#$20 : tset !flg,a
-or (!noiseEnableFlags),(!musicVoiceBitset)
+or (!noiseEnableFlags),(!sound_voiceBitset) ; so noise instruments can't ruin sound effects, we also update that while updating music
 mov a,#$02 ; first looping sample for noise to work, see https://snes.nesdev.org/wiki/S-DSP_registers#NON
 bra .branch_dsp
 
 +
 endif
-mov a,!musicVoiceBitset : tclr !noiseEnableFlags,a
+mov a,!sound_voiceBitset : tclr !noiseEnableFlags,a
 
 .loop_dsp
 {

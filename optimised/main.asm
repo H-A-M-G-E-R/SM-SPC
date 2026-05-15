@@ -19,6 +19,9 @@ org $CF8000 ; The actual ROM location the engine is going to be written to
 
 !version = 2
 
+; Defines
+!noiseInstruments = 1
+
 incsrc "ram.asm"
 
 arch spc700
