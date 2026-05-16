@@ -226,10 +226,7 @@ or (!keyOnFlags),(!musicVoiceBitset)
 
 ; Enable ADSR if key-off gain is enabled
 mov a,!musicVoiceBitset : and a,!keyOffGainEnableBitset : beq +
-mov a,x : xcn a : lsr a : or a,#$05 : mov y,a ; VxADSR1
-mov $F2,y : mov a,$F3 ; read register
-or a,#$80 ; enable ADSR
-call writeDspRegister
+call enableADSR
 
 +
 mov a,!trackSlideLengths+x : mov !trackPitchSlideTimers+x,a

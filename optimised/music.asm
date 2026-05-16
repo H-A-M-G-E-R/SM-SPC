@@ -729,7 +729,16 @@ ret
 toggleKeyOffGain:
 {
 eor (!keyOffGainEnableBitset),(!musicVoiceBitset)
+mov a,!keyOffGainEnableBitset : and a,!musicVoiceBitset : beq enableADSR
 ret
+}
+
+enableADSR:
+{
+mov a,x : xcn a : lsr a : or a,#$05 : mov y,a ; VxADSR1
+mov $F2,y : mov a,$F3 ; read register
+or a,#$80 ; enable ADSR
+jmp writeDspRegister
 }
 
 ; $1B3B
