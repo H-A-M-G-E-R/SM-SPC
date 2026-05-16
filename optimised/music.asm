@@ -72,6 +72,7 @@ mov !dynamicMusicTempoTimer,a
 mov !musicTranspose,a
 mov !trackerTimer,a
 mov !percussionInstrumentsBaseIndex,a
+mov !keyOffGainEnableBitset,a
 mov !disablePsychoacousticAdjustment,a
 mov y,#$C0 : movw !musicVolume,ya
 mov y,#$20 : movw !musicTempo,ya
@@ -695,12 +696,13 @@ dw \
     setNoteLengthTable,\
     setEchoFirFilters,\
     setDPMiscCommand,\
-    addMusicCommandF4_toggleEcho
+    addMusicCommandF4_toggleEcho,\
+    toggleKeyOffGain
 }
 
 miscCommandParameterBytes:
 {
-db $02,$02,$02,$00
+db $02,$02,$02,$00,$00
 }
 
 setNoteLengthTable:
@@ -721,6 +723,12 @@ setDPMiscCommand:
 {
 call getNextTrackDataByte : push a : call getNextTrackDataByte : pop a
 push x : mov x,a : mov a,y : mov (x),a : pop x
+ret
+}
+
+toggleKeyOffGain:
+{
+eor (!keyOffGainEnableBitset),(!musicVoiceBitset)
 ret
 }
 
@@ -1007,6 +1015,7 @@ inc y : mov a,(!misc0)+y : push a : inc y : mov a,(!misc0)+y : mov y,a : pop a
 jmp .loop_sections
 
 .branch_note
+mov a,!musicVoiceBitset : and a,!keyOffGainEnableBitset : bne .branch_enableGain
 mov a,!musicVoiceBitset : mov y,#$5C : call writeDspRegister
 
 .branch_continuePlaying
@@ -1020,6 +1029,14 @@ bra .branch_pitchSlide_end
 .branch_miscCommand
 inc y : mov a,(!misc0)+y : push y : mov y,a : pop a : adc a,miscCommandParameterBytes+y : mov y,a
 jmp .loop_commands
+
+; Enable GAIN if key-off gain is enabled
+.branch_enableGain
+mov a,x : xcn a : lsr a : or a,#$05 : mov y,a ; VxADSR1
+mov $F2,y : mov a,$F3 ; read register
+and a,#$7F ; enable GAIN
+call writeDspRegister
+bra .branch_continuePlaying
 
 +
 set7 !noteModifiedFlag

@@ -193,6 +193,7 @@ endmacro
 %declare_word(musicVolumeDelta)
 %declare_byte(musicVoiceVolumeUpdateBitset)
 %declare_byte(percussionInstrumentsBaseIndex)
+%declare_byte(keyOffGainEnableBitset) ; only works with ADSR because it works by toggling ADSR/GAIN
 }
 
 ; Echo
@@ -340,7 +341,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $2E8..2592: SPC engine
+; $2E8..25C7: SPC engine
 !p_ram = $2700-($30*6)
 
 %declare_byteArray(instrumentTable, $30*6)

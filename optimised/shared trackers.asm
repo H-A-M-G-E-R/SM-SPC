@@ -145,6 +145,10 @@ endmacro
 macro toggleEcho()
     db $FB, $03
 endmacro
+
+macro toggleKeyOffGain()
+    db $FB, $04
+endmacro
 }
 }
 
