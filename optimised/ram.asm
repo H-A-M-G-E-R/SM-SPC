@@ -183,6 +183,7 @@ endmacro
 {
 %declare_byte(musicTranspose)
 %declare_word(musicTrackClock)
+%declare_byte(musicTrackClockHi)
 %declare_word(musicTempo)
 %declare_byte(dynamicMusicTempoTimer)
 %declare_byte(targetMusicTempo)

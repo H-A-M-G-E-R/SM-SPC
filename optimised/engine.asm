@@ -122,12 +122,14 @@ inc !echoTimer
 ; Music track clock += (time since last loop) * ([music tempo] / 100h)
 pop y : push y : mov a,!musicTempo : mul ya : movw !misc0,ya
 pop y : mov a,!musicTempo+1 : mul ya : clrc : adc a,!misc0+1 : mov !misc0+1,a
+mov a,y : adc a,#$00 : mov !musicTrackClockHi,a
 movw ya,!musicTrackClock : addw ya,!misc0 : movw !musicTrackClock,ya
 bcc .branch_musicTrack_end
 
 ; Music
 .branch_musicTrack
 call handleMusicTrack
+dec !musicTrackClockHi : bpl .branch_musicTrack
 mov x,#$00 : call writeReadCpuIo
 jmp .loop_main
 .branch_musicTrack_end
