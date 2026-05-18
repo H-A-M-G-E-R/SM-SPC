@@ -147,7 +147,9 @@ endmacro
 %declare_word(misc1)
 }
 
+if defined("rng")
 %declare_word(randomNumber)
+endif
 %declare_byte(enableSoundEffectVoices)
 
 ; Sounds
@@ -307,6 +309,9 @@ endif
 %declare_bytePairArray(trackSubnotes,                      !n_tracks)
 %declare_bytePairArray(trackTargetNotes,                   !n_tracks)
 %declare_bytePairArray(trackSubtransposes,                 !n_tracks)
+%declare_bytePairArray(trackSubloopCounters,               !n_tracks)
+
+%declare_bytePairArray(sound_releaseFlags,                      !n_tracks)
 
 %declare_wordArray(trackInstrumentPitches,                 !n_tracks)
 %declare_wordArray(trackRepeatedSubsectionReturnAddresses, !n_tracks)
@@ -316,11 +321,11 @@ endif
 %declare_wordArray(trackPanningBiases,                     !n_tracks)
 %declare_wordArray(trackPanningBiasDeltas,                 !n_tracks)
 %declare_wordArray(trackNoteDeltas,                        !n_tracks)
+%declare_wordArray(trackSubloopAddresses,                  !n_tracks)
 }
 
 ; Sound channels
 {
-%declare_bytePairArray(sound_releaseFlags,                      !n_tracks)
 %declare_bytePairArray(sound_repeatCounters,                    !n_tracks)
 %declare_bytePairArray(sound_updateAdsrSettingsFlags,           !n_tracks)
 %declare_bytePairArray(sound_notes,                             !n_tracks)
@@ -342,8 +347,8 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $2E8..25D0: SPC engine
-!p_ram = $2700-($30*6)
+; $2E8..26D9: SPC engine
+!p_ram = $2800-($30*6)
 
 %declare_byteArray(instrumentTable, $30*6)
 

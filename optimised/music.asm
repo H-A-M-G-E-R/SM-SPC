@@ -741,6 +741,29 @@ or a,#$80 ; enable ADSR
 jmp writeDspRegister
 }
 
+subloop:
+{
+bne +
+; Set subloop address
+mov !trackSubloopCounters+x,a
+mov a,!trackPointers+x : mov !trackSubloopAddresses+x,a : mov a,!trackPointers+1+x : mov !trackSubloopAddresses+1+x,a
+ret
+
++
+mov a,!trackSubloopCounters+x : bne .branch_decrementCounter
+; Set subloop counter
+mov a,y : mov !trackSubloopCounters+x,a
+
+.branch_doSubloop
+mov a,!trackSubloopAddresses+x : mov !trackPointers+x,a : mov a,!trackSubloopAddresses+1+x : mov !trackPointers+1+x,a
+ret
+
+.branch_decrementCounter
+dec a : mov !trackSubloopCounters+x,a
+bne .branch_doSubloop
+ret
+}
+
 ; $1B3B
 getTrackNote:
 {
@@ -809,14 +832,15 @@ dw \
     dynamicEchoVolume,\
     pitchSlide,\
     setPercussionInstrumentsIndex,\
-    miscCommand
+    miscCommand,\
+    subloop
 }
 
 ; $1BA0
 trackCommandParameterBytes:
 {
 db $01, $01, $02, $03, $00, $01, $02, $01, $02, $01, $01, $03, $00, $01, $02, $03,\
-   $01, $03, $03, $00, $01, $03, $00, $03, $03, $03, $01, $03
+   $01, $03, $03, $00, $01, $03, $00, $03, $03, $03, $01, $03, $01
 }
 
 ; $1BBF
@@ -980,8 +1004,9 @@ cmp a,#$C9 : bcc .branch_continuePlaying
 
 +
 cmp a,#$C8 : beq .branch_continuePlaying
-cmp a,#$EF : beq .branch_repeatSubsection
+cmp a,#$EF : bne + : jmp .branch_repeatSubsection : +
 cmp a,#$FB : beq .branch_miscCommand
+cmp a,#$FC : bne + : jmp .branch_subloop : +
 cmp a,#$E0 : bcc .branch_note
 push y : mov y,a : pop a : adc a,trackCommandParameterBytes-$E0+y : mov y,a
 bra .loop_commands
@@ -1012,15 +1037,11 @@ bra .loop_sections
 
 .branch_endSubsection
 dbnz !misc1+1,+
-mov a,!trackRepeatedSubsectionReturnAddresses+1+x : push a : mov a,!trackRepeatedSubsectionReturnAddresses+x : pop y
+mov a,!trackRepeatedSubsectionReturnAddresses+1+x : mov y,a : mov a,!trackRepeatedSubsectionReturnAddresses+x
 bra .loop_sections
 
 +
-mov a,!trackRepeatedSubsectionAddresses+1+x : push a : mov a,!trackRepeatedSubsectionAddresses+x : pop y
-bra .loop_sections
-
-.branch_repeatSubsection
-inc y : mov a,(!misc0)+y : push a : inc y : mov a,(!misc0)+y : mov y,a : pop a
+mov a,!trackRepeatedSubsectionAddresses+1+x : mov y,a : mov a,!trackRepeatedSubsectionAddresses+x
 jmp .loop_sections
 
 .branch_note
@@ -1038,6 +1059,22 @@ bra .branch_pitchSlide_end
 .branch_miscCommand
 inc y : mov a,(!misc0)+y : push y : mov y,a : pop a : adc a,miscCommandParameterBytes+y : mov y,a
 jmp .loop_commands
+
+.branch_repeatSubsection
+inc y : mov a,(!misc0)+y : push a : inc y : mov a,(!misc0)+y : mov y,a : pop a
+jmp .loop_sections
+
+.branch_subloop
+inc y : mov a,(!misc0)+y
+bne ++
+-
+inc y
+jmp .loop_commands
+
+++
+mov a,!trackSubloopCounters+x : dec a : beq -
+mov a,!trackSubloopAddresses+1+x : mov y,a : mov a,!trackSubloopAddresses+x
+jmp .loop_sections
 
 ; Enable GAIN if key-off gain is enabled
 .branch_enableGain
