@@ -5,7 +5,7 @@ ret
 
 +
 asl a : mov x,a
-mov a,!cpuIo1_read
+mov a,!cpuIo1_read ; parameter 1
 call doCpuIo0Command
 
 ; Clear CPUIO ports

@@ -45,6 +45,8 @@ soundInitialisation:
 ;; Parameters:
 ;;     X: Sound index
 ;;     YA: Pointer to sound instruction list pointer set
+;;     !cpuIo2_read: Panning modifier
+;;     !cpuIo3_read: Volume modifier
 
 ; Requires !i_soundLibrary to be set
 
@@ -85,6 +87,8 @@ mov !sound_pitchSlideLegatoFlags+x,a
 mov !sound_subtransposes+x,a
 inc a : mov !sound_instructionTimers+x,a
 mov a,#$0A : mov !sound_panningBiases+x,a
+mov a,!cpuIo2_read : mov !sound_panningModifiers+x,a
+mov a,!cpuIo3_read : mov !sound_volumeModifiers+x,a
 
 mov a,!misc1+1
 tset !enableSoundEffectVoices,a
@@ -217,16 +221,31 @@ mov !sound_notes+x,a
 mov a,#$00 : mov !sound_subnotes+x,a
 
 +
-; Volume
-call getNextDataByte : mov y,a
 ; Save track output volume and phase inversion options
 mov a,!trackOutputVolumes+x : push a
 mov a,!trackPhaseInversionOptions+x : push a
 
-mov a,y : mov !trackOutputVolumes+x,a
+; Volume
+; v * (volume modifier) / FFh
+mov a,!sound_volumeModifiers+x : mov y,a
+call getNextDataByte
+mul ya
+push x : mov x,#$FF : div ya,x : pop x
+mov !trackOutputVolumes+x,a
+
+; Panning
+; p + (panning modifier)
 mov a,!sound_panningBiases+x : mov !trackPhaseInversionOptions+x,a
-and a,#$1F : mov !panningBias+1,a : mov !panningBias,#$00
+and a,#$1F : clrc : adc a,!sound_panningModifiers+x
+bpl +
+mov a,#$00
++
+cmp a,#$14 : bcc +
+mov a,#$14
++
+mov !panningBias+1,a : mov !panningBias,#$00
 call writeDspVoiceVolumes
+
 ; Restore track output volume and phase inversion options
 pop a : mov !trackPhaseInversionOptions+x,a
 pop a : mov !trackOutputVolumes+x,a

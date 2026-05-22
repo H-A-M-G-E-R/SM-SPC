@@ -104,7 +104,7 @@ LDX $0592 : BMI .ret ; If [power bomb explosion status] = exploding: return
 ; ignore max queued sounds for now
 LDX ApuCommandQueueEnd
 AND #$FF00 : ORA #$0003 : STA ApuCommandQueue+0,x
-STZ ApuCommandQueue+2,x
+LDA #$FF00 : STA ApuCommandQueue+2,x
 LDA ApuCommandQueueEnd : CLC : ADC #$0004 : CMP.w #4*25 : BCC + : TDC : + : STA ApuCommandQueueEnd
 
 .ret
@@ -120,7 +120,7 @@ LDX $0998 : CPX #$0028 : BCS .ret
 LDX $0592 : BMI .ret
 LDX ApuCommandQueueEnd
 AND #$FF00 : ORA #$0004 : STA ApuCommandQueue+0,x
-STZ ApuCommandQueue+2,x
+LDA #$FF00 : STA ApuCommandQueue+2,x
 LDA ApuCommandQueueEnd : CLC : ADC #$0004 : CMP.w #4*25 : BCC + : TDC : + : STA ApuCommandQueueEnd
 
 .ret
@@ -136,7 +136,7 @@ LDX $0998 : CPX #$0028 : BCS .ret
 LDX $0592 : BMI .ret
 LDX ApuCommandQueueEnd
 AND #$FF00 : ORA #$0005 : STA ApuCommandQueue+0,x
-STZ ApuCommandQueue+2,x
+LDA #$FF00 : STA ApuCommandQueue+2,x
 LDA ApuCommandQueueEnd : CLC : ADC #$0004 : CMP.w #4*25 : BCC + : TDC : + : STA ApuCommandQueueEnd
 
 .ret

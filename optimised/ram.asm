@@ -337,6 +337,8 @@ endif
 %declare_bytePairArray(sound_pitchSlideLegatoFlags,             !n_tracks)
 %declare_bytePairArray(sound_panningBiases,                     !n_tracks)
 %declare_bytePairArray(sound_subtransposes,                     !n_tracks)
+%declare_bytePairArray(sound_panningModifiers,                  !n_tracks) ; Additive (Ah = center to left, -Ah = center to right)
+%declare_bytePairArray(sound_volumeModifiers,                   !n_tracks) ; Multiplicative (FFh = max volume)
 
 %declare_wordArray(sound_repeatPoints,                          !n_tracks)
 if defined("adsrSoundCommand")
