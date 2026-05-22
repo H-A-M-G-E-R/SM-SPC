@@ -15,6 +15,10 @@ if defined("printRamMsl") || defined("printRamMap") : undef printAramSummary
 ; This is a workaround for spcblock with labels referenced outside the spcblock
 
 lorom
+
+; SNES side
+incsrc "snes/main.asm"
+
 org $CF8000 ; The actual ROM location the engine is going to be written to
 
 !version = 2
@@ -46,6 +50,9 @@ incsrc "engine.asm"
 main_utility:
 incsrc "utility.asm"
 
+main_io0Commands:
+incsrc "io0 commands.asm"
+
 main_music:
 incsrc "music.asm"
 
@@ -73,6 +80,7 @@ incsrc "samples.asm"
 if defined("printAramSummary")
     print "$",hex(main_engine), ": RAM end / engine"
     print "$",hex(main_utility), ": Utility"
+    print "$",hex(main_io0Commands), ": CPUIO0 commands"
     print "$",hex(main_music), ": Music"
     print "$",hex(main_soundLibrary), ": Sound library"
     print "$",hex(main_soundLibrary1), ": Sound library 1"

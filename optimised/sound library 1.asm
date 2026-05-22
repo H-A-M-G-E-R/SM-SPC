@@ -1,10 +1,9 @@
-handleCpuIo1:
+cpuIo0Command_sound1:
 {
-mov !i_soundLibrary,#$01
+mov !cpuIo1_write,a
+cmp a,#$00 : beq .branch_noChange
 
-mov a,!cpuIo1_read : mov !cpuIo1_write,a
-beq .branch_noChange
-cmp a,!cpuIo1_read_prev : beq .branch_noChange
+mov !i_soundLibrary,#$01
 
 cmp a,#$03 : bcc +
 mov a,!sound1Priority : bne .branch_noChange

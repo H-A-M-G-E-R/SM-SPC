@@ -1,10 +1,9 @@
-handleCpuIo3:
+cpuIo0Command_sound3:
 {
-mov !i_soundLibrary,#$03
+mov !cpuIo3_write,a
+cmp a,#$00 : beq .branch_noChange
 
-mov a,!cpuIo3_read : mov !cpuIo3_write,a
-beq .branch_noChange
-cmp a,!cpuIo3_read_prev : beq .branch_noChange
+mov !i_soundLibrary,#$03
 
 cmp a,#$01 : beq +
 mov y,!sound3Priority : cmp y,#$02 : beq .branch_noChange

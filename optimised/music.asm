@@ -15,7 +15,7 @@ ret
 loadNewMusicData:
 {
 call receiveDataFromCpu
-mov !cpuIo0_read_prev,a
+mov a,#$00
 
 ; Fall through
 }
@@ -26,7 +26,7 @@ loadNewMusicTrack:
 ;; Parameters:
 ;;     A: Music track to load. Caller is responsible for setting previous value read from CPU IO 0
 
-mov !cpuIo0_write,a
+mov !musicTrackIndex,a
 
 ; Tracker pointer = [[!p_trackerData] + ([A] - 1) * 2]
 dec a : asl a : mov y,a : mov a,(!p_trackerData)+y : mov x,a : inc y : mov a,(!p_trackerData)+y : mov y,a : mov a,x : movw !p_tracker,ya
@@ -87,15 +87,7 @@ ret
 ; $1793
 handleMusicTrack:
 {
-; Check CPU IO 0
-mov a,!cpuIo0_read
-cmp a,#$F0 : beq keyOffMusicVoices
-cmp a,#$F1 : beq +
-cmp a,#$FF : beq loadNewMusicData
-cmp a,!cpuIo0_read_prev : bne loadNewMusicTrack
-
-+
-mov a,!cpuIo0_write : beq musicTrackInitialisation_ret
+mov a,!musicTrackIndex : beq musicTrackInitialisation_ret
 mov a,!musicTrackStatus : beq .branch_musicTrackPlaying
 dbnz !musicTrackStatus,musicTrackInitialisation
 

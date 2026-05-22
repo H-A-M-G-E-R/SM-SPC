@@ -83,22 +83,17 @@ inc y
 ; Save time since last loop
 push y
 
+; Read CPU IO
+mov x,#$00 : call writeReadCpuIo
+mov x,#$01 : call writeReadCpuIo
+mov x,#$02 : call writeReadCpuIo
+mov x,#$03 : call writeReadCpuIo
+call handleCpuIo0
+
 ; Sound effects clock += (time since last loop) * 20h
 mov a,#$20 : mul ya : clrc : adc a,!soundEffectsClock : mov !soundEffectsClock,a
 
 bcc .branch_soundFx_end
-
-; CPU IO 1
-call handleCpuIo1
-mov x,#$01 : call writeReadCpuIo
-
-; CPU IO 2
-call handleCpuIo2
-mov x,#$02 : call writeReadCpuIo
-
-; CPU IO 3
-call handleCpuIo3
-mov x,#$03 : call writeReadCpuIo
 
 ; Process sounds
 {
@@ -131,11 +126,10 @@ beq .branch_musicTrack_end
 .branch_musicTrack
 call handleMusicTrack
 dbnz !musicTrackClockHi,.branch_musicTrack
-mov x,#$00 : call writeReadCpuIo
 jmp .loop_main
 .branch_musicTrack_end
 
-mov a,!cpuIo0_write : beq ++
+mov a,!musicTrackIndex : beq ++
 
 ; Update playing tracks
 mov x,#$00
@@ -159,9 +153,6 @@ writeReadCpuIo:
 {
 ;; Parameter:
 ;;     X: CPU IO index
-
-; Update previous value read from CPU IO [X]
-mov a,!cpuIo0_read+x : mov !cpuIo0_read_prev+x,a
 
 ; Write CPU IO [X]
 mov a,!cpuIo0_write+x : mov $F4+x,a

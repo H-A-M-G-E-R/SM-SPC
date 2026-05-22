@@ -126,9 +126,10 @@ endmacro
 {
 %generate_bytes(cpuIo, _read, 4)
 %generate_bytes(cpuIo, _write, 4)
-%generate_bytes(cpuIo, _read_prev, 4)
 }
 
+%declare_byte(io0CommandCtr)
+%declare_byte(musicTrackIndex)
 %declare_byte(musicTrackStatus)
 %declare_word(zero)
 

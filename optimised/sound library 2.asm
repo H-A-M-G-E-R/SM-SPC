@@ -1,10 +1,9 @@
-handleCpuIo2:
+cpuIo0Command_sound2:
 {
-mov !i_soundLibrary,#$02
+mov !cpuIo2_write,a
+cmp a,#$00 : beq .branch_noChange
 
-mov a,!cpuIo2_read : mov !cpuIo2_write,a
-beq .branch_noChange
-cmp a,!cpuIo2_read_prev : beq .branch_noChange
+mov !i_soundLibrary,#$02
 
 cmp a,#$71 : beq +
 cmp a,#$7E : beq +
