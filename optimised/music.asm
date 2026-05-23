@@ -1029,6 +1029,7 @@ bra .loop_tracker
 movw !noteOrPanningBias,ya
 mov a,x : mov y,a
 mov a,(!noteOrPanningBias)+y : push a : inc y : mov a,(!noteOrPanningBias)+y : mov y,a : pop a
+beq .branch_note ; empty track
 bra .loop_sections
 
 .branch_endSubsection
