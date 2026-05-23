@@ -16,8 +16,7 @@ loadNewMusicData:
 {
 call receiveDataFromCpu
 mov a,#$00
-
-; Fall through
+bra loadNewMusicTrack_load
 }
 
 ; $1740
@@ -26,6 +25,9 @@ loadNewMusicTrack:
 ;; Parameters:
 ;;     A: Music track to load. Caller is responsible for setting previous value read from CPU IO 0
 
+cmp a,!musicTrackIndex : beq keyOffMusicVoices_ret
+
+.load
 mov !musicTrackIndex,a
 
 ; Tracker pointer = [[!p_trackerData] + ([A] - 1) * 2]
@@ -41,6 +43,8 @@ mov !musicTrackStatus,#$02
 keyOffMusicVoices:
 {
 mov a,!enableSoundEffectVoices : eor a,#$FF : tset !keyOffFlags,a
+
+.ret
 ret
 }
 

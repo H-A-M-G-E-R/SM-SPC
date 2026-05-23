@@ -2,56 +2,95 @@ incsrc "ram.asm"
 
 incsrc "apu_upload.asm"
 
+;;; Handle APU command queue ;;;
+
 org $8289EF
 HandleApuCommandQueue:
 {
 PHP : SEP #$30
 LDA ApuCommandState : ASL : TAX
-JSR (.states,x)
+JSR (.musicStates,x)
+LDA ApuCommandState : ASL : TAX
+JSR (.soundStates,x)
 PLP : RTL
 
-.states
+.musicStates
+dw MusicCommandState0_Idle
+dw MusicCommandState1_WaitForApu
+
+.soundStates
 dw ApuCommandState0_Idle
 dw ApuCommandState1_WaitForApu
 }
 
 ApuCommandState0_Idle:
 {
-LDX ApuCommandQueueStart : CPX ApuCommandQueueEnd : BEQ .ret
-; Send command to APU
-LDA ApuCommandQueue+1,x : STA $2141
-LDA ApuCommandQueue+2,x : STA $2142
-LDA ApuCommandQueue+3,x : STA $2143
-LDA ApuCommandQueue+0,x : STA $2140
-DEC : BNE +
+LDX ApuCommandQueueStart : CPX ApuCommandQueueEnd : BEQ +
+JSL Thing1
++
+RTS
+}
 
-LDA ApuCommandQueue+1,x : STA $07F5 ; music track index
+; Same as below, except that it handles music timer
+MusicCommandState1_WaitForApu:
+{
+LDX MusicCommandQueueStart : CPX MusicCommandQueueEnd : BEQ +
+REP #$20 : LDA MusicCommandTimer : CMP MusicCommandQueue+2,x : BCS +
+INC : STA MusicCommandTimer
++
+SEP #$20
+}
+
+; fallthrough
+ApuCommandState1_WaitForApu:
+{
+LDA ApuCommandCtr : CMP $2140 : BEQ +
+INC : STA ApuCommandCtr
+DEC ApuCommandState ; ApuCommandState = 0
++
+RTS
+}
+
+MusicCommandState0_Idle:
+{
+LDX MusicCommandQueueStart : CPX MusicCommandQueueEnd : BEQ .ret
+; timer
+REP #$20 : LDA MusicCommandTimer : CMP MusicCommandQueue+2,x : BCS +
+INC : STA MusicCommandTimer
+SEP #$20
+RTS
+
++
+SEP #$20
+; Send command to APU
+LDA MusicCommandQueue+1,x : STA $2141
+LDA MusicCommandQueue+0,x : STA $2140
+
+; music track
+DEC : BNE +
+LDA MusicCommandQueue+1,x : STA $07F5 ; music track index
 BRA .done
 
 +
+; music data
 DEC : BNE .done
-
-LDA ApuCommandQueue+1,x : STA $07F3 : TAX ; music data index
+LDA MusicCommandQueue+1,x : STA $07F3 : TAX ; music data index
 REP #$20
 LDA $8FE7E1,x : STA $00 : LDA $8FE7E2,x : STA $01
 JSL UploadToAPU_MusicData
 SEP #$20
 
 .done
-INC ApuCommandState ; ApuCommandState = 1
+INC ApuCommandState
+LDA MusicCommandQueueStart : CLC : ADC #$04 : CMP.b #4*8 : BCC + : TDC : + : STA MusicCommandQueueStart
+
 .ret
 RTS
 }
 
-ApuCommandState1_WaitForApu:
-{
-LDA ApuCommandCtr : CMP $2140 : BEQ +
-INC : STA ApuCommandCtr
-DEC ApuCommandState ; ApuCommandState = 0
-LDA ApuCommandQueueStart : CLC : ADC #$04 : CMP.b #4*25 : BCC + : TDC : + : STA ApuCommandQueueStart
-+
-RTS
-}
+assert pc() <= $828AB0
+
+;;; Bank $80 stuff ;;;
 
 ; replace an instance of handling music queue
 org $80A136 : JSL HandleApuCommandQueue
@@ -61,7 +100,7 @@ org $808EF4
 CheckIfMusicQueued:
 {
 PHP : SEP #$20
-LDA ApuCommandQueueStart : CMP ApuCommandQueueEnd : BNE +
+LDA MusicCommandQueueStart : CMP MusicCommandQueueEnd : BNE +
 PLP : CLC : RTL
 +
 PLP : SEC : RTL
@@ -70,29 +109,70 @@ PLP : SEC : RTL
 ; Handle music queue
 org $808F0C : RTL ; just RTL it out
 
-org $808FC1
-QueueMusicTrack:
+CheckIfSoundsQueued:
 {
-PHX : PHP : REP #$30
+PHP : SEP #$20
+LDA ApuCommandQueueStart : CMP ApuCommandQueueEnd : BNE +
+PLP : CLC : RTL
++
+PLP : SEC : RTL
+}
+
+Thing1:
+{
+; Send command to APU
+LDA ApuCommandQueue+1,x : STA $2141
+LDA ApuCommandQueue+2,x : STA $2142
+LDA ApuCommandQueue+3,x : STA $2143
+LDA ApuCommandQueue+0,x : STA $2140
+INC ApuCommandState
+LDA ApuCommandQueueStart : CLC : ADC #$04 : CMP.b #4*16 : BCC + : TDC : + : STA ApuCommandQueueStart
+RTL
+}
+
+Thing2:
+{
+LDA MusicCommandQueueEnd : CLC : ADC #$0004 : CMP.w #4*8 : BCC + : TDC : + : STA MusicCommandQueueEnd
+RTS
+}
+
+assert pc() <= $808FA3
+
+org $808FC1 ; Queue music data or music track, 8 frame delay, cannot set last queue entry
+QueueMusicTrack_8FrameDelay:
+{
+PHX : PHY : PHP : REP #$30
+LDY #$0008
+}
+
+; fallthrough
+QueueMusicTrack_Common:
+{
 LDX $0998 : CPX #$0028 : BCS .ret ; If in demo: return
 
-LDX ApuCommandQueueEnd
+LDX MusicCommandQueueEnd
 ORA #$0000 : BMI .musicData
 ORA #$0100 : BRA .merge
 .musicData
 AND #$02FF
 .merge
-XBA : STA ApuCommandQueue,x
-STZ ApuCommandQueue+2,x
-LDA ApuCommandQueueEnd : CLC : ADC #$0004 : CMP.w #4*25 : BCC + : TDC : + : STA ApuCommandQueueEnd
+XBA : STA MusicCommandQueue,x
+TYA : STA MusicCommandQueue+2,x
+JSR Thing2
 
 .ret
-PLP : PLX : RTL
+PLP : PLY : PLX : RTL
 assert pc() <= $808FF7
 }
 
 org $808FF7 ; Queue music data or music track, max([Y], 8) frame delay, can overwrite old entries
-BRA QueueMusicTrack
+QueueMusicTrack_YDelay:
+{
+PHX : PHY : PHP : REP #$30
+BRA QueueMusicTrack_Common
+}
+
+;;; Queue sound ;;;
 
 org $809051 ; Queue sound, sound library 1
 QueueSound1:
@@ -105,7 +185,7 @@ LDX $0592 : BMI .ret ; If [power bomb explosion status] = exploding: return
 LDX ApuCommandQueueEnd
 AND #$FF00 : ORA #$0003 : STA ApuCommandQueue+0,x
 LDA #$FF00 : STA ApuCommandQueue+2,x
-LDA ApuCommandQueueEnd : CLC : ADC #$0004 : CMP.w #4*25 : BCC + : TDC : + : STA ApuCommandQueueEnd
+LDA ApuCommandQueueEnd : CLC : ADC #$0004 : CMP.w #4*16 : BCC + : TDC : + : STA ApuCommandQueueEnd
 
 .ret
 PLP : PLY : PLX : RTL
@@ -121,7 +201,7 @@ LDX $0592 : BMI .ret
 LDX ApuCommandQueueEnd
 AND #$FF00 : ORA #$0004 : STA ApuCommandQueue+0,x
 LDA #$FF00 : STA ApuCommandQueue+2,x
-LDA ApuCommandQueueEnd : CLC : ADC #$0004 : CMP.w #4*25 : BCC + : TDC : + : STA ApuCommandQueueEnd
+LDA ApuCommandQueueEnd : CLC : ADC #$0004 : CMP.w #4*16 : BCC + : TDC : + : STA ApuCommandQueueEnd
 
 .ret
 PLP : PLY : PLX : RTL
@@ -137,14 +217,18 @@ LDX $0592 : BMI .ret
 LDX ApuCommandQueueEnd
 AND #$FF00 : ORA #$0005 : STA ApuCommandQueue+0,x
 LDA #$FF00 : STA ApuCommandQueue+2,x
-LDA ApuCommandQueueEnd : CLC : ADC #$0004 : CMP.w #4*25 : BCC + : TDC : + : STA ApuCommandQueueEnd
+LDA ApuCommandQueueEnd : CLC : ADC #$0004 : CMP.w #4*16 : BCC + : TDC : + : STA ApuCommandQueueEnd
 
 .ret
 PLP : PLY : PLX : RTL
 }
 
+;;; Misc ;;;
+
 org $82E2AE ; Door transition function - wait for sounds to finish
-JSL CheckIfMusicQueued : BCS +
+JSL CheckIfSoundsQueued : BCS +
 LDA #$E2DB : STA $099C ; Door transition function = $E2DB (fade out the screen)
 +
 PLP : RTS
+
+org $80A091 : BRA $02 ; disable clearing sounds when starting game
