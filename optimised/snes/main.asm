@@ -16,13 +16,18 @@ PLP : RTL
 
 .musicStates
 dw MusicCommandState0_Idle
-dw MusicCommandState1_WaitForApu
+dw GoToMusicCommandState1_WaitForApu
 
 .soundStates
 dw ApuCommandState0_Idle
-dw ApuCommandState1_WaitForApu
+dw GoToApuCommandState1_WaitForApu
 }
 
+GoToApuCommandState1_WaitForApu:
+{
+JSR ApuCommandState1_WaitForApu
+}
+; fallthrough
 ApuCommandState0_Idle:
 {
 LDX ApuCommandQueueStart : CPX ApuCommandQueueEnd : BEQ +
@@ -51,6 +56,11 @@ DEC ApuCommandState ; ApuCommandState = 0
 RTS
 }
 
+GoToMusicCommandState1_WaitForApu:
+{
+JSR MusicCommandState1_WaitForApu
+}
+; fallthrough
 MusicCommandState0_Idle:
 {
 LDX MusicCommandQueueStart : CPX MusicCommandQueueEnd : BEQ .ret
