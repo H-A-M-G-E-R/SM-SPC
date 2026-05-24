@@ -2,6 +2,8 @@ incsrc "ram.asm"
 
 incsrc "apu_upload.asm"
 
+incsrc "panning.asm"
+
 ;;; Handle APU command queue ;;;
 
 org $8289EF
