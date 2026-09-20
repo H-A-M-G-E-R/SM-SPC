@@ -145,7 +145,7 @@ db $01 : dw ..voice0
 ; Sound Ah: Enemy frozen
 .soundA
 db $11 : dw ..voice0
-..voice0 : db $F6,$0C, $0D, $A3,$70,$01, $A1,$80,$01, $9F,$80,$02, $9D,$80,$02, $9C,$70,$02, $9A,$50,$01, $97,$60,$01, $98,$60,$03, $FF
+..voice0 : db $0D, $A3,$70,$01, $A1,$80,$01, $9F,$80,$02, $9D,$80,$02, $9C,$70,$02, $9A,$50,$01, $97,$60,$01, $98,$60,$03, $FF
 
 ; Sound Bh: Elevator
 .soundB
@@ -168,9 +168,10 @@ db $01 : dw ..voice0
 
 ; Sound Eh: Gate opening/closing
 .soundE
-db $12 : dw ..voice0, ..voice1
-..voice0 : db $F6,$0C, $03, $85,$50,$05, $85,$50,$05, $85,$50,$05, $85,$50,$05, $85,$50,$05, $85,$50,$05, $85,$50,$05, $85,$50,$05, $85,$50,$05, $FF
-..voice1 : db $F5,$60,$A9, $06, $91,$90,$20, $FF
+;db $12 : dw ..voice0, ..voice1
+;..voice0 : db $03, $85,$50,$05, $85,$50,$05, $85,$50,$05, $85,$50,$05, $85,$50,$05, $85,$50,$05, $85,$50,$05, $85,$50,$05, $85,$50,$05, $FF
+;..voice1 : db $F5,$60,$A9, $06, $91,$90,$20, $FF
+db $00
 
 ; Sound Fh: Shinespark
 .soundF
@@ -203,9 +204,10 @@ db $01 : dw ..voice0
 
 ; Sound 14h: Gunship elevator activated
 .sound14
-db $12 : dw ..voice0, ..voice1
-..voice0 : db $06, $91,$00,$23, $91,$A0,$18, $F5,$F0,$A9, $91,$A0,$18, $FF
-..voice1 : db $02, $90,$00,$23, $90,$20,$18, $F5,$F0,$A8, $90,$20,$18, $FF
+;db $12 : dw ..voice0, ..voice1
+;..voice0 : db $06, $91,$00,$23, $91,$A0,$18, $F5,$F0,$A9, $91,$A0,$18, $FF
+;..voice1 : db $02, $90,$00,$23, $90,$20,$18, $F5,$F0,$A8, $90,$20,$18, $FF
+db $00
 
 ; Sound 15h: Gunship elevator deactivated
 .sound15
@@ -231,9 +233,10 @@ db $12 : dw ..voice0, ..voice1
 
 ; Sound 1Bh: Draygon dying cry
 .sound1B
-db $12 : dw ..voice0, ..voice1
-..voice0 : db $25, $8E,$D0,$30, $8E,$D0,$30, $8E,$D0,$40, $FF
-..voice1 : db $25, $A6,$00,$0C, $98,$80,$30, $98,$80,$30, $9A,$80,$10, $98,$80,$40, $FF
+;db $12 : dw ..voice0, ..voice1
+;..voice0 : db $25, $8E,$D0,$30, $8E,$D0,$30, $8E,$D0,$40, $FF
+;..voice1 : db $25, $A6,$00,$0C, $98,$80,$30, $98,$80,$30, $9A,$80,$10, $98,$80,$40, $FF
+db $00
 
 ; Sound 1Ch: Crocomire spit
 .sound1C
@@ -267,23 +270,24 @@ db $01 : dw ..voice0
 
 ; Sound 23h: Baby metroid cry 1
 .sound23
-db $01 : dw ..voice0
-..voice0 : db $25, $95,$20,$40, $FF
+;db $01 : dw ..voice0
+;..voice0 : db $25, $95,$20,$40, $FF
 
 ; Sound 24h: Baby metroid cry - Ceres
 .sound24
-db $11 : dw ..voice0
-..voice0 : db $24, $95,$20,$40, $FF
+;db $11 : dw ..voice0
+;..voice0 : db $24, $95,$20,$40, $FF
 
 ; Sound 26h: Baby metroid cry 2
 .sound26
-db $01 : dw ..voice0
-..voice0 : db $25, $92,$20,$09, $92,$30,$40, $FF
+;db $01 : dw ..voice0
+;..voice0 : db $25, $92,$20,$09, $92,$30,$40, $FF
 
 ; Sound 27h: Baby metroid cry 3
 .sound27
-db $01 : dw ..voice0
-..voice0 : db $25, $91,$30,$40, $FF
+;db $01 : dw ..voice0
+;..voice0 : db $25, $91,$30,$40, $FF
+db $00
 
 ; Sound 28h: Phantoon materialises attack
 .sound28
@@ -297,8 +301,9 @@ db $01 : dw ..voice0
 
 ; Sound 2Ah: Pause menu ambient beep
 .sound2A
-db $01 : dw ..voice0
-..voice0 : db $0B, $C7,$20,$03, $C7,$20,$03, $C7,$10,$03, $FF
+;db $01 : dw ..voice0
+;..voice0 : db $0B, $C7,$20,$03, $C7,$20,$03, $C7,$10,$03, $FF
+db $00
 
 ; Sound 2Bh: Resume speed booster / shinespark
 .sound2B
