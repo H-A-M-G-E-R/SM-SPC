@@ -150,6 +150,10 @@ macro toggleKeyOffGain()
     db $FB, $04
 endmacro
 
+macro amplify(value)
+    db $FB, $05, <value>
+endmacro
+
 macro subloop(n_repeats)
     db $FC, <n_repeats>
 endmacro

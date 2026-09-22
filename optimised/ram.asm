@@ -310,6 +310,7 @@ endif
 %declare_bytePairArray(trackTargetNotes,                   !n_tracks)
 %declare_bytePairArray(trackSubtransposes,                 !n_tracks)
 %declare_bytePairArray(trackSubloopCounters,               !n_tracks)
+%declare_bytePairArray(trackVolumeMultipliers,             !n_tracks)
 
 %declare_bytePairArray(sound_releaseFlags,                      !n_tracks)
 
@@ -347,7 +348,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $2E8..2645: SPC engine
+; $327..2673: SPC engine
 !p_ram = $2800-($30*6)
 
 %declare_byteArray(instrumentTable, $30*6)

@@ -63,22 +63,11 @@ mov !trackVibratoExtents+x,a
 mov !trackTremoloExtents+x,a
 mov !trackDynamicVolumeTimers+x,a
 mov !trackDynamicPanningTimers+x,a
+mov !trackVolumeMultipliers+x,a
 dec x : dec x : bpl -
 }
 
-mov !dynamicMusicVolumeTimer,a
-mov !dynamicEchoVolumeTimer,a
-mov !dynamicMusicTempoTimer,a
-mov !musicTranspose,a
-mov !trackerTimer,a
-mov !percussionInstrumentsBaseIndex,a
-mov !keyOffGainEnableBitset,a
-mov !disablePsychoacousticAdjustment,a
-mov y,#$C0 : movw !musicVolume,ya
-mov y,#$20 : movw !musicTempo,ya
-mov a,#sharedNoteRingLengthTable&$FF : mov y,#sharedNoteRingLengthTable>>8 : movw !p_noteRingLengthTable,ya
-mov a,#sharedEchoFirFilters&$FF : mov y,#sharedEchoFirFilters>>8 : movw !p_echoFirFilters,ya
-mov !noteEndInTicks,#$02
+jmp musicTrackInitialisation_part2
 
 .ret
 ret
@@ -251,6 +240,24 @@ inc x : inc x
 asl !musicVoiceBitset : bne -
 }
 
+ret
+}
+
+musicTrackInitialisation_part2:
+{
+mov !dynamicMusicVolumeTimer,a
+mov !dynamicEchoVolumeTimer,a
+mov !dynamicMusicTempoTimer,a
+mov !musicTranspose,a
+mov !trackerTimer,a
+mov !percussionInstrumentsBaseIndex,a
+mov !keyOffGainEnableBitset,a
+mov !disablePsychoacousticAdjustment,a
+mov y,#$C0 : movw !musicVolume,ya
+mov y,#$20 : movw !musicTempo,ya
+mov a,#sharedNoteRingLengthTable&$FF : mov y,#sharedNoteRingLengthTable>>8 : movw !p_noteRingLengthTable,ya
+mov a,#sharedEchoFirFilters&$FF : mov y,#sharedEchoFirFilters>>8 : movw !p_echoFirFilters,ya
+mov !noteEndInTicks,#$02
 ret
 }
 
@@ -697,12 +704,13 @@ dw \
     setEchoFirFilters,\
     setDPMiscCommand,\
     addMusicCommandF4_toggleEcho,\
-    toggleKeyOffGain
+    toggleKeyOffGain,\
+    amplify
 }
 
 miscCommandParameterBytes:
 {
-db $02,$02,$02,$00,$00
+db $02,$02,$02,$00,$00,$01
 }
 
 setNoteLengthTable:
@@ -739,6 +747,13 @@ mov a,x : xcn a : lsr a : or a,#$05 : mov y,a ; VxADSR1
 mov $F2,y : mov a,$F3 ; read register
 or a,#$80 ; enable ADSR
 jmp writeDspRegister
+}
+
+amplify:
+{
+call getNextTrackDataByte : mov !trackVolumeMultipliers+x,a
+or (!musicVoiceVolumeUpdateBitset),(!musicVoiceBitset) ; to change volume in the middle of note
+ret
 }
 
 subloop:
@@ -950,6 +965,10 @@ mov a,x : xcn a : lsr a : mov !dspVoiceVolumeIndex,a
 {
 mov y,!panningBias+1 : mov a,panningVolumeMultipliers+1+y : setc : sbc a,panningVolumeMultipliers+y : mov y,!panningBias : mul ya : mov a,y
 mov y,!panningBias+1 : clrc : adc a,panningVolumeMultipliers+y : mov y,a : mov a,!trackOutputVolumes+x : mul ya
+
+; Add the computed volume to (computedvolume * volumemultipier / $100)
+mov !misc0,y : mov a,!trackVolumeMultipliers+x : mul ya
+mov a,y : clrc : adc a,!misc0 : mov y,a
 
 ; Handle phase inversion
 mov a,!trackPhaseInversionOptions+x : asl a
