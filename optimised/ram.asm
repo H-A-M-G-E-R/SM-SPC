@@ -353,7 +353,7 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $357..2720: SPC engine
+; $357..2721: SPC engine
 !p_ram = $2900-($31*6)
 
 %declare_byteArray(instrumentTable, $31*6)
