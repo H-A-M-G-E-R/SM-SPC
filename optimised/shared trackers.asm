@@ -158,6 +158,10 @@ macro restoreInstrument()
     db $FB, $06
 endmacro
 
+macro toggleLegato()
+    db $FB, $07
+endmacro
+
 macro subloop(n_repeats)
     db $FC, <n_repeats>
 endmacro

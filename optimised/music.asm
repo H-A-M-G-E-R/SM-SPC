@@ -253,6 +253,8 @@ mov !trackerTimer,a
 mov !percussionInstrumentsBaseIndex,a
 mov !keyOffGainEnableBitset,a
 mov !disablePsychoacousticAdjustment,a
+mov !legatoEnableBitset,a
+mov !legatoInProgressBitset,a
 mov y,#$C0 : movw !musicVolume,ya
 mov y,#$20 : movw !musicTempo,ya
 mov a,#sharedNoteRingLengthTable&$FF : mov y,#sharedNoteRingLengthTable>>8 : movw !p_noteRingLengthTable,ya
@@ -771,12 +773,13 @@ dw \
     addMusicCommandF4_toggleEcho,\
     toggleKeyOffGain,\
     amplify,\
-    restoreInstrument
+    restoreInstrument,\
+    toggleLegato
 }
 
 miscCommandParameterBytes:
 {
-db $02,$02,$02,$00,$00,$01,$00
+db $02,$02,$02,$00,$00,$01,$00,$00
 }
 
 setNoteLengthTable:
@@ -819,6 +822,13 @@ amplify:
 {
 call getNextTrackDataByte : mov !trackVolumeMultipliers+x,a
 or (!musicVoiceVolumeUpdateBitset),(!musicVoiceBitset) ; to change volume in the middle of note
+ret
+}
+
+toggleLegato:
+{
+mov a,!musicVoiceBitset : tclr !legatoInProgressBitset,a
+eor !legatoEnableBitset,!musicVoiceBitset
 ret
 }
 
@@ -1080,32 +1090,32 @@ mov y,#$00
 mov a,(!misc0)+y : beq .branch_end : bmi .branch_command
 
 .loop_noteParameters
-inc y : bmi .branch_note
+inc y : bpl + : jmp .branch_note : +
 mov a,(!misc0)+y
 bpl .loop_noteParameters
 
 .branch_command
 bbc1 !enableLateKeyOff,+
-cmp a,#$C9 : bcc .branch_continuePlaying
+cmp a,#$C9 : bcs + : jmp .branch_continuePlaying : +
 
 +
+cmp a,#$C9 : beq .branch_rest
 cmp a,#$C8 : beq .branch_continuePlaying
-cmp a,#$C9 : beq .branch_keyOffGainCheck
 cmp a,#$EF : bne + : jmp .branch_repeatSubsection : +
-cmp a,#$FB : beq .branch_miscCommand
 cmp a,#$FC : bne + : jmp .branch_subloop : +
+cmp a,#$FB : beq .branch_miscCommand
 cmp a,#$E0 : bcc .branch_note
 push y : mov y,a : pop a : adc a,trackCommandParameterBytes-$E0+y : mov y,a
 bra .loop_commands
 
 .branch_end
 mov a,!misc1+1 : bne .branch_endSubsection
-bbc0 !enableLateKeyOff,.branch_keyOffGainCheck
+bbc0 !enableLateKeyOff,.branch_rest
 
 .loop_tracker
 call getNextTrackerCommand
 bne .branch_newTrackData
-mov y,a : beq .branch_keyOffGainCheck
+mov y,a : beq .branch_rest
 
 dec !misc1 : bpl +
 mov !misc1,a
@@ -1120,22 +1130,24 @@ bra .loop_tracker
 movw !noteOrPanningBias,ya
 mov a,x : mov y,a
 mov a,(!noteOrPanningBias)+y : push a : inc y : mov a,(!noteOrPanningBias)+y : mov y,a : pop a
-beq .branch_keyOffGainCheck ; empty track
+beq .branch_rest ; empty track
 bra .loop_sections
 
 .branch_endSubsection
 dbnz !misc1+1,+
 mov a,!trackRepeatedSubsectionReturnAddresses+1+x : mov y,a : mov a,!trackRepeatedSubsectionReturnAddresses+x
-bra .loop_sections
+jmp .loop_sections
 
 +
 mov a,!trackRepeatedSubsectionAddresses+1+x : mov y,a : mov a,!trackRepeatedSubsectionAddresses+x
 jmp .loop_sections
 
-.branch_keyOffGainCheck
-mov a,!musicVoiceBitset : and a,!keyOffGainEnableBitset : bne .branch_enableGain
+.branch_rest
+mov a,!musicVoiceBitset : tclr !legatoInProgressBitset,a
+and a,!keyOffGainEnableBitset : bne .branch_enableGain
 
 .branch_note
+mov a,!musicVoiceBitset : and a,!legatoEnableBitset : and a,!legatoInProgressBitset : bne .branch_continuePlaying
 mov a,!musicVoiceBitset : mov y,#$5C : call writeDspRegister
 
 .branch_continuePlaying

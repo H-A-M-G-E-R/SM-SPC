@@ -225,7 +225,10 @@ mov !trackDynamicVibratoTimers+x,a
 mov !trackTremoloPhases+x,a
 mov !trackTremoloDelayTimers+x,a
 or (!musicVoiceVolumeUpdateBitset),(!musicVoiceBitset)
-or (!keyOnFlags),(!musicVoiceBitset)
+
+; Don't key on if legato
+mov a,!legatoInProgressBitset : push a : or !legatoInProgressBitset,!musicVoiceBitset : pop a
+and a,!legatoEnableBitset : eor a,#$FF : and a,!musicVoiceBitset : tset !keyOnFlags,a
 
 ; Enable ADSR if key-off gain is enabled
 mov a,!musicVoiceBitset : and a,!keyOffGainEnableBitset : beq +
