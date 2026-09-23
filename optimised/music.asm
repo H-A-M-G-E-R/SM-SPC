@@ -301,6 +301,11 @@ mov y,a
 ret
 }
 
+restoreInstrument:
+{
+mov a,!trackInstrumentIndices+x : bra setInstrumentSettings
+}
+
 ; $18F9
 selectInstrument: ; Track command E0h
 {
@@ -338,39 +343,99 @@ mov y,a : bpl +
 setc : sbc a,#$CA : clrc : adc a,!percussionInstrumentsBaseIndex
 
 +
-mov y,#$06 : mul ya : movw !misc0,ya : clrc : adc !misc0,#!instrumentTable&$FF : adc !misc0+1,#!instrumentTable>>8
+; Backup instrument
+call getInstrumentPtr
+call getTrackInstrumentBackupPtr
+
+mov y,#$05
+-
+mov a,(!misc0)+y : mov (!misc1)+y,a
+dec y : bpl -
+
+; Fall through
+}
+
+;; Parameters:
+;;     X: Track index
+;;     !misc1: Instrument pointer
+updateInstrument:
+{
 mov a,!sound_activeVoices : and a,!musicVoiceBitset : bne .ret
 mov a,!musicVoiceBitset : tclr !enableSoundEffectVoices,a
+
+; have to do it in reverse because of this: https://snes.nesdev.org/wiki/Errata#S-DSP
 push x
-mov a,x : xcn a : lsr a : or a,#$04 : mov x,a
-mov y,#$00
+mov a,x : xcn a : lsr a : or a,#$07 : mov x,a
+mov y,#$03
+
+.loop_dsp
+{
+mov a,(!misc1)+y
+mov $F2,x : mov $F3,a
+dec x
+dec y
+bne .loop_dsp
+}
 
 if defined("noiseInstruments")
-mov a,(!misc0)+y : bpl +
+mov a,(!misc1)+y : bpl +
 and a,#$1F : and !flg,#$20 : tset !flg,a
 or (!noiseEnableFlags),(!sound_voiceBitset) ; so noise instruments can't ruin sound effects, we also update that while updating music
 mov a,#$02 ; first looping sample for noise to work, see https://snes.nesdev.org/wiki/S-DSP_registers#NON
-bra .branch_dsp
+bra ++
 
 +
 endif
 mov a,!sound_voiceBitset : tclr !noiseEnableFlags,a
+mov a,(!misc1)+y
 
-.loop_dsp
-{
-mov a,(!misc0)+y
-
-.branch_dsp
+++
 mov $F2,x : mov $F3,a
-inc x
-inc y
-cmp y,#$04 : bne .loop_dsp
-}
 
 pop x
-mov a,(!misc0)+y : mov !trackInstrumentPitches+1+x,a : inc y : mov a,(!misc0)+y : mov !trackInstrumentPitches+x,a
+mov y,#$04
+mov a,(!misc1)+y : mov !trackInstrumentPitches+1+x,a : inc y : mov a,(!misc1)+y : mov !trackInstrumentPitches+x,a
 
 .ret
+ret
+}
+
+adsrGain: ; Track command FDh
+{
+push a : call getTrackInstrumentBackupPtr : pop a
+
+; ADSR1
+eor a,#$80 : push p
+mov y,#$01 : mov (!misc1)+y,a
+
+; ADSR2 or GAIN
+call getNextTrackDataByte
+mov y,#$02 : pop p : bmi +
+inc y
++
+mov (!misc1)+y,a
+bra updateInstrument
+}
+
+;; Parameters:
+;;     A: Instrument index
+
+;; Returns:
+;;     !misc0: Instrument pointer
+getInstrumentPtr:
+{
+mov y,#$06 : mul ya : movw !misc0,ya : clrc : adc !misc0,#!instrumentTable&$FF : adc !misc0+1,#!instrumentTable>>8
+ret
+}
+
+;; Parameters:
+;;     X: Track index
+
+;; Returns:
+;;     !misc1: Instrument pointer
+getTrackInstrumentBackupPtr:
+{
+mov a,x : mov y,#$03 : mul ya : movw !misc1,ya : clrc : adc !misc1,#!trackInstrumentBackups&$FF : adc !misc1+1,#!trackInstrumentBackups>>8
 ret
 }
 
@@ -705,12 +770,13 @@ dw \
     setDPMiscCommand,\
     addMusicCommandF4_toggleEcho,\
     toggleKeyOffGain,\
-    amplify
+    amplify,\
+    restoreInstrument
 }
 
 miscCommandParameterBytes:
 {
-db $02,$02,$02,$00,$00,$01
+db $02,$02,$02,$00,$00,$01,$00
 }
 
 setNoteLengthTable:
@@ -848,7 +914,8 @@ dw \
     pitchSlide,\
     setPercussionInstrumentsIndex,\
     miscCommand,\
-    subloop
+    subloop,\
+    adsrGain
 }
 
 ; $1BA0

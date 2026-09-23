@@ -154,8 +154,16 @@ macro amplify(value)
     db $FB, $05, <value>
 endmacro
 
+macro restoreInstrument()
+    db $FB, $06
+endmacro
+
 macro subloop(n_repeats)
     db $FC, <n_repeats>
+endmacro
+
+macro adsrGain(value1, value2)
+    db $FD, <value1>, <value2>
 endmacro
 }
 }

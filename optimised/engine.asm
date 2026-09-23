@@ -194,11 +194,11 @@ call selectInstrument
 mov y,#$A4
 bra ++
 
-; Select current instrument if voice is sound effect enabled and sound is not active,
+; Restore instrument if voice is sound effect enabled and sound is not active,
 ; and disable sound effect enable flag if so
 +
 mov a,!enableSoundEffectVoices : and a,!musicVoiceBitset : beq ++
-push y : mov a,!trackInstrumentIndices+x : call setInstrumentSettings : pop y
+push y : call getTrackInstrumentBackupPtr : call updateInstrument : pop y
 
 ++
 ; Return if sound is active

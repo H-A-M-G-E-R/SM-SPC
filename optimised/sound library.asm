@@ -204,7 +204,7 @@ bra .loop_commands
 +
 cmp a,#$80 : bcs +
 ; 0..7Fh - select instrument
-call setInstrumentSettings
+call getInstrumentPtr : movw ya,!misc0 : movw !misc1,ya : call updateInstrument
 call getNextDataByte
 
 ; Process note instruction

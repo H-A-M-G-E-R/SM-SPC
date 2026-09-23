@@ -323,6 +323,9 @@ endif
 %declare_wordArray(trackPanningBiasDeltas,                 !n_tracks)
 %declare_wordArray(trackNoteDeltas,                        !n_tracks)
 %declare_wordArray(trackSubloopAddresses,                  !n_tracks)
+
+%declare(trackInstrumentBackups,                           !n_tracks*6)
+!canInterleaveBytePairArray = 0
 }
 
 ; Sound channels
@@ -348,10 +351,10 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $327..2673: SPC engine
-!p_ram = $2800-($30*6)
+; $357..26F1: SPC engine
+!p_ram = $2900-($31*6)
 
-%declare_byteArray(instrumentTable, $30*6)
+%declare_byteArray(instrumentTable, $31*6)
 
 ; Must be 100h aligned
 !p_ram #= !p_ram+$100-1
