@@ -162,6 +162,10 @@ macro toggleLegato()
     db $FB, $07
 endmacro
 
+macro setInstrumentByte(index, value)
+    db $FB, $08, <index>, <value>
+endmacro
+
 macro subloop(n_repeats)
     db $FC, <n_repeats>
 endmacro

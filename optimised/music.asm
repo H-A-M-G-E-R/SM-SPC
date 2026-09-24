@@ -347,7 +347,7 @@ mov y,a
 ret
 }
 
-restoreInstrument:
+restoreInstrument: ; misc command 6
 {
 mov a,!trackInstrumentIndices+x : bra setInstrumentSettings
 }
@@ -456,11 +456,20 @@ mov y,#$01 : mov (!misc1)+y,a
 
 ; ADSR2 or GAIN
 call getNextTrackDataByte
-mov y,#$02 : pop p : bmi +
+mov y,#$02 : pop p : bmi .update
 inc y
-+
+.update
 mov (!misc1)+y,a
+
 bra updateInstrument
+}
+
+setInstrumentByte: ; misc command 8
+{
+call getTrackInstrumentBackupPtr
+call getNextTrackDataByte
+push y : call getNextTrackDataByte : pop y
+bra adsrGain_update
 }
 
 ;; Parameters:
@@ -679,7 +688,7 @@ mov a,!enableSoundEffectVoices : eor a,#$FF : and a,!fakeEchoEnableFlags : mov !
 ret
 }
 
-addMusicCommandF4_toggleEcho:
+addMusicCommandF4_toggleEcho: ; misc command 3
 {
 eor (!fakeEchoEnableFlags),(!musicVoiceBitset)
 bra staticEcho_echoChannels
@@ -802,7 +811,7 @@ setc : sbc a,!trackNotes+x : mov y,!trackPitchSlideTimers+x : push y : pop x : c
 ret
 }
 
-miscCommand:
+miscCommand: ; Track command FBh
 {
 ; Jump to [!miscCommandPointers + [A] * 2] while preserving X
 asl a : mov y,a : mov a,miscCommandPointers+1+y : push a : mov a,miscCommandPointers+y : push a : ret
@@ -818,36 +827,37 @@ dw \
     toggleKeyOffGain,\
     amplify,\
     restoreInstrument,\
-    toggleLegato
+    toggleLegato,\
+    setInstrumentByte
 }
 
 miscCommandParameterBytes:
 {
-db $02,$02,$02,$00,$00,$01,$00,$00
+db $02,$02,$02,$00,$00,$01,$00,$00,$02
 }
 
-setNoteLengthTable:
+setNoteLengthTable: ; misc command 0
 {
 call getNextTrackDataByte : mov !p_noteRingLengthTable,a
 call getNextTrackDataByte : mov !p_noteRingLengthTable+1,a
 ret
 }
 
-setEchoFirFilters:
+setEchoFirFilters: ; misc command 1
 {
 call getNextTrackDataByte : mov !p_echoFirFilters,a
 call getNextTrackDataByte : mov !p_echoFirFilters+1,a
 ret
 }
 
-setDPMiscCommand:
+setDPMiscCommand: ; misc command 2
 {
 call getNextTrackDataByte : push a : call getNextTrackDataByte : pop a
 push x : mov x,a : mov a,y : mov (x),a : pop x
 ret
 }
 
-toggleKeyOffGain:
+toggleKeyOffGain: ; misc command 4
 {
 eor (!keyOffGainEnableBitset),(!musicVoiceBitset)
 mov a,!keyOffGainEnableBitset : and a,!musicVoiceBitset : beq enableADSR
@@ -862,21 +872,21 @@ or a,#$80 ; enable ADSR
 jmp writeDspRegister
 }
 
-amplify:
+amplify: ; misc command 5
 {
 call getNextTrackDataByte : mov !trackVolumeMultipliers+x,a
 or (!musicVoiceVolumeUpdateBitset),(!musicVoiceBitset) ; to change volume in the middle of note
 ret
 }
 
-toggleLegato:
+toggleLegato: ; misc command 7
 {
 mov a,!musicVoiceBitset : tclr !legatoInProgressBitset,a
 eor !legatoEnableBitset,!musicVoiceBitset
 ret
 }
 
-subloop:
+subloop: ; Track command FCh
 {
 bne +
 ; Set subloop address
