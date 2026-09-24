@@ -347,10 +347,14 @@ db $01 : dw ..voice0
 
 ; Sound 40h: Mother Brain's rainbow beam
 .sound40
+if !songSpecificSounds == 1
 db $13 : dw ..voice0, ..voice1, ..voice2
 ..voice0 : db $FE,$00, $23, $89,$D0,$07, $8B,$D0,$07, $8C,$D0,$07, $8E,$D0,$07, $90,$D0,$07, $91,$D0,$07, $93,$D0,$07, $95,$D0,$07, $97,$D0,$07, $FB
 ..voice1 : db $06, $BA,$D0,$FF
 ..voice2 : db $06, $B3,$D0,$FF
+else
+db $00
+endif
 
 ; Sound 41h: Resume charging beam
 .sound41
@@ -360,7 +364,11 @@ db $02 : dw ..voice0, .resumeChargingBeamVoice
 
 ; Sound 42h:
 .sound42
+if !songSpecificSounds == 1
 db $02 : dw ..voice0, ..voice1
 ..voice0 : db $24, $9C,$A0,$20, $FF
 ..voice1 : db $24, $9D,$00,$05, $95,$80,$40, $FF
+else
+db $00
+endif
 }

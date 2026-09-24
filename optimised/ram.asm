@@ -313,6 +313,9 @@ endif
 %declare_bytePairArray(trackSubtransposes,                 !n_tracks)
 %declare_bytePairArray(trackSubloopCounters,               !n_tracks)
 %declare_bytePairArray(trackVolumeMultipliers,             !n_tracks)
+%declare_bytePairArray(trackPositiveRemoteCodeTypes,       !n_tracks)
+%declare_bytePairArray(trackRemoteCodeDelayLengths,        !n_tracks)
+%declare_bytePairArray(trackRemoteCodeDelayTimers,         !n_tracks)
 
 %declare_bytePairArray(sound_releaseFlags,                      !n_tracks)
 
@@ -325,6 +328,8 @@ endif
 %declare_wordArray(trackPanningBiasDeltas,                 !n_tracks)
 %declare_wordArray(trackNoteDeltas,                        !n_tracks)
 %declare_wordArray(trackSubloopAddresses,                  !n_tracks)
+%declare_wordArray(trackPositiveRemoteCodeAddresses,       !n_tracks)
+%declare_wordArray(trackNegativeRemoteCodeAddresses,       !n_tracks)
 
 %declare(trackInstrumentBackups,                           !n_tracks*6)
 !canInterleaveBytePairArray = 0
@@ -353,8 +358,8 @@ endif
 
 !p_end_ram #= !p_ram
 
-; $357..2721: SPC engine
-!p_ram = $2900-($31*6)
+; $388..239C: SPC engine
+!p_ram = $2600-($31*6)
 
 %declare_byteArray(instrumentTable, $31*6)
 

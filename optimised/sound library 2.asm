@@ -161,23 +161,39 @@ db $01 : dw ..voice0
 
 ; Sound 12h: Plays at random in heated rooms
 .sound12
+if !songSpecificSounds == 1
 db $01 : dw ..voice0
 ..voice0 : db $22, $84,$60,$1C, $90,$60,$19, $0E, $80,$60,$10, $22, $89,$60,$19, $0E, $80,$60,$07, $84,$60,$10, $22, $8B,$60,$1B, $FF
+else
+db $00
+endif
 
 ; Sound 13h: Plays at random in heated rooms
 .sound13
+if !songSpecificSounds == 1
 db $01 : dw ..voice0
 ..voice0 : db $0E, $80,$60,$0A, $84,$60,$07, $22, $8B,$60,$1F, $89,$60,$16, $0E, $80,$60,$0A, $87,$60,$10, $FF
+else
+db $00
+endif
 
 ; Sound 14h: Plays at random in heated rooms
 .sound14
+if !songSpecificSounds == 1
 db $01 : dw ..voice0
 ..voice0 : db $0E, $80,$60,$0A, $87,$60,$10, $22, $84,$60,$1A, $0E, $80,$60,$0A, $84,$60,$07, $22, $91,$60,$16, $0E, $80,$60,$0A, $87,$60,$10, $FF
+else
+db $00
+endif
 
 ; Sound 16h: Fake Kraid cry
 .sound16
+if !songSpecificSounds == 1
 db $11 : dw ..voice0
 ..voice0 : db $25, $A8,$60,$10, $FF
+else
+db $00
+endif
 
 ; Sound 17h: Morph ball eye's ray
 .sound17
@@ -191,14 +207,22 @@ db $01 : dw ..voice0
 
 ; Sound 19h: Tourian statue unlocking particle
 .sound19
+if !songSpecificSounds == 1
 db $02 : dw ..voice0, ..voice1
 ..voice0 : db $10, $C1,$50,$03, $C2,$40,$03, $C3,$30,$03, $C4,$20,$03, $C5,$10,$03, $C6,$10,$03, $C7,$10,$03, $C7,$00,$30, $C7,$60,$03, $C6,$50,$03, $C5,$30,$03, $C4,$30,$03, $C3,$20,$03, $C2,$20,$03, $C1,$10,$03, $C0,$10,$03, $FF
 ..voice1 : db $08, $99,$D0,$03, $9C,$D0,$04, $0F, $8B,$30,$03, $8C,$40,$03, $8E,$50,$0E, $FF
+else
+db $00
+endif
 
 ; Sound 1Ah: n00b tube shattering
 .sound1A
+if !songSpecificSounds == 1
 db $02 : dw ..voice0, sound3InstructionLists_motherBrainGlassShatteringVoice1
 ..voice0 : db $08, $94,$D0,$03, $97,$D0,$02, $98,$D0,$03, $9A,$D0,$04, $97,$D0,$03, $9A,$D0,$04, $9D,$D0,$03, $9F,$D0,$03, $94,$D0,$1A, $25, $8C,$40,$26, $FF
+else
+db $00
+endif
 
 ; Sound 1Bh: Spike platform stops / tatori hits wall
 .sound1B
@@ -217,12 +241,20 @@ db $01 : dw ..voice0
 
 ; Sound 1Eh: Sound library 2 version of Mother Brain's glass shattering
 .sound1E
+if !songSpecificSounds == 1
 db $12 : dw sound3InstructionLists_motherBrainGlassShatteringVoice0, sound3InstructionLists_motherBrainGlassShatteringVoice1
+else
+db $00
+endif
 
 ; Sound 1Fh: Fune spits
 .sound1F
+if !songSpecificSounds == 1
 db $11 : dw ..voice0
 ..voice0 : db $25, $90,$D0,$09, $00, $97,$D8,$07, $FF
+else
+db $00
+endif
 
 ; Sound 20h: Shot fly
 .sound20
@@ -288,20 +320,32 @@ db $01 : dw ..voice0
 
 ; Sound 2Ch: Shot Spore Spawn
 .sound2C
+if !songSpecificSounds == 1
 db $12 : dw ..voice0, ..voice1
 ..voice0 : db $25, $8E,$D0,$40, $FF
 ..voice1 : db $25, $87,$00,$15, $87,$D0,$40, $FF
+else
+db $00
+endif
 
 ; Sound 2Dh: Kraid's roar / Crocomire dying cry
 .sound2D
+if !songSpecificSounds == 1
 db $11 : dw ..voice0
 ..voice0 : db $25, $95,$D0,$45, $FF
+else
+db $00
+endif
 
 ; Sound 2Eh: Kraid's dying cry
 .sound2E
+if !songSpecificSounds == 1
 db $12 : dw ..voice0, ..voice1
 ..voice0 : db $25, $9F,$D0,$60, $9A,$D0,$30, $98,$D0,$30, $FF
 ..voice1 : db $25, $9A,$00,$45, $9C,$D0,$60, $97,$D0,$50, $FF
+else
+db $00
+endif
 
 ; Sound 2Fh: Yapping maw
 .sound2F
@@ -310,8 +354,12 @@ db $01 : dw ..voice0
 
 ; Sound 30h: Shot super-desgeega
 .sound30
+if !songSpecificSounds == 1
 db $01 : dw ..voice0
 ..voice0 : db $25, $93,$90,$06, $98,$B0,$10, $98,$40,$03, $98,$30,$03, $FF
+else
+db $00
+endif
 
 ; Sound 31h: Brinstar plant chewing
 .sound31
@@ -320,13 +368,21 @@ db $01 : dw ..voice0
 
 ; Sound 32h: Etecoon wall-jump
 .sound32
+if !songSpecificSounds == 1
 db $01 : dw ..voice0
 ..voice0 : db $1D, $AC,$70,$0B, $FF
+else
+db $00
+endif
 
 ; Sound 33h: Etecoon cry
 .sound33
+if !songSpecificSounds == 1
 db $01 : dw ..voice0
 ..voice0 : db $1D, $B4,$70,$04, $B0,$70,$04, $FF
+else
+db $00
+endif
 
 ; Sound 34h: Spike shooting plant spikes
 ; Sound 6Ah: Shot Maridia floater
@@ -337,8 +393,12 @@ db $01 : dw ..voice0
 
 ; Sound 35h: Etecoon's theme
 .sound35
+if !songSpecificSounds == 1
 db $11 : dw ..voice0
 ..voice0 : db $1D, $A9,$70,$07, $A9,$20,$07, $AE,$70,$07, $AE,$20,$07, $B0,$70,$07, $B0,$20,$07, $B2,$70,$07, $B2,$20,$07, $B4,$70,$07, $B4,$20,$07, $B0,$70,$07, $B0,$20,$07, $AB,$70,$07, $AB,$20,$07, $B0,$70,$07, $B0,$20,$07, $B5,$70,$07, $B5,$20,$07, $B2,$70,$07, $B2,$20,$07, $AE,$70,$07, $AE,$20,$07, $AB,$70,$07, $AB,$20,$07, $AD,$70,$20, $FF
+else
+db $00
+endif
 
 ; Sound 36h: Shot rio / Norfair lava-jumping enemy / lava seahorse
 .sound36
@@ -461,20 +521,32 @@ db $01 : dw ..voice0
 
 ; Sound 50h: Metroid draining Samus / random metroid cry
 .sound50
+if !songSpecificSounds == 1
 db $12 : dw ..voice0, ..voice1
 ..voice0 : db $24, $9A,$A0,$0E, $FF
 ..voice1 : db $24, $8C,$00,$03, $98,$90,$14, $FF
+else
+db $00
+endif
 
 ; Sound 51h: Shot Wrecked Ship ghost
 .sound51
+if !songSpecificSounds == 1
 db $12 : dw ..voice0, ..voice1
 ..voice0 : db $19, $A4,$60,$13, $A4,$50,$13, $A4,$30,$13, $A4,$10,$13, $FF
 ..voice1 : db $19, $9F,$60,$16, $9F,$50,$16, $9F,$30,$16, $9F,$10,$16, $FF
+else
+db $00
+endif
 
 ; Sound 52h: Shitroid feels remorse
 .sound52
+if !songSpecificSounds == 1
 db $01 : dw ..voice0
 ..voice0 : db $22, $92,$D0,$2B, $FF
+else
+db $00
+endif
 
 ; Sound 53h: Shot mini-Crocomire
 .sound53
@@ -502,21 +574,33 @@ db $01 : dw ..voice0
 
 ; Sound 58h: Shot mochtroid
 .sound58
+if !songSpecificSounds == 1
 db $02 : dw ..voice0, ..voice1
 ..voice0 : db $24, $98,$A0,$0D, $FF
 ..voice1 : db $24, $94,$00,$03, $9A,$80,$15, $FF
+else
+db $00
+endif
 
 ; Sound 59h: Ridley's roar
 .sound59
+if !songSpecificSounds == 1
 db $12 : dw ..voice0, ..voice1
 ..voice0 : db $25, $9D,$D0,$30, $FF
 ..voice1 : db $25, $A1,$D0,$30, $FF
+else
+db $00
+endif
 
 ; Sound 5Ah: Shot metroid
 .sound5A
+if !songSpecificSounds == 1
 db $02 : dw ..voice0, ..voice1
 ..voice0 : db $24, $98,$A0,$15, $FF
 ..voice1 : db $24, $96,$00,$03, $95,$80,$1D, $FF
+else
+db $00
+endif
 
 ; Sound 5Ch: Skree hits the ground
 .sound5C
@@ -540,8 +624,12 @@ db $01 : dw ..voice0
 
 ; Sound 60h:
 .sound60
+if !songSpecificSounds == 1
 db $01 : dw ..voice0
 ..voice0 : db $25, $AB,$70,$20, $FF
+else
+db $00
+endif
 
 ; Sound 61h: Dragon / magdollite spit / fire geyser
 .sound61
@@ -555,9 +643,13 @@ db $01 : dw ..voice0
 
 ; Sound 63h: Mother Brain's ketchup beam
 .sound63
+if !songSpecificSounds == 1
 db $02 : dw ..voice0, ..voice1
 ..voice0 : db $00, $95,$E0,$05, $01, $A4,$E0,$05, $08, $9F,$E0,$04, $9C,$E0,$03, $A1,$E0,$03, $93,$E0,$04, $93,$E0,$08, $8B,$D0,$13, $89,$D0,$13, $85,$D0,$16, $82,$D0,$18, $FF
 ..voice1 : db $00, $95,$E0,$05, $18, $A4,$E0,$05, $9F,$E0,$04, $9C,$E0,$03, $A1,$E0,$03, $93,$E0,$04, $93,$E0,$08, $8C,$E0,$05, $87,$E0,$04, $84,$E0,$03, $FF
+else
+db $00
+endif
 
 ; Sound 64h: Holtz cry
 .sound64
@@ -583,8 +675,12 @@ db $01 : dw ..voice0
 
 ; Sound 68h: Shot Wrecked Ship robot
 .sound68
+if !songSpecificSounds == 1
 db $01 : dw ..voice0
 ..voice0 : db $1B, $94,$A0,$06, $8C,$90,$20, $FF
+else
+db $00
+endif
 
 ; Sound 69h: Shot Shaktool
 .sound69
@@ -603,20 +699,32 @@ db $01 : dw ..voice0
 
 ; Sound 6Eh: Shot Mother Brain phase 1
 .sound6E
+if !songSpecificSounds == 1
 db $12 : dw ..voice0, ..voice1
 ..voice0 : db $23, $80,$D0,$20, $FF
 ..voice1 : db $23, $87,$D0,$20, $FF
+else
+db $00
+endif
 
 ; Sound 6Fh: Mother Brain's cry - low pitch
 .sound6F
+if !songSpecificSounds == 1
 db $12 : dw ..voice0, ..voice1
 ..voice0 : db $25, $80,$E0,$C0, $FF
 ..voice1 : db $24, $8C,$E0,$C0, $FF
+else
+db $00
+endif
 
 ; Sound 70h: Maridia snail bounce
 .sound70
+if !songSpecificSounds == 1
 db $01 : dw ..voice0
 ..voice0 : db $1A, $AB,$60,$06, $B0,$60,$09, $FF
+else
+db $00
+endif
 
 ; Sound 15h: Maridia elevatube
 ; Sound 41h: (Empty)
@@ -630,77 +738,129 @@ db $00
 
 ; Sound 72h: Shitroid's cry
 .sound72
+if !songSpecificSounds == 1
 db $12 : dw ..voice0, ..voice1
 ..voice0 : db $24, $8C,$A0,$30, $FF
 ..voice1 : db $24, $9D,$00,$03, $87,$80,$45, $FF
+else
+db $00
+endif
 
 ; Sound 73h: Phantoon's cry / Draygon's cry
 .sound73
+if !songSpecificSounds == 1
 db $12 : dw ..voice0, ..voice1
 ..voice0 : db $25, $A3,$E0,$40, $FF
 ..voice1 : db $25, $A6,$00,$0C, $A3,$80,$40, $FF
+else
+db $00
+endif
 
 ; Sound 74h: Crocomire's cry
 .sound74
+if !songSpecificSounds == 1
 db $12 : dw ..voice0, ..voice1
 ..voice0 : db $25, $92,$90,$53, $FF
 ..voice1 : db $26, $A6,$E0,$09, $A4,$E0,$0D, $A2,$E0,$0D, $A0,$E0,$0D, $FF
+else
+db $00
+endif
 
 ; Sound 75h: Crocomire's skeleton collapses
 .sound75
+if !songSpecificSounds == 1
 db $12 : dw ..voice0, ..voice1
 ..voice0 : db $F6,$0C, $0D, $A3,$00,$05, $A3,$A0,$02, $A1,$C0,$02, $9F,$C0,$03, $9D,$C0,$03, $9C,$B0,$03, $9A,$A0,$02, $A3,$90,$02, $98,$90,$04, $97,$A0,$02, $95,$C0,$02, $93,$C0,$03, $91,$C0,$03, $90,$B0,$03, $8E,$A0,$02, $97,$90,$02, $8C,$90,$04, $FF
 ..voice1 : db $F6,$0C, $0D, $97,$A0,$02, $90,$B0,$03, $91,$C0,$03, $91,$C0,$03, $90,$B0,$03, $97,$90,$02, $97,$90,$02, $8C,$90,$04, $8B,$A0,$02, $8B,$90,$02, $87,$C0,$03, $85,$C0,$03, $89,$C0,$02, $84,$B0,$03, $89,$C0,$02, $80,$90,$04, $FF
+else
+db $00
+endif
 
 ; Sound 77h: Crocomire melting cry
 .sound77
+if !songSpecificSounds == 1
 db $12 : dw ..voice0, ..voice1
 ..voice0 : db $25, $A7,$D0,$15, $A3,$D0,$20, $A2,$D0,$63, $A2,$00,$09, $A2,$D0,$60, $A2,$00,$09, $A2,$D0,$60, $A2,$00,$09, $A3,$D0,$20, $A2,$D0,$33, $FF
 ..voice1 : db $26, $A6,$D0,$0D, $A6,$D0,$0D, $A5,$D0,$0D, $A4,$D0,$0D, $A7,$D0,$0D, $A2,$D0,$0D, $AA,$00,$7B, $AA,$00,$90, $A7,$D0,$0D, $A6,$D0,$0D, $A5,$D0,$0D, $A4,$D0,$0D, $A3,$D0,$0D, $A2,$D0,$0D, $FF
+else
+db $00
+endif
 
 ; Sound 78h: Shitroid draining
 .sound78
+if !songSpecificSounds == 1
 db $02 : dw ..voice0, ..voice1
 ..voice0 : db $24, $9C,$A0,$20, $FF
 ..voice1 : db $24, $9D,$00,$05, $95,$80,$40, $FF
+else
+db $00
+endif
 
 ; Sound 79h: Phantoon appears 1
 .sound79
+if !songSpecificSounds == 1
 db $02 : dw ..voice0, ..voice1
 ..voice0 : db $26, $95,$D0,$38, $FF
 ..voice1 : db $26, $95,$00,$0A, $9C,$D0,$38, $FF
+else
+db $00
+endif
 
 ; Sound 7Ah: Phantoon appears 2
 .sound7A
+if !songSpecificSounds == 1
 db $02 : dw ..voice0, ..voice1
 ..voice0 : db $26, $8E,$D0,$40, $FF
 ..voice1 : db $26, $8E,$00,$0A, $99,$D0,$40, $FF
+else
+db $00
+endif
 
 ; Sound 7Bh: Phantoon appears 3
 .sound7B
+if !songSpecificSounds == 1
 db $02 : dw ..voice0, ..voice1
 ..voice0 : db $26, $9E,$D0,$3D, $FF
 ..voice1 : db $26, $9E,$00,$0A, $9D,$D0,$3D, $FF
+else
+db $00
+endif
 
 ; Sound 7Ch: Botwoon spit
 .sound7C
+if !songSpecificSounds == 1
 db $11 : dw ..voice0
 ..voice0 : db $24, $94,$90,$1A, $94,$30,$10, $FF
+else
+db $00
+endif
 
 ; Sound 7Dh: Shitroid feels guilty
 .sound7D
+if !songSpecificSounds == 1
 db $11 : dw ..voice0
 ..voice0 : db $22, $88,$D0,$90, $8E,$D0,$37, $FF
+else
+db $00
+endif
 
 ; Sound 7Eh: Mother Brain's cry - high pitch / Phantoon's dying cry
 .sound7E
+if !songSpecificSounds == 1
 db $11 : dw ..voice0
 ..voice0 : db $25, $87,$D0,$C0, $FF
+else
+db $00
+endif
 
 ; Sound 7Fh: Mother Brain charging her rainbow
 .sound7F
+if !songSpecificSounds == 1
 db $02 : dw ..voice0, ..voice1
 ..voice0 : db $FE,$00, $24, $84,$D0,$0D, $85,$D0,$0D, $87,$D0,$0D, $89,$D0,$0D, $8B,$D0,$0D, $8C,$D0,$0D, $8E,$D0,$0D, $90,$D0,$0D, $91,$D0,$0D, $93,$D0,$0D, $FB
 ..voice1 : db $24, $00,$80,$04,\
               $FE,$00, $84,$D0,$0D, $85,$D0,$0D, $87,$D0,$0D, $89,$D0,$0D, $8B,$D0,$0D, $8C,$D0,$0D, $8E,$D0,$0D, $90,$D0,$0D, $91,$D0,$0D, $93,$D0,$0D, $FB
+else
+db $00
+endif
 }

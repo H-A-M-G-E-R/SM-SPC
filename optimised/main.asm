@@ -21,6 +21,7 @@ org $CF8000 ; The actual ROM location the engine is going to be written to
 
 ; Defines
 !noiseInstruments = 1
+!songSpecificSounds = 0 ; setting it to 1 will eat up so much aram
 
 incsrc "ram.asm"
 

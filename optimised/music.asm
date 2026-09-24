@@ -8,7 +8,25 @@ mov y,#$00 : mov a,(!p_tracker)+y : incw !p_tracker
 push a
 mov a,(!p_tracker)+y : incw !p_tracker : mov y,a
 pop a
+
+.ret
 ret
+}
+
+trackerReadahead:
+{
+call getNextTrackerCommand
+bne getNextTrackerCommand_ret
+mov y,a : beq getNextTrackerCommand_ret
+
+dec !misc1 : bpl +
+mov !misc1,a
+
++
+call getNextTrackerCommand
+and !misc1,!misc1 : beq trackerReadahead
+movw !p_tracker,ya
+bra trackerReadahead
 }
 
 ; $173B
@@ -64,6 +82,8 @@ mov !trackTremoloExtents+x,a
 mov !trackDynamicVolumeTimers+x,a
 mov !trackDynamicPanningTimers+x,a
 mov !trackVolumeMultipliers+x,a
+mov !trackPositiveRemoteCodeTypes+x,a
+mov !trackNegativeRemoteCodeAddresses+1+x,a
 dec x : dec x : bpl -
 }
 
@@ -148,6 +168,7 @@ call getNextTrackDataByte
 bne +
 
 ; End of section
+.runningRemoteCodeGate
 mov a,!trackRepeatedSubsectionCounters+x : beq .loop_tracker
 call repeatSubsection_setTrackPointer
 dec !trackRepeatedSubsectionCounters+x : bne .loop_track_command
@@ -241,6 +262,29 @@ asl !musicVoiceBitset : bne -
 }
 
 ret
+}
+
+runPositiveRemoteCode:
+{
+mov a,!trackPointers+x : push a : mov a,!trackPointers+1+x : push a
+mov a,!trackPositiveRemoteCodeAddresses+x : mov y,a : mov a,!trackPositiveRemoteCodeAddresses+1+x
+
+.exec
+mov !trackPointers+x,y : mov !trackPointers+1+x,a
+
+mov a,#$6F : mov handleMusicTrack_runningRemoteCodeGate,a ; ret
+call handleMusicTrack_loop_track_command
+mov a,#$F4 : mov handleMusicTrack_runningRemoteCodeGate,a ; mov a,ss+x
+
+pop a : mov !trackPointers+1+x,a : pop a : mov !trackPointers+x,a
+ret
+}
+
+runNegativeRemoteCode:
+{
+mov a,!trackPointers+x : push a : mov a,!trackPointers+1+x : push a
+mov a,!trackNegativeRemoteCodeAddresses+x : mov y,a : mov a,!trackNegativeRemoteCodeAddresses+1+x
+bra runPositiveRemoteCode_exec
 }
 
 musicTrackInitialisation_part2:
@@ -855,6 +899,60 @@ bne .branch_doSubloop
 ret
 }
 
+remoteCode: ; Track command FEh
+{
+; address
+push a : call getNextTrackDataByte : push a
+
+; type
+call getNextTrackDataByte
+beq .clearBoth
+bmi .negative
+cmp a,#$04 : beq .immediate
+cmp a,#$07 : beq .clearPositive
+cmp a,#$08 : beq .clearNegative
+
+; Otherwise
+mov !trackPositiveRemoteCodeTypes+x,a
+pop a : mov !trackPositiveRemoteCodeAddresses+1+x,a : pop a : mov !trackPositiveRemoteCodeAddresses+x,a
+call getNextTrackDataByte : mov !trackRemoteCodeDelayLengths+x,a
+ret
+
+.negative
+pop a : mov !trackNegativeRemoteCodeAddresses+1+x,a : pop a : mov !trackNegativeRemoteCodeAddresses+x,a
+
+.discardTimer
+jmp incrementTrackPointer
+
+.immediate
+mov a,!trackPositiveRemoteCodeAddresses+x : mov !misc0,a : mov a,!trackPositiveRemoteCodeAddresses+1+x : mov !misc0+1,a
+
+; Run remote code at pushed address
+pop a : mov !trackPositiveRemoteCodeAddresses+1+x,a : pop a : mov !trackPositiveRemoteCodeAddresses+x,a
+movw ya,!misc0 : push a : push y
+
+call runPositiveRemoteCode
+
+; Restore
+pop a : mov !trackPositiveRemoteCodeAddresses+1+x,a : pop a : mov !trackPositiveRemoteCodeAddresses+x,a
+bra .discardTimer
+
+.clearBoth
+pop a : pop a
+mov a,#$00 : mov !trackPositiveRemoteCodeTypes+x,a : mov !trackNegativeRemoteCodeAddresses+1+x,a
+bra .discardTimer
+
+.clearPositive
+pop a : pop a
+mov a,#$00 : mov !trackPositiveRemoteCodeTypes+x,a
+bra .discardTimer
+
+.clearNegative
+pop a : pop a
+mov a,#$00 : mov !trackNegativeRemoteCodeAddresses+1+x,a
+bra .discardTimer
+}
+
 ; $1B3B
 getTrackNote:
 {
@@ -925,14 +1023,15 @@ dw \
     setPercussionInstrumentsIndex,\
     miscCommand,\
     subloop,\
-    adsrGain
+    adsrGain,\
+    remoteCode
 }
 
 ; $1BA0
 trackCommandParameterBytes:
 {
 db $01, $01, $02, $03, $00, $01, $02, $01, $02, $01, $01, $03, $00, $01, $02, $03,\
-   $01, $03, $03, $00, $01, $03, $00, $03, $03, $03, $01, $03, $01, $02
+   $01, $03, $03, $00, $01, $03, $00, $03, $03, $03, $01, $03, $01, $02, $04
 }
 
 ; $1BBF
@@ -1070,6 +1169,12 @@ ret
 ; $1C88
 handleCurrentNote:
 {
+; Check for remote code 1
+mov a,!trackPositiveRemoteCodeTypes+x : dec a : bne +
+mov a,!trackRemoteCodeDelayTimers+x : dec a : mov !trackRemoteCodeDelayTimers+x,a : bne +
+call runPositiveRemoteCode
++
+
 movw ya,!p_tracker : push y : push a
 mov a,!trackNoteRingTimers+x : bne + : jmp .branch_continuePlaying : +
 dec !trackNoteRingTimers+x : beq +
@@ -1112,19 +1217,9 @@ bra .loop_commands
 mov a,!misc1+1 : bne .branch_endSubsection
 bbc0 !enableLateKeyOff,.branch_rest
 
-.loop_tracker
-call getNextTrackerCommand
+call trackerReadahead
 bne .branch_newTrackData
-mov y,a : beq .branch_rest
-
-dec !misc1 : bpl +
-mov !misc1,a
-
-+
-call getNextTrackerCommand
-and !misc1,!misc1 : beq .loop_tracker
-movw !p_tracker,ya
-bra .loop_tracker
+beq .branch_rest
 
 .branch_newTrackData
 movw !noteOrPanningBias,ya
@@ -1145,6 +1240,11 @@ jmp .loop_sections
 .branch_rest
 mov a,!musicVoiceBitset : tclr !legatoInProgressBitset,a
 and a,!keyOffGainEnableBitset : bne .branch_enableGain
+
+; Check for remote code 3 (incompatible with key-off gain for now)
+mov a,!trackPositiveRemoteCodeTypes+x : cmp a,#$03 : bne .branch_note
+call runPositiveRemoteCode
+bra .branch_continuePlaying
 
 .branch_note
 mov a,!musicVoiceBitset : and a,!legatoEnableBitset : and a,!legatoInProgressBitset : bne .branch_continuePlaying

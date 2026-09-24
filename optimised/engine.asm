@@ -201,6 +201,16 @@ mov a,!enableSoundEffectVoices : and a,!musicVoiceBitset : beq ++
 push y : call getTrackInstrumentBackupPtr : call updateInstrument : pop y
 
 ++
+; Check for remote code 1 and set timer if so
+mov a,!trackPositiveRemoteCodeTypes+x : dec a : bne +
+mov a,!trackRemoteCodeDelayLengths+x : mov !trackRemoteCodeDelayTimers+x,a
++
+
+; Check for remote code -1
+mov a,!trackNegativeRemoteCodeAddresses+1+x : beq +
+push y : call runNegativeRemoteCode : pop y
++
+
 ; Return if sound is active
 mov a,!sound_activeVoices : and a,!musicVoiceBitset : bne writeReadCpuIo_ret
 
