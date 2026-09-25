@@ -1,3 +1,4 @@
+if !soundVoiceAllocation == 1
 determineSoundVoiceOrder:
 {
 mov y,#7
@@ -24,6 +25,7 @@ dec x : dec x : bpl -
 
 ret
 }
+endif
 
 
 songSpecificSoundInitialisation:
@@ -59,11 +61,20 @@ mov a,y : xcn a : and a,#$0F : mov y,!i_soundLibrary : mov !sound_priorities-1+y
 
 mov !sounds-1+y,x
 
+if !soundVoiceAllocation == 1
 mov !misc0,#$08
+else
+mov x,#$0E
+mov !sound_voiceBitset,#$80
+endif
 
 .loop
+if !soundVoiceAllocation == 1
 mov y,!misc0 : mov a,!sound_voiceOrder-1+y : mov x,a
-lsr a : mov y,a : mov a,channelBitsets+y : mov !misc1+1,a
+lsr a : mov y,a : mov a,channelBitsets+y : mov !sound_voiceBitset,a
+else
+mov a,!sound_voiceBitset
+endif
 
 ; Check if voice is not occupied
 and a,!sound_activeVoices : bne .skipVoice
@@ -86,7 +97,7 @@ mov !sound_subtransposes+x,a
 inc a : mov !sound_instructionTimers+x,a
 mov a,#$0A : mov !sound_panningBiases+x,a
 
-mov a,!misc1+1
+mov a,!sound_voiceBitset
 tset !enableSoundEffectVoices,a
 tset !sound_activeVoices,a
 tclr !echoEnableFlags,a
@@ -96,7 +107,12 @@ mov y,!i_soundLibrary : or a,!sound_enabledVoices-1+y : mov !sound_enabledVoices
 dec !misc1 : beq .ret
 
 .skipVoice
+if !soundVoiceAllocation == 1
 dbnz !misc0,.loop
+else
+dec x : dec x
+lsr !sound_voiceBitset : bne .loop
+endif
 
 ; Could not initialise all channels, reset sound if no channels are initialised
 mov y,!i_soundLibrary : mov a,!dspVoiceVolumeIndex : beq resetSoundChannel_resetSound

@@ -353,7 +353,9 @@ if defined("adsrSoundCommand")
 %declare_wordArray(sound_adsrSettings,                          !n_tracks)
 endif
 
+if !soundVoiceAllocation == 1
 %declare_byteArray(sound_voiceOrder, !n_tracks)
+endif
 }
 
 !p_end_ram #= !p_ram

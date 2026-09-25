@@ -487,5 +487,7 @@ db !echoVolumeLeft+1, !echoVolumeRight+1, !echoFeedbackVolume, !echoEnableFlags,
 pitchTable:
 dw $10BE, $11BD, $12CB, $13E9, $1518, $1659, $17AD, $1916, $1A94, $1C28, $1DD5, $1F9B, $217C
 
+if !soundVoiceAllocation == 1
 channelBitsets:
 db $01, $02, $04, $08, $10, $20, $40, $80
+endif
