@@ -798,7 +798,7 @@ pitchSlide: ; Track command F9h
 {
 mov !trackPitchSlideDelayTimers+x,a
 call getNextTrackDataByte : mov !trackPitchSlideTimers+x,a
-call getNextTrackDataByte : clrc : adc a,!musicTranspose : adc a,!trackTransposes+x
+call getNextTrackDataByte : clrc : adc a,!musicTranspose : clrc : adc a,!trackTransposes+x
 
 ; Fall through
 }
