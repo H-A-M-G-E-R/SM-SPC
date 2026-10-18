@@ -738,7 +738,6 @@ adc $F2,#$10
 bpl -
 }
 
-mov x,!trackIndex
 ret
 }
 
@@ -1303,7 +1302,7 @@ bra .branch_continuePlaying
 set7 !noteModifiedFlag
 dec !trackPitchSlideTimers+x
 bne +
-mov a,!trackTargetNotes+1+x : mov !trackSubnotes+x,a
+mov a,!trackSubtransposes+x : mov !trackSubnotes+x,a
 mov a,!trackTargetNotes+x
 bra ++
 
