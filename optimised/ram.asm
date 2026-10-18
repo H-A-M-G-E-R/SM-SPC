@@ -197,6 +197,8 @@ endif
 %declare_byte(musicVoiceVolumeUpdateBitset)
 %declare_byte(percussionInstrumentsBaseIndex)
 %declare_byte(keyOffGainEnableBitset) ; only works with ADSR because it works by toggling ADSR/GAIN
+%declare_byte(legatoEnableBitset)
+%declare_byte(legatoInProgressBitset)
 }
 
 ; Echo
@@ -310,6 +312,10 @@ endif
 %declare_bytePairArray(trackTargetNotes,                   !n_tracks)
 %declare_bytePairArray(trackSubtransposes,                 !n_tracks)
 %declare_bytePairArray(trackSubloopCounters,               !n_tracks)
+%declare_bytePairArray(trackVolumeMultipliers,             !n_tracks)
+%declare_bytePairArray(trackPositiveRemoteCodeTypes,       !n_tracks)
+%declare_bytePairArray(trackRemoteCodeDelayLengths,        !n_tracks)
+%declare_bytePairArray(trackRemoteCodeDelayTimers,         !n_tracks)
 
 %declare_bytePairArray(sound_releaseFlags,                      !n_tracks)
 
@@ -322,6 +328,11 @@ endif
 %declare_wordArray(trackPanningBiasDeltas,                 !n_tracks)
 %declare_wordArray(trackNoteDeltas,                        !n_tracks)
 %declare_wordArray(trackSubloopAddresses,                  !n_tracks)
+%declare_wordArray(trackPositiveRemoteCodeAddresses,       !n_tracks)
+%declare_wordArray(trackNegativeRemoteCodeAddresses,       !n_tracks)
+
+%declare(trackInstrumentBackups,                           !n_tracks*6)
+!canInterleaveBytePairArray = 0
 }
 
 ; Sound channels
@@ -342,15 +353,17 @@ if defined("adsrSoundCommand")
 %declare_wordArray(sound_adsrSettings,                          !n_tracks)
 endif
 
+if !soundVoiceAllocation == 1
 %declare_byteArray(sound_voiceOrder, !n_tracks)
+endif
 }
 
 !p_end_ram #= !p_ram
 
-; $2E8..263F: SPC engine
-!p_ram = $2300-($30*6)
+; $370..20F0: SPC engine
+!p_ram = $2300-($40*6)
 
-%declare_byteArray(instrumentTable, $30*6)
+%declare_byteArray(instrumentTable, $40*6)
 
 ; Must be 100h aligned
 !p_ram #= !p_ram+$100-1

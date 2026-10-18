@@ -8,7 +8,25 @@ mov y,#$00 : mov a,(!p_tracker)+y : incw !p_tracker
 push a
 mov a,(!p_tracker)+y : incw !p_tracker : mov y,a
 pop a
+
+.ret
 ret
+}
+
+trackerReadahead:
+{
+call getNextTrackerCommand
+bne getNextTrackerCommand_ret
+mov y,a : beq getNextTrackerCommand_ret
+
+dec !misc1 : bpl +
+mov !misc1,a
+
++
+call getNextTrackerCommand
+and !misc1,!misc1 : beq trackerReadahead
+movw !p_tracker,ya
+bra trackerReadahead
 }
 
 ; $173B
@@ -63,22 +81,13 @@ mov !trackVibratoExtents+x,a
 mov !trackTremoloExtents+x,a
 mov !trackDynamicVolumeTimers+x,a
 mov !trackDynamicPanningTimers+x,a
+mov !trackVolumeMultipliers+x,a
+mov !trackPositiveRemoteCodeTypes+x,a
+mov !trackNegativeRemoteCodeAddresses+1+x,a
 dec x : dec x : bpl -
 }
 
-mov !dynamicMusicVolumeTimer,a
-mov !dynamicEchoVolumeTimer,a
-mov !dynamicMusicTempoTimer,a
-mov !musicTranspose,a
-mov !trackerTimer,a
-mov !percussionInstrumentsBaseIndex,a
-mov !keyOffGainEnableBitset,a
-mov !disablePsychoacousticAdjustment,a
-mov y,#$C0 : movw !musicVolume,ya
-mov y,#$20 : movw !musicTempo,ya
-mov a,#sharedNoteRingLengthTable&$FF : mov y,#sharedNoteRingLengthTable>>8 : movw !p_noteRingLengthTable,ya
-mov a,#sharedEchoFirFilters&$FF : mov y,#sharedEchoFirFilters>>8 : movw !p_echoFirFilters,ya
-mov !noteEndInTicks,#$02
+jmp musicTrackInitialisation_part2
 
 .ret
 ret
@@ -123,7 +132,10 @@ mov y,#$0F
 
 -
 mov a,(!misc1)+y : mov !trackPointers+y,a : dec y : bpl -
+
+if !soundVoiceAllocation == 1
 call determineSoundVoiceOrder
+endif
 
 ; Reset music tracks
 mov x,#$0E
@@ -159,6 +171,7 @@ call getNextTrackDataByte
 bne +
 
 ; End of section
+.runningRemoteCodeGate
 mov a,!trackRepeatedSubsectionCounters+x : beq .loop_tracker
 call repeatSubsection_setTrackPointer
 dec !trackRepeatedSubsectionCounters+x : bne .loop_track_command
@@ -254,6 +267,49 @@ asl !musicVoiceBitset : bne -
 ret
 }
 
+runPositiveRemoteCode:
+{
+mov a,!trackPointers+x : push a : mov a,!trackPointers+1+x : push a
+mov a,!trackPositiveRemoteCodeAddresses+x : mov y,a : mov a,!trackPositiveRemoteCodeAddresses+1+x
+
+.exec
+mov !trackPointers+x,y : mov !trackPointers+1+x,a
+
+mov a,#$6F : mov handleMusicTrack_runningRemoteCodeGate,a ; ret
+call handleMusicTrack_loop_track_command
+mov a,#$F4 : mov handleMusicTrack_runningRemoteCodeGate,a ; mov a,ss+x
+
+pop a : mov !trackPointers+1+x,a : pop a : mov !trackPointers+x,a
+ret
+}
+
+runNegativeRemoteCode:
+{
+mov a,!trackPointers+x : push a : mov a,!trackPointers+1+x : push a
+mov a,!trackNegativeRemoteCodeAddresses+x : mov y,a : mov a,!trackNegativeRemoteCodeAddresses+1+x
+bra runPositiveRemoteCode_exec
+}
+
+musicTrackInitialisation_part2:
+{
+mov !dynamicMusicVolumeTimer,a
+mov !dynamicEchoVolumeTimer,a
+mov !dynamicMusicTempoTimer,a
+mov !musicTranspose,a
+mov !trackerTimer,a
+mov !percussionInstrumentsBaseIndex,a
+mov !keyOffGainEnableBitset,a
+mov !disablePsychoacousticAdjustment,a
+mov !legatoEnableBitset,a
+mov !legatoInProgressBitset,a
+mov y,#$C0 : movw !musicVolume,ya
+mov y,#$20 : movw !musicTempo,ya
+mov a,#sharedNoteRingLengthTable&$FF : mov y,#sharedNoteRingLengthTable>>8 : movw !p_noteRingLengthTable,ya
+mov a,#sharedEchoFirFilters&$FF : mov y,#sharedEchoFirFilters>>8 : movw !p_echoFirFilters,ya
+mov !noteEndInTicks,#$02
+ret
+}
+
 ; $5800
 sharedNoteRingLengthTable:
 db $32,$65,$7F,$98,$B2,$CB,$E5,$FC
@@ -294,6 +350,11 @@ mov y,a
 ret
 }
 
+restoreInstrument: ; misc command 6
+{
+mov a,!trackInstrumentIndices+x : bra setInstrumentSettings
+}
+
 ; $18F9
 selectInstrument: ; Track command E0h
 {
@@ -331,39 +392,108 @@ mov y,a : bpl +
 setc : sbc a,#$CA : clrc : adc a,!percussionInstrumentsBaseIndex
 
 +
-mov y,#$06 : mul ya : movw !misc0,ya : clrc : adc !misc0,#!instrumentTable&$FF : adc !misc0+1,#!instrumentTable>>8
+; Backup instrument
+call getInstrumentPtr
+call getTrackInstrumentBackupPtr
+
+mov y,#$05
+-
+mov a,(!misc0)+y : mov (!misc1)+y,a
+dec y : bpl -
+
+; Fall through
+}
+
+;; Parameters:
+;;     X: Track index
+;;     !misc1: Instrument pointer
+updateInstrument:
+{
 mov a,!sound_activeVoices : and a,!musicVoiceBitset : bne .ret
 mov a,!musicVoiceBitset : tclr !enableSoundEffectVoices,a
+
+; have to do it in reverse because of this: https://snes.nesdev.org/wiki/Errata#S-DSP
 push x
-mov a,x : xcn a : lsr a : or a,#$04 : mov x,a
-mov y,#$00
+mov a,x : xcn a : lsr a : or a,#$07 : mov x,a
+mov y,#$03
+
+.loop_dsp
+{
+mov a,(!misc1)+y
+mov $F2,x : mov $F3,a
+dec x
+dec y
+bne .loop_dsp
+}
 
 if defined("noiseInstruments")
-mov a,(!misc0)+y : bpl +
+mov a,(!misc1)+y : bpl +
 and a,#$1F : and !flg,#$20 : tset !flg,a
 or (!noiseEnableFlags),(!sound_voiceBitset) ; so noise instruments can't ruin sound effects, we also update that while updating music
 mov a,#$02 ; first looping sample for noise to work, see https://snes.nesdev.org/wiki/S-DSP_registers#NON
-bra .branch_dsp
+bra ++
 
 +
 endif
 mov a,!sound_voiceBitset : tclr !noiseEnableFlags,a
+mov a,(!misc1)+y
 
-.loop_dsp
-{
-mov a,(!misc0)+y
-
-.branch_dsp
+++
 mov $F2,x : mov $F3,a
-inc x
-inc y
-cmp y,#$04 : bne .loop_dsp
-}
 
 pop x
-mov a,(!misc0)+y : mov !trackInstrumentPitches+1+x,a : inc y : mov a,(!misc0)+y : mov !trackInstrumentPitches+x,a
+mov y,#$04
+mov a,(!misc1)+y : mov !trackInstrumentPitches+1+x,a : inc y : mov a,(!misc1)+y : mov !trackInstrumentPitches+x,a
 
 .ret
+ret
+}
+
+adsrGain: ; Track command FDh
+{
+push a : call getTrackInstrumentBackupPtr : pop a
+
+; ADSR1
+eor a,#$80 : push p
+mov y,#$01 : mov (!misc1)+y,a
+
+; ADSR2 or GAIN
+call getNextTrackDataByte
+mov y,#$02 : pop p : bmi .update
+inc y
+.update
+mov (!misc1)+y,a
+
+bra updateInstrument
+}
+
+setInstrumentByte: ; misc command 8
+{
+call getTrackInstrumentBackupPtr
+call getNextTrackDataByte
+push y : call getNextTrackDataByte : pop y
+bra adsrGain_update
+}
+
+;; Parameters:
+;;     A: Instrument index
+
+;; Returns:
+;;     !misc0: Instrument pointer
+getInstrumentPtr:
+{
+mov y,#$06 : mul ya : movw !misc0,ya : clrc : adc !misc0,#!instrumentTable&$FF : adc !misc0+1,#!instrumentTable>>8
+ret
+}
+
+;; Parameters:
+;;     X: Track index
+
+;; Returns:
+;;     !misc1: Instrument pointer
+getTrackInstrumentBackupPtr:
+{
+mov a,x : mov y,#$03 : mul ya : movw !misc1,ya : clrc : adc !misc1,#!trackInstrumentBackups&$FF : adc !misc1+1,#!trackInstrumentBackups>>8
 ret
 }
 
@@ -561,7 +691,7 @@ mov a,!enableSoundEffectVoices : eor a,#$FF : and a,!fakeEchoEnableFlags : mov !
 ret
 }
 
-addMusicCommandF4_toggleEcho:
+addMusicCommandF4_toggleEcho: ; misc command 3
 {
 eor (!fakeEchoEnableFlags),(!musicVoiceBitset)
 bra staticEcho_echoChannels
@@ -684,7 +814,7 @@ setc : sbc a,!trackNotes+x : mov y,!trackPitchSlideTimers+x : push y : pop x : c
 ret
 }
 
-miscCommand:
+miscCommand: ; Track command FBh
 {
 ; Jump to [!miscCommandPointers + [A] * 2] while preserving X
 asl a : mov y,a : mov a,miscCommandPointers+1+y : push a : mov a,miscCommandPointers+y : push a : ret
@@ -697,36 +827,40 @@ dw \
     setEchoFirFilters,\
     setDPMiscCommand,\
     addMusicCommandF4_toggleEcho,\
-    toggleKeyOffGain
+    toggleKeyOffGain,\
+    amplify,\
+    restoreInstrument,\
+    toggleLegato,\
+    setInstrumentByte
 }
 
 miscCommandParameterBytes:
 {
-db $02,$02,$02,$00,$00
+db $02,$02,$02,$00,$00,$01,$00,$00,$02
 }
 
-setNoteLengthTable:
+setNoteLengthTable: ; misc command 0
 {
 call getNextTrackDataByte : mov !p_noteRingLengthTable,a
 call getNextTrackDataByte : mov !p_noteRingLengthTable+1,a
 ret
 }
 
-setEchoFirFilters:
+setEchoFirFilters: ; misc command 1
 {
 call getNextTrackDataByte : mov !p_echoFirFilters,a
 call getNextTrackDataByte : mov !p_echoFirFilters+1,a
 ret
 }
 
-setDPMiscCommand:
+setDPMiscCommand: ; misc command 2
 {
 call getNextTrackDataByte : push a : call getNextTrackDataByte : pop a
 push x : mov x,a : mov a,y : mov (x),a : pop x
 ret
 }
 
-toggleKeyOffGain:
+toggleKeyOffGain: ; misc command 4
 {
 eor (!keyOffGainEnableBitset),(!musicVoiceBitset)
 mov a,!keyOffGainEnableBitset : and a,!musicVoiceBitset : beq enableADSR
@@ -741,7 +875,21 @@ or a,#$80 ; enable ADSR
 jmp writeDspRegister
 }
 
-subloop:
+amplify: ; misc command 5
+{
+call getNextTrackDataByte : mov !trackVolumeMultipliers+x,a
+or (!musicVoiceVolumeUpdateBitset),(!musicVoiceBitset) ; to change volume in the middle of note
+ret
+}
+
+toggleLegato: ; misc command 7
+{
+mov a,!musicVoiceBitset : tclr !legatoInProgressBitset,a
+eor !legatoEnableBitset,!musicVoiceBitset
+ret
+}
+
+subloop: ; Track command FCh
 {
 bne +
 ; Set subloop address
@@ -762,6 +910,60 @@ ret
 dec a : mov !trackSubloopCounters+x,a
 bne .branch_doSubloop
 ret
+}
+
+remoteCode: ; Track command FEh
+{
+; address
+push a : call getNextTrackDataByte : push a
+
+; type
+call getNextTrackDataByte
+beq .clearBoth
+bmi .negative
+cmp a,#$04 : beq .immediate
+cmp a,#$07 : beq .clearPositive
+cmp a,#$08 : beq .clearNegative
+
+; Otherwise
+mov !trackPositiveRemoteCodeTypes+x,a
+pop a : mov !trackPositiveRemoteCodeAddresses+1+x,a : pop a : mov !trackPositiveRemoteCodeAddresses+x,a
+call getNextTrackDataByte : mov !trackRemoteCodeDelayLengths+x,a
+ret
+
+.negative
+pop a : mov !trackNegativeRemoteCodeAddresses+1+x,a : pop a : mov !trackNegativeRemoteCodeAddresses+x,a
+
+.discardTimer
+jmp incrementTrackPointer
+
+.immediate
+mov a,!trackPositiveRemoteCodeAddresses+x : mov !misc0,a : mov a,!trackPositiveRemoteCodeAddresses+1+x : mov !misc0+1,a
+
+; Run remote code at pushed address
+pop a : mov !trackPositiveRemoteCodeAddresses+1+x,a : pop a : mov !trackPositiveRemoteCodeAddresses+x,a
+movw ya,!misc0 : push a : push y
+
+call runPositiveRemoteCode
+
+; Restore
+pop a : mov !trackPositiveRemoteCodeAddresses+1+x,a : pop a : mov !trackPositiveRemoteCodeAddresses+x,a
+bra .discardTimer
+
+.clearBoth
+pop a : pop a
+mov a,#$00 : mov !trackPositiveRemoteCodeTypes+x,a : mov !trackNegativeRemoteCodeAddresses+1+x,a
+bra .discardTimer
+
+.clearPositive
+pop a : pop a
+mov a,#$00 : mov !trackPositiveRemoteCodeTypes+x,a
+bra .discardTimer
+
+.clearNegative
+pop a : pop a
+mov a,#$00 : mov !trackNegativeRemoteCodeAddresses+1+x,a
+bra .discardTimer
 }
 
 ; $1B3B
@@ -833,14 +1035,16 @@ dw \
     pitchSlide,\
     setPercussionInstrumentsIndex,\
     miscCommand,\
-    subloop
+    subloop,\
+    adsrGain,\
+    remoteCode
 }
 
 ; $1BA0
 trackCommandParameterBytes:
 {
 db $01, $01, $02, $03, $00, $01, $02, $01, $02, $01, $01, $03, $00, $01, $02, $03,\
-   $01, $03, $03, $00, $01, $03, $00, $03, $03, $03, $01, $03, $01
+   $01, $03, $03, $00, $01, $03, $00, $03, $03, $03, $01, $03, $01, $02, $04
 }
 
 ; $1BBF
@@ -951,6 +1155,10 @@ mov a,x : xcn a : lsr a : mov !dspVoiceVolumeIndex,a
 mov y,!panningBias+1 : mov a,panningVolumeMultipliers+1+y : setc : sbc a,panningVolumeMultipliers+y : mov y,!panningBias : mul ya : mov a,y
 mov y,!panningBias+1 : clrc : adc a,panningVolumeMultipliers+y : mov y,a : mov a,!trackOutputVolumes+x : mul ya
 
+; Add the computed volume to (computedvolume * volumemultipier / $100)
+mov !misc0,y : mov a,!trackVolumeMultipliers+x : mul ya
+mov a,y : clrc : adc a,!misc0 : mov y,a
+
 ; Handle phase inversion
 mov a,!trackPhaseInversionOptions+x : asl a
 bbc0 !dspVoiceVolumeIndex,+
@@ -974,6 +1182,12 @@ ret
 ; $1C88
 handleCurrentNote:
 {
+; Check for remote code 1
+mov a,!trackPositiveRemoteCodeTypes+x : dec a : bne +
+mov a,!trackRemoteCodeDelayTimers+x : dec a : mov !trackRemoteCodeDelayTimers+x,a : bne +
+call runPositiveRemoteCode
++
+
 movw ya,!p_tracker : push y : push a
 mov a,!trackNoteRingTimers+x : bne + : jmp .branch_continuePlaying : +
 dec !trackNoteRingTimers+x : beq +
@@ -994,62 +1208,59 @@ mov y,#$00
 mov a,(!misc0)+y : beq .branch_end : bmi .branch_command
 
 .loop_noteParameters
-inc y : bmi .branch_note
+inc y : bpl + : jmp .branch_note : +
 mov a,(!misc0)+y
 bpl .loop_noteParameters
 
 .branch_command
 bbc1 !enableLateKeyOff,+
-cmp a,#$C9 : bcc .branch_continuePlaying
+cmp a,#$C9 : bcs + : jmp .branch_continuePlaying : +
 
 +
+cmp a,#$C9 : beq .branch_rest
 cmp a,#$C8 : beq .branch_continuePlaying
-cmp a,#$C9 : beq .branch_keyOffGainCheck
 cmp a,#$EF : bne + : jmp .branch_repeatSubsection : +
-cmp a,#$FB : beq .branch_miscCommand
 cmp a,#$FC : bne + : jmp .branch_subloop : +
+cmp a,#$FB : beq .branch_miscCommand
 cmp a,#$E0 : bcc .branch_note
 push y : mov y,a : pop a : adc a,trackCommandParameterBytes-$E0+y : mov y,a
 bra .loop_commands
 
 .branch_end
 mov a,!misc1+1 : bne .branch_endSubsection
-bbc0 !enableLateKeyOff,.branch_keyOffGainCheck
+bbc0 !enableLateKeyOff,.branch_rest
 
-.loop_tracker
-call getNextTrackerCommand
+call trackerReadahead
 bne .branch_newTrackData
-mov y,a : beq .branch_keyOffGainCheck
-
-dec !misc1 : bpl +
-mov !misc1,a
-
-+
-call getNextTrackerCommand
-and !misc1,!misc1 : beq .loop_tracker
-movw !p_tracker,ya
-bra .loop_tracker
+beq .branch_rest
 
 .branch_newTrackData
 movw !noteOrPanningBias,ya
 mov a,x : mov y,a
 mov a,(!noteOrPanningBias)+y : push a : inc y : mov a,(!noteOrPanningBias)+y : mov y,a : pop a
-beq .branch_keyOffGainCheck ; empty track
+beq .branch_rest ; empty track
 bra .loop_sections
 
 .branch_endSubsection
 dbnz !misc1+1,+
 mov a,!trackRepeatedSubsectionReturnAddresses+1+x : mov y,a : mov a,!trackRepeatedSubsectionReturnAddresses+x
-bra .loop_sections
+jmp .loop_sections
 
 +
 mov a,!trackRepeatedSubsectionAddresses+1+x : mov y,a : mov a,!trackRepeatedSubsectionAddresses+x
 jmp .loop_sections
 
-.branch_keyOffGainCheck
-mov a,!musicVoiceBitset : and a,!keyOffGainEnableBitset : bne .branch_enableGain
+.branch_rest
+mov a,!musicVoiceBitset : tclr !legatoInProgressBitset,a
+and a,!keyOffGainEnableBitset : bne .branch_enableGain
+
+; Check for remote code 3 (incompatible with key-off gain for now)
+mov a,!trackPositiveRemoteCodeTypes+x : cmp a,#$03 : bne .branch_note
+call runPositiveRemoteCode
+bra .branch_continuePlaying
 
 .branch_note
+mov a,!musicVoiceBitset : and a,!legatoEnableBitset : and a,!legatoInProgressBitset : bne .branch_continuePlaying
 mov a,!musicVoiceBitset : mov y,#$5C : call writeDspRegister
 
 .branch_continuePlaying

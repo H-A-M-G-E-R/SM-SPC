@@ -227,16 +227,23 @@ db $01 : dw ..voice0
 
 ; Sound 19h: Shitroid dies
 .sound19
+if !songSpecificSounds == 1
 db $12 : dw ..voice0, ..voice1
 ..voice0 : db $25, $93,$D0,$26, $FF
 ..voice1 : db $25, $8C,$A0,$3B, $FF
+else
+db $00
+endif
 
 ; Sound 1Bh: Draygon dying cry
 .sound1B
-;db $12 : dw ..voice0, ..voice1
-;..voice0 : db $25, $8E,$D0,$30, $8E,$D0,$30, $8E,$D0,$40, $FF
-;..voice1 : db $25, $A6,$00,$0C, $98,$80,$30, $98,$80,$30, $9A,$80,$10, $98,$80,$40, $FF
+if !songSpecificSounds == 1
+db $12 : dw ..voice0, ..voice1
+..voice0 : db $25, $8E,$D0,$30, $8E,$D0,$30, $8E,$D0,$40, $FF
+..voice1 : db $25, $A6,$00,$0C, $98,$80,$30, $98,$80,$30, $9A,$80,$10, $98,$80,$40, $FF
+else
 db $00
+endif
 
 ; Sound 1Ch: Crocomire spit
 .sound1C
@@ -270,24 +277,39 @@ db $01 : dw ..voice0
 
 ; Sound 23h: Baby metroid cry 1
 .sound23
-;db $01 : dw ..voice0
-;..voice0 : db $25, $95,$20,$40, $FF
+if !songSpecificSounds == 1
+db $01 : dw ..voice0
+..voice0 : db $25, $95,$20,$40, $FF
+else
+db $00
+endif
 
 ; Sound 24h: Baby metroid cry - Ceres
 .sound24
-;db $11 : dw ..voice0
-;..voice0 : db $24, $95,$20,$40, $FF
+if !songSpecificSounds == 1
+db $11 : dw ..voice0
+..voice0 : db $24, $95,$20,$40, $FF
+else
+db $00
+endif
 
 ; Sound 26h: Baby metroid cry 2
 .sound26
-;db $01 : dw ..voice0
-;..voice0 : db $25, $92,$20,$09, $92,$30,$40, $FF
+if !songSpecificSounds == 1
+db $01 : dw ..voice0
+..voice0 : db $25, $92,$20,$09, $92,$30,$40, $FF
+else
+db $00
+endif
 
 ; Sound 27h: Baby metroid cry 3
 .sound27
-;db $01 : dw ..voice0
-;..voice0 : db $25, $91,$30,$40, $FF
+if !songSpecificSounds == 1
+db $01 : dw ..voice0
+..voice0 : db $25, $91,$30,$40, $FF
+else
 db $00
+endif
 
 ; Sound 28h: Phantoon materialises attack
 .sound28
@@ -322,7 +344,11 @@ db $01 : dw ..voice0
 
 ; Sound 2Eh: Mother Brain's glass shattering
 .sound2E
+if !songSpecificSounds == 1
 db $12 : dw .motherBrainGlassShatteringVoice0, .motherBrainGlassShatteringVoice1
 .motherBrainGlassShatteringVoice0 : db $08, $94,$D0,$59, $FF
 .motherBrainGlassShatteringVoice1 : db $25, $98,$D0,$10, $93,$D0,$16, $8F,$90,$15, $FF
+else
+db $00
+endif
 }

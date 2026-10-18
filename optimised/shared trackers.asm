@@ -152,8 +152,28 @@ macro toggleKeyOffGain()
     db $FB, $04
 endmacro
 
+macro amplify(value)
+    db $FB, $05, <value>
+endmacro
+
+macro restoreInstrument()
+    db $FB, $06
+endmacro
+
+macro toggleLegato()
+    db $FB, $07
+endmacro
+
+macro setInstrumentByte(index, value)
+    db $FB, $08, <index>, <value>
+endmacro
+
 macro subloop(n_repeats)
     db $FC, <n_repeats>
+endmacro
+
+macro adsrGain(value1, value2)
+    db $FD, <value1>, <value2>
 endmacro
 }
 }
