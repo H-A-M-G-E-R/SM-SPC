@@ -30,6 +30,7 @@ endif
 !noiseInstruments = 1
 !songSpecificSounds = 0 ; setting it to 1 will eat up so much aram
 !soundVoiceAllocation = 0 ; 3Ah bytes
+!sharedTrackers = 0 ; 1D6h bytes
 
 incsrc "ram.asm"
 

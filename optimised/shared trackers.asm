@@ -109,7 +109,7 @@ macro subtranspose(subtranspose)
 endmacro
 
 macro staticEcho(voices, volume_left, volume_right)
-    db $F5, <voices>, <volume_left>, <volume_right>
+    db $F5, <voices>, <volume_left>*$7F/$60, <volume_right>*$7F/$60
 endmacro
 
 macro endEcho()
@@ -121,7 +121,7 @@ macro echoParameters(delay, feedbackVolume, i_firFilter)
 endmacro
 
 macro dynamicEchoVolume(delay, volume_left, volume_right)
-    db $F8, <delay>, <volume_left>, <volume_right>
+    db $F8, <delay>, <volume_left>*$7F/$60, <volume_right>*$7F/$60
 endmacro
 
 macro pitchSlide(delay, duration, extent)
@@ -179,6 +179,7 @@ endmacro
 }
 
 sharedTrackerPointers:
+if !sharedTrackers == 1
 ; Dummy trackers 5..7 to prevent crashing in QuickMet
 dw musicTrack1_tracker, musicTrack2_tracker, musicTrack3_tracker, musicTrack4_tracker, !zero, !zero, !zero
 
@@ -507,3 +508,7 @@ dw .track0, $0000, $0000, $0000, $0000, $0000, $0000, $0000
 !end
 }
 }
+
+else
+dw !zero, !zero, !zero, !zero, !zero, !zero, !zero
+endif

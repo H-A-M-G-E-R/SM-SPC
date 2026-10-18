@@ -151,7 +151,7 @@ db $01 : dw ..voice0
 ; Sound Bh: Uncharged power beam
 .soundB
 db $01 : dw ..voice0
-..voice0 : db $04, $89,$90,$03, $84,$90,$0E, $FF
+..voice0 : db $04, $A4,$90,33, $FF
 
 ; Sound Ch: Uncharged ice beam
 ; Sound Eh: Uncharged ice + wave beam
@@ -193,7 +193,7 @@ db $01 : dw ..voice0
 ; Sound 17h: Charged power beam
 .sound17
 db $01 : dw ..voice0
-..voice0 : db $04, $84,$D0,$05, $80,$D0,$0C, $02, $98,$80,$03, $98,$60,$03, $98,$50,$03, $FF
+..voice0 : db $04, $A4,$FF,33, $FF
 
 ; Sound 18h: Charged ice beam
 ; Sound 1Ah: Charged ice + wave beam

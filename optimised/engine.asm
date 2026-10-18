@@ -18,8 +18,8 @@ call memclear
 ; Set up echo with echo delay = 0
 mov a,#$00 : mov !echoDelay,a : call setUpEcho_spcInitialisation
 
-; DSP left/right track master volume = 60h
-mov y,#$60
+; DSP left/right track master volume = 7Fh
+mov y,#$7F
 mov a,#$0C : movw $F2,ya
 mov a,#$1C : movw $F2,ya
 
