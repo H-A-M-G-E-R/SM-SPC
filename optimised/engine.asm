@@ -130,8 +130,8 @@ beq .branch_musicTrack_end
 ; Music
 .branch_musicTrack
 call handleMusicTrack
-dbnz !musicTrackClockHi,.branch_musicTrack
 mov x,#$00 : call writeReadCpuIo
+dbnz !musicTrackClockHi,.branch_musicTrack
 jmp .loop_main
 .branch_musicTrack_end
 
