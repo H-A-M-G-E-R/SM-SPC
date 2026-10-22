@@ -16,7 +16,7 @@ mov !misc1,#main-!p_stackBegin
 call memclear
 
 ; Set up echo with echo delay = 0
-mov a,#$00 : mov !echoDelay,a : call setUpEcho_spcInitialisation
+mov a,#$00 : mov !echoDelay,a : call setUpEcho
 
 ; DSP left/right track master volume = 60h
 mov y,#$60

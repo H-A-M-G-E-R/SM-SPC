@@ -755,7 +755,6 @@ clrc : adc a,!echoTimer
 +
 mov !echoTimer,a
 
-.spcInitialisation
 ; Clear echo DSP registers
 mov y,#$04
 
